@@ -1,0 +1,7 @@
+{
+	"screens": {
+		"loader": {
+			"background": "/images/MobApp-BG-Splash-ipad.png"
+		}
+	}
+}

@@ -1,0 +1,55 @@
+# Liferay Events-specific #
+###########################
+[dD]efault*.png
+Resources/**/app*.png
+modules
+Info.plist
+tich-liferayevents.cfg
+tiapp-liferayevents.xml
+tiapp.xml
+Resources/fonts/*
+Resources/images/MobApp-BG-Splash*.png
+!Resources/fonts/*.md
+!Resources/Default-568h@2x.png
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IntelliJ IDEA files #
+#######################
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+.idea_modules
+build/
+build.log
+tmp/
+
+# Eclipse #
+###########
+.settings/
+.loadpath
+.project
+.classpath
+.target
+
+# Other #
+#########
+.gradle
+target/
+bin/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+

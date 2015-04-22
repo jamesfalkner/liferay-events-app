@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- I18N: Note in all strings below, positional parameters such as %1$s and %2$d should be preserved. -->
+
+<resources>
+	<!-- Short abbreviations for months -->
+	<string name="JAN">GEN</string>
+	<string name="FEB">FEB</string>
+	<string name="MAR">MAR</string>
+	<string name="APR">APR</string>
+	<string name="MAY">MAG</string>
+	<string name="JUN">GIU</string>
+	<string name="JUL">LUG</string>
+	<string name="AUG">AGO</string>
+	<string name="SEP">SET</string>
+	<string name="OCT">OTT</string>
+	<string name="NOV">NOV</string>
+	<string name="DEC">DIC</string>
+
+	<!-- Long names for months (for agenda display) -->
+	<string name="JAN_L">Gennaio</string>
+	<string name="FEB_L">Febbraio</string>
+	<string name="MAR_L">March</string>
+	<string name="APR_L">Aprile</string>
+	<string name="MAY_L">Maggio</string>
+	<string name="JUN_L">Giugno</string>
+	<string name="JUL_L">Luglio</string>
+	<string name="AUG_L">Agosto</string>
+	<string name="SEP_L">Settembre</string>
+	<string name="OCT_L">Ottobre</string>
+	<string name="NOV_L">Novembre</string>
+	<string name="DEC_L">Dicembre</string>
+
+	<!-- Generic Stuff -->
+	<string name="LOADING">Carico...</string>
+	<string name="ALERT">Attenzione</string>
+	<string name="NOTE">Notifica</string>
+	<string name="YES">Si</string>
+	<string name="NO">No</string>
+	<string name="OK">OK</string>
+	<string name="CANCEL">Cancella</string>
+	<string name="CLOSE">Chiudi</string>
+	<string formatted="false" name="ERROR_1">Errore: %1$s</string>
+
+	<!-- Titles of screens -->
+	<string name="HOME">Home</string>
+	<string name="AGENDA">Agenda</string>
+	<string name="GALLERY">Gallery</string>
+	<string name="CONTACTS">Contatti</string>
+	<string name="ACTIVITIES">Attività</string>
+	<string name="SPONSORS">Sponsors</string>
+	<string name="MAPS">Mappe</string>
+
+
+	<!-- Loading Screen -->
+
+	<!-- i18n: These two lines fade in on the splash screen, while the app is loading -->
+	<!-- They should be roughly the same (short) length each and is supposed to welcome you to the app -->
+	<string name="SPLASH_FADE_1">Benvenuti agli</string>
+	<string name="SPLASH_FADE_2">Eventi Liferay</string>
+
+	<string name="LOADING_EVENTS">Caricamento Eventi...</string>
+	<string name="GETTING_UPDATES">Mostra Aggiornamenti...</string>
+
+	<!-- I18N: "Skip" is shown during app loading, if the network takes too long, a button is offered to skip the loading
+	     process and use previously-saved data -->
+	<string name="SKIP">Salta</string>
+
+	<!-- I18N: "News" is a popup that shows a list of news items entered by event staff. There is a title (NEWS) and
+	     then for unread news, they are decorated with the NEWS_NEW string -->
+	<string name="NEWS">Ultime notizie</string>
+	<string name="NEWS_NEW">Breaking News!</string>
+	<string name="NO_NEWS">Nessuna notizia. Riprova più tardi!</string>
+
+	<!-- I18n: shown if the event is in the past -->
+	<string name="THANKS_FOR_ATTENDING">Grazie per aver partecipato! L\'evento è concluso, ma è ancora possibile ottenere informazioni sugli eventi!</string>
+
+	<!-- I18N: After 3-4 hours of use, the app will ask whether to reload data -->
+	<string name="REFRESH_DATA">Aggiorna Dati</string>
+	<string name="REFRESH_REMINDER">La pagina è stata in esecuzione a lungo.  Ricarica la pagina per aggiornare i dati.</string>
+	<string name="RELOAD">Ricarica</string>
+	<string name="DO_NOT_RELOAD">Non ricaricare</string>
+	<string name="UPDATE_SUCCESSFUL">Aggiornamento effettuato con successo, ritorna alla Home per vedere gli aggiornamenti.</string>
+
+	<!-- Various error messages while loading data over network -->
+	<string name="FAILED_UPDATE">Impossibile caricare i dati dell\'evento.  Visualizza i dati caricati in precedenza (potrebbero mancare alcuni contenuti)</string>
+	<string name="FAILED_UPDATE_EVENTS">Impossibile caricare la lista degli eventi.  Visualizza la lista eventi precedentemente caricata (che potrebbe essere obsoleta)</string>
+	<string name="FAILED_UPDATE_NETWORK">Impossibile caricare i dati a causa di problemi di rete.  Riprova più tardi.</string>
+	<string formatted="false" name="FAILED_UPDATE_NETWORK_1">Impossibile caricare i dati a causa di problemi di rete: %1$s.  Riprova più tardi.</string>
+	<string name="FAILED_LOADING_SETTINGS_FROM_FILE">Errore di caricamento da file.</string>
+	<string name="NO_NETWORK_FOUND">Nessuna rete trovata.  Visualizza i dati caricati in precedenza (potrebbero mancare alcuni contenuti).</string>
+	<string name="NO_NETWORK_FOUND_CANNOT_LOAD">Nessuna rete rilevata, impossibile caricare i dati precedenti.  Chiudi la app e riprova più tardi.</string>
+	<string name="INVALID_DATA">Trovate informazioni non valide sull\'evento.  Utilizza i dati caricati in precedenza (potrebbero mancare alcuni contenuti).</string>
+	<string name="INVALID_DATA_CANNOT_LOAD">Nessuna rete rilevata, impossibile caricare i dati precedenti.  Chiudi la app e riprova più tardi.</string>
+
+	<!-- Event Select screen -->
+	<string name="EVENT_SELECT_DIRECTIONS">Per selezionare l\'evento più vicino, tocca il pulsante di destinazione.</string>
+	<!-- Justification for needing access to geo data from phone (iOS only) -->
+	<string name="GEO_PERMISSION_PURPOSE">Per scegliere l\'evento Liferay più vicino alla tua posizione.</string>
+	<string name="REMEMBER">Ricorda</string>
+	<string name="DO_NOT_REMEMBER">Non ricordare più</string>
+	<string name="EVENT_REMEMBER_TITLE">Selezione Evento</string>
+	<string formatted="false" name="EVENT_REMEMBER_PROMPT">Benvenuti a %1$s! Per ricordare questa scelta la prossima volta, premi Ricorda .</string>
+	<string formatted="false" name="NO_LOCATION">Impossibile determinare la posizione (%1$s).  Riprova più tardi, oppure scegli manualmente un evento.</string>
+	<string name="EVENT_SELECT_HEADER">Seleziona l\'evento a cui desideri accedere.</string>
+	<string formatted="false" name="EVENT_REMEMBER_REG_PROMPT">Benvenuti al %1$s! Se desideri ricordare questa scelta la prossima volta, premi Ricorda. Per iscriverti a questo evento, premi Registra.</string>
+	<string name="REGISTER">Registra</string>
+
+	<!-- Agenda -->
+	<!-- I18N: this label is used to show a short version of the date, such as "January 25" or "25 janvier"
+	           Countries like the USA use month first (represented as %1$s %2$d), whereas other countries like France use day first,
+	           so for French, change to "%2$d %1$s" -->
+	<string name="DATE_FMT">%2$d %1$s</string>
+	<string name="TODAY">OGGI:</string>
+	<string formatted="false" name="FOLLOW_1">Segui %1$s su</string>
+	<string name="RATINGS_NOTE">La votazione apre 15 minuti prima di ogni sessione</string>
+	<string name="RATINGS_INSTRUCTIONS">Per votare questa sessione premi il pollice in alto o in basso</string>
+	<string name="RATINGS_OPEN_SOON">La votazione è momentaneamente aperta...</string>
+	<string formatted="false" name="RATINGS_OPEN_MINUTES">La votazione aprirà tra qualche %1$d minuto</string>
+	<string name="RATINGS_CLOSED">Le votazioni sono chiuse per questa sessione</string>
+	<string name="ALREADY_RATED">Hai già votato questa sessione</string>
+	<string name="SAVING_RATING">Stiamo salvando il voto...</string>
+	<string name="RATING_THANKS">Grazie per aver votato questa sessione!</string>
+	<string formatted="false" name="RATING_FAIL">Non puoi votare questa sessione: %1$s</string>
+	<string name="RATING_TIMEOUT">Impossibile votare la sessione a causa di un timeout di rete.  Riprova più tardi!</string>
+	<!-- This is used to format a time range for some event, e.g. "11:00 - 13:00" -->
+	<string formatted="false" name="TIME_RANGE">%1$s - %2$s</string>
+	<string name="SESSION_NOTES">Note sulla Sessione</string>
+	<string name="HINT_TEXT">Inserisci alcune note personali sulla sessione.  Le note verranno salvate.</string>
+	<!-- I18N: used on agenda detail screen for title of talk that has no abstract, e.g. "Liferay 6.2 Preview by Ed Chung" -->
+	<string formatted="false" name="TALK_BY">%1$s by %2$s.</string>
+
+	<!-- Session types -->
+	<string name="CASE_STUDY">Casi di successo</string>
+	<string name="PARTNER_STUDY">Casi di studio dei Partner</string>
+	<string name="TECH_SESSION">Sessioni tecniche</string>
+	<string name="BUSINESS_SESSION">Sessioni Business</string>
+	<string name="WORKSHOP">Workshop</string>
+
+	<!-- Contacts -->
+	<!-- I18N: this is shown during badge scanning when there is no sponsor for badge scans -->
+	<string name="SCAN_TITLE">Scan Liferay Badge</string>
+	<!-- I18N: Here the name of the sponsor appears in the message -->
+	<string formatted="false" name="SCAN_SPONSORED_BY">Sponsorizzato da %1$s</string>
+
+	<!-- I18N: this is shown when a 2D barcode is scanned, but not a valid contact -->
+	<string formatted="false" name="SCAN_INVALID_TYPE">Questo non è un tipo di contatto valido (type=%1$s), prova di nuovo.</string>
+	<string name="SCAN_NO_DATA_FOUND">Nessun dato trovato, prova di nuovo</string>
+	<string formatted="false" name="SCAN_UNABLE">Impossibile eseguire la scansione (%1$s), prova di nuovo!</string>
+	<!-- I18N: MECARD is the standard for 2D barcodes we use for Liferay events -->
+	<string name="SCAN_NOT_CONTACT">Il codice scansionato non è un MECARD valido</string>
+	<string name="SCAN_EXPORT_TITLE">Esporta Contatti</string>
+	<string name="SCAN_EXPORT_PROMPT">Come si desidera esportare i contatti?</string>
+	<string name="SCAN_EXPORT_CLIPBOARD">Copia nella clipboard</string>
+	<string name="SCAN_EXPORT_EMAIL">Invia per E-mail</string>
+	<string name="SCAN_EMAIL_UNSUP">Email non supportata, configura la email su questo dispositivo</string>
+	<string name="SCAN_EMAIL_FAILED">Impossibile inviare la email, si prega di controllare la configurazione della email</string>
+	<string name="SCAN_EMAIL_SENT">Messaggio inviato</string>
+	<!-- I18N: This is the email subject. something like "Contact list for Liferay Symposium - San Francisco" -->
+	<string formatted="false" name="SCAN_EMAIL_SUBJ">Lista dei contatti per %1$s - %2$s</string>
+	<string name="SCAN_EMAIL_SEE_ATTACHMENT">Visualizza allegato</string>
+
+	<!-- I18N: Titles of contact fields -->
+	<string name="FMT_SCANDATE">Dati di scansione</string>
+	<string name="FMT_NAME">Nome</string>
+	<string name="FMT_EMAIL">E-Mail</string>
+	<string name="FMT_TITLE">Ruolo</string>
+	<string name="FMT_ADDR">Indirizzo</string>
+	<string name="FMT_COMPANY">Azienda</string>
+	<string name="FMT_PHONE">Telefono</string>
+	<string name="FMT_ADDRESS">Indirizzo</string>
+	<string name="FMT_URL">URL</string>
+	<string name="FMT_WEBSITE">Sito web</string>
+	<string name="FMT_FOLLOW">Vai</string>
+	<!-- I18N: UNKNOWN should be all caps and represents fields with unknown values, like if a contact doesn\'t have a title or a phone number -->
+	<string name="FMT_UNKNOWN">SCONOSCIUTO</string>
+	<!-- I18N: N/A means "Not Applicable" - used for contacts that are hard-coded into the app, and don\'t have an associated scan date. -->
+	<string name="FMT_NA">N/A</string>
+	<!-- I18N: something like "Contact from Liferay Symposium - Paris" -->
+	<string formatted="false" name="CONTACT_EMAIL_SUBJ">Contatto da %1$s - %2$s</string>
+	<string name="CONTACT_SAVE_TO_ADDRBOOK_TITLE">Salva in rubrica</string>
+	<string name="CONTACT_SAVE_TO_ADDRBOOK_PROMPT">Desideri salvare questo contatto nella tua rubrica?</string>
+	<string name="CONTACT_SAVE_TO_ADDRBOOK_SAVED">Contatto salvato.</string>
+	<string name="CONTACT_DELETE_TITLE">Rimuovi Contatto</string>
+	<string name="CONTACT_DELETE_PROMPT">Sei sicuro di voler cancellare questo contatto? La lista dei contatti sul tuo dispositivo non subirà variazioni.</string>
+	<string name="CONTACT_DELETE_DELETED">Contatto cancellato.</string>
+
+	<!-- Gallery and photostream upload -->
+	<string name="GALLERY_THANKS">Grazie per la condivisione!  La tua foto verrà inserita nel photostream dell\'evento!</string>
+	<string name="GALLERY_CAMERA_BUSY">Impossibile caricare la foto: La fotocamera è piena, chiudere le altre applicazioni che potrebbero utilizzare la fotocamera e riprovare.</string>
+	<string name="GALLERY_NO_CAMERA">Questo dispositivo non dispone di una fotocamera</string>
+	<string formatted="false" name="GALLERY_UNKNOWN_ERROR">Errore sconosciuto, impossibile caricare l\'immagine: %1$s</string>
+	<string name="GALLERY_CANNOT_LOAD_TITLE">Impossibile caricare la Galleria Immagini</string>
+	<string name="GALLERY_CANNOT_LOAD_MSG">Impossibile caricare la Galleria Immagini perché sei offline.</string>
+	<string name="GALLERY_CHECK_SETTINGS">Impossibile accedere alla galleria, si prega di verificare le impostazioni di rete e riprovare.</string>
+	<string name="GALLERY_TIMEOUT">Impossibile visualizzare la galleria (molto probabilmente a causa di un timeout di rete). Prova più tardi.</string>
+	<string formatted="false" name="GALLERY_CANNOT_LOAD_ERROR">Impossibile caricare la Galleria: %1$s</string>
+	<string name="GALLERY_CANNOT_DISPLAY">Impossibile visualizzare la galleria, prova più tardi.</string>
+	<string name="GALLERY_NO_PICS">Nessuna immagine trovata.</string>
+	<string name="UPLOADING_IMAGE">Caricamento immagine...</string>
+	<string formatted="false" name="PICTURE_FROM">Avanzamento foto al %1$s</string>
+	<string name="UPLOAD_FAILED">Impossibile completare il carimento, controllare le impostazioni di rete e provare più tardi.</string>
+	<string name="GALLERY_SAVE_TITLE">Salva l\'immagine</string>
+	<string name="GALLERY_SAVE_PROMPT">Desideri salvare questa immagine nel tuo dispositivo?</string>
+	<string name="GALLERY_SAVE_SAVED">Immagine salvata.</string>
+	<string formatted="false" name="GALLERY_SAVE_ERROR">Impossibile salvare la foto (%1$s)</string>
+	<string name="GALLERY_SLOW">Tempo di caricamento immagine molto lungo. Attendere o riprovare tra qualche istante.</string>
+	<!-- I18N: These are used when displaying sponsorship logos in the app -->
+	<string formatted="false" name="STREAM_SPONSORED_BY">Photostream sponsorizzato da</string>
+
+	<!-- Maps -->
+	<string name="MAPS_LOADING">Caricamento Mappa...</string>
+	<string name="MAPS_DIRECTIONS">Premere il pulsante mappa per visualizzare le indicazioni per raggiungere la location</string>
+
+	<!-- Activities -->
+	<string name="WHATS_HAPPENING">Che cosa è successo</string>
+	<string name="HOSTED_BY">Hosted By</string>
+	<string name="LOCATION">Location</string>
+
+	<!-- Sponsors -->
+	<!-- Only shown when there are no sponsors (which should rarely be the case) -->
+	<string name="SPONSORS_NONE">Nessuno sponsor</string>
+
+	<!-- misc -->
+
+	<!-- title of dialog box holding survey -->
+	<string name="EVENT_SURVEY">Questionario di indagine</string>
+
+	<!-- title of button for sending survey answers -->
+	<string name="SURVEY_SEND">Invia</string>
+
+	<!-- error shown when blank survey is submitted -->
+	<string name="SURVEY_NO_ANSWERS">E\' necessario rispondere almeno ad una domanda</string>
+
+	<!-- title of dialog box when submitting survey answers -->
+	<string name="SAVING_SURVEY">Invio in corso...</string>
+
+	<!-- instructions for entering survey answers -->
+	<string name="EVENT_SURVEY_INSTRUCTIONS">Per aiutarci a migliorare i futuri eventi, per favore concedici alcuni momenti per rispondere a questo breve questionario. Tutte le domande sono facoltative.</string>
+
+	<!-- thank you message after submitting survey -->
+	<string name="EVENT_SURVEY_THANKS">Grazie per aver completato il questionario! Le tue risposte ci aiuteranno a migliorare gli eventi futuri.</string>
+
+	<!-- title of dialog box when error occurs sending survey -->
+	<string formatted="false" name="EVENT_SURVEY_ERROR">Impossibile rispondere al sondaggio(%1$s). Per favore riprova pi˘ tardi(le tue risposte verranno salvate.)</string>
+
+	<!-- title of dialog box for survey send confirmation -->
+	<string name="SURVEY_SUBMIT_TITLE">Invia Survey</string>
+
+	<!-- message shown when survey answers are about to be submitted -->
+	<string name="SURVEY_SUBMIT_PROMPT">Sei sicuro di voler inviare le risposte del sondaggio?</string>
+
+
+	<string name="SURVEY_SAVE_FOR_LATER">Salva bozza</string>
+
+	<!-- New Sep 2013 -->
+	<!--
+		Favorites allows people to "add" a session to a list of favorites,
+		which are then highlighted in the agenda.
+	-->
+	<string name="ADD_TO_FAVORITES">Aggiungi ai preferiti</string>
+	<string name="ADDED_TO_FAVORITES">Aggiunto ai preferiti</string>
+
+	<!--
+		Event Select screen now shows sections for upcoming events, and past events
+	-->
+	<string name="UPCOMING_EVENTS">Prossimi eventi</string>
+	<string name="PAST_EVENTS">Eventi passati</string>
+
+	<!--
+		Users can optionally add their name to every pic they upload. This will be
+		used for potential contests to see who can get the highest rating on their pic.
+	-->
+	<string name="ADD_NAME">Aggiungere nome?</string>
+	<string name="ADD_NAME_DESC">Desideri aggiungere il nome alla foto caricata? Il tuo nome sarà registrato nel campo di ricerca della foto caricata.</string>
+	<string name="ADD_NAME_INSTRUCTIONS">Inserisci il tuo nome completo come riportato sul badge dell\'evento. Il tuo nome verrà aggiunto ad ogni foto caricata nel photostream di un evento pubblico. Il tuo nome non verrà utilizzato per altri scopi.</string>
+	<string name="ADD_NAME_CONFIRM">Sei certo di voler registrare il tuo nome in tutte le foto?</string>
+
+	<!--
+		Success and error messages when rating a photo
+	-->
+	<string name="ALREADY_RATED_PHOTO">Hai già votato questa foto!</string>
+	<string name="THANKS_PHOTO_RATING">Grazie per aver votato questa foto!</string>
+	<string formatted="false" name="PHOTO_RATING_FAIL">Impossibile salvare la valutazione di questa foto: %1$s</string>
+
+	<!--
+		Geolocation map shows small dots for each attendee, including a dot for the
+		user themselves. The list of attendees also lists how far away they are
+	-->
+	<string name="SCANNING_AREA">Scansione dell\'area...</string>
+	<string name="SEARCH">Ricerca</string>
+	<string name="GEO_PERMISSION_LOCATOR">Visualizza la tua posizione sulla mappa.</string>
+	<string name="GEO_LOCATOR_RESPOND_INSTRUCTIONS">Per rispondere a questo messaggio, visita la sezione Mappa del partecipante cliccando sull\'icona a globo posta sulla schermata principale</string>
+	<!--
+		NOTE: This string is to show distancesm such as "59km" or "34m" (kilometers and meters).
+		The "%1$d is a placeholder for the number of kilometers (km) or meters (m) so don\'t forget
+		to leave the suffixes in the right spot, and translate them if needed.
+	-->
+	<string formatted="false" name="DIST_KM">%1$dkm</string>
+	<string formatted="false" name="DIST_M">%1$dm</string>
+
+	<!--
+		Once a user is registered, they can send messages to other users who have
+		also registered. These strings are for sending messages to other users.
+	-->
+	<string name="MESSAGE">Messaggi</string>
+	<string name="MSG_SEND_A_MSG">Invia un messaggio</string>
+	<string name="MSG_SENDING_PROGRESS">Invio del messaggio in corso...</string>
+	<string name="MSG_DELIVERED">Messaggio inviato</string>
+	<string formatted="false" name="MSG_TO">To: %1$s</string>
+	<string formatted="false" name="MSG_INSTRUCTIONS">Inserisci il tuo messaggio qui sotto (%1$d characters max)</string>
+	<string formatted="false" name="MSG_CONFIRM">Sei sicuro di voler inviare il messaggio a %1$s?</string>
+	<string formatted="false" name="MSG_FAIL">Errore nella spedizione del messaggio, si prega di provare pi˘ tardi (%1$s)</string>
+
+	<!--
+		Users can also unregister, and these strings are used for that
+	-->
+	<string name="MSG_UNREGISTER">Annullare la registrazione</string>
+	<string name="MSG_UNREGISTER_PROGRESS">Annullamento della registrazione...</string>
+	<string name="MSG_UNREGISTER_CONFIRM">Sei sicuro di voler annullare la registrazione?</string>
+	<string name="MSG_UNREGISTER_SUCCESS">Annullamento della registrazione avvenuto con successo</string>
+	<string formatted="false" name="MSG_UNREGISTER_FAIL">Errore nell\'annullamento, si prega di provare pi˘ tardi (%1$s)</string>
+
+	<!--
+		Users of the geolocation map must "opt-in" (register) themselves before their
+		location is sent to other users. This is known as "registering your presence"
+	-->
+	<string name="MSG_NOT_REGISTERED">Non sei registrato</string>
+	<string name="MSG_MUST_FIRST_REGISTER">E\' necessario registrare la propria presenza prima di inviare un messaggio agli altri partecipanti! Premi Registrati per confermare la tua presenza.</string>
+	<string name="MSG_REGISTER">Registra la tua presenza</string>
+	<string name="MSG_REGISTER_INSTRUCTIONS">Inserendo i tuoi dati qui sotto, la tua presenza sarà comunicata agli altri partecipanti, e saranno in grado di vedere le tue informazioni ed inviare messaggi attraverso questa app. I tuoi dati non saranno utilizzati per altri scopi.</string>
+	<string name="MSG_REGISTER_PROGRESS">Annullamento della registrazione in corso...</string>
+	<string name="MSG_REGISTER_CONFIRM">Sei sicuro di voler registrare la tua presenza?</string>
+	<string name="MSG_REGISTER_SUCCESS">Registrazione avvenuta con successo</string>
+	<string formatted="false" name="MSG_REGISTER_FAIL">Errore nella registrazione, si prega di provare pi˘ tardi (%1$s)</string>
+
+	<!--
+		One of the fields a user can fill out when registering is an "About me" field,
+		which is arbitrary text describing the person, which is shown when other users
+		view the user in the geo map.
+	-->
+	<string name="MSG_ABOUT_ME">Informazioni su di me</string>
+
+    <!-- new for 2014 -->
+    <string name="TWEET">Tweet</string>
+    <string name="SHORTEN">Accorcia url</string>
+    <string name="SPLASH_POWERED_BY">Powered By</string>
+    <string name="SURVEY_READONLY">Grazie per aver completato il sondaggio! Puoi rivedere le risposte, ma non è possibile inviarle nuovamente.</string>
+
+    <string name="BEACON_UNSUPPORTED">Questo dispositivo non supporta Bluetooth LE o non hai fornito alla app l’autorizzazione ad utilizzarlo. Per visualizzare la lista dei dispositivi supportati, clicca Dispositivi Supportati.</string>
+    <string name="BEACON_SUPPORTED_DEVICES">Dispositivi Supportati</string>
+    <string name="NOTIFICATION_AREAS">Area Notifiche</string>
+    <string name="MUTE">Silenzioso</string>
+    <string name="MUTE_ALL">Disattiva tutto</string>
+    <string name="MUTE_AREA" formatted="false">Silenzioso %1$s</string>
+    <string name="UNMUTE_AREA" formatted="false">Attiva %1$s</string>
+    <string name="NEW_NOTIFICATION">Nuova Notifica</string>
+    <string name="MISSED_WHILE_LOCKED">Ti sei perso delle notifiche mentre questo dispositivo era bloccato! Premi OK per continuare.</string>
+    <string name="TRY_LATER">Riprova più tardi</string>
+    <string name="FINAL_ANSWER">Risposta finale?</string>
+    <string name="IF_INCORRECT">Se la risposta é sbagliata, puoi riprovare più tardi!</string>
+    <string name="RESET_BADGES_TITLE">Reset Sponsor Badges?</string>
+    <string name="RESET_BADGES">Sei sicuro di voler resettare il tuo sponsor badges?</string>
+    <string name="RESET_BADGES_WAIT">Reset badges in corso, attendere prego… </string>
+    <string name="RESET_BADGES_SUCCESS">Sponsor Badges resettato.</string>
+    <string name="RESET_BADGES_FAIL" formatted="false">Impossibile resettare il badges. Riprova più tardi (%1$s)</string>
+    <string name="UPGRADE_NOTE">È stato aggiornato Liferay Eventi, ma l\'applicazione non è stata in grado di caricare i nuovi dati sugli eventi. Si prega di controllare le impostazioni di rete e la connettività.</string>
+    <string name="ALL_PHOTOS">Foto</string>
+    <string name="PLEASE_ENTER_NAME">Inserisci il tuo nome</string>
+    <string name="RATINGS_DISABLED_FOR_PHOTO">I voti sono disabilitati per questa foto!</string>
+    <string name="MUTE_ALL_WARNING">To re-enable notifications, you must quit and restart this app and choose which notifications to receive via the main menu.</string>
+
+	<!--TODO: Need IT Translations-->
+
+    <string name="APPLY">Applica</string>
+    <string name="ALL">Tutti</string>
+    <string name="MY_AGENDA">Agenda</string>
+    <string name="FILTERS">Filtri</string>
+    <string name="FILTERS_SHOW_ALL">Mostra Tutto</string>
+    <string name="NO_FILTER_MATCH">In questa giornata non sono presenti sessioni rispondenti al filtro selezionato. Tocca \"Filtri\" per modificare il filtro, o \"Mostra Tutto\" per visualizzare tutte le sessioni.</string>
+    <string name="NO_FILTER_MATCH_MY_AGENDA">In questa giornata l'agenda non contiene alcuna sessione. Tocca \"Aggiungi all'Agenda\" durante la visualizzazione di una sessione per creare la tua agenda personale, o \"Mostra Tutto\" per visualizzare tutte le sessioni.</string>
+    <string formatted="false" name="CANT_SAVE_PDF">Impossibile salvare il file PDF: %1$s</string>
+    <string formatted="false" name="CANT_READ_PDF">Impossibile leggere il file PDF: %1$s</string>
+    <string formatted="false" name="CANT_LOAD_PDF">Impossibile caricare il file PDF: %1$s</string>
+    <string name="NO_PDF_APP">Impossibile visualizzare le slide. Non è presente alcuna applicazione per leggere i file PDF. Installare un visualizzatore PDF e riprovare.</string>
+    <string name="ADD_TO_MY_AGENDA">Aggiungi all'Agenda</string>
+    <string name="ADDED_TO_MY_AGENDA">Aggiunto all'Agenda</string>
+
+
+</resources>

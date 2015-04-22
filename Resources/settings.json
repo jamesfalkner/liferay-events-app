@@ -1,0 +1,872 @@
+{
+	"server": {
+		"reminderTime": 14400000,
+		"requestTimeout": 40000,
+
+        "dataHost": {
+          "host": "https://www.liferay.com",
+          "endpoint":"/skinny-web/api/jsonws/skinny/get-skinny-ddl-records",
+          "siteListingType": "36416693"
+        },
+        "servicesHost": {
+          "host": "https://mdata.liferay.com",
+          "ratingServiceEndpoint": "/html/mdata-public/liferay-rating-service.jsp",
+          "surveyServiceEndpoint": "/html/mdata-public/liferay-survey-service.jsp",
+          "favoritesServiceEndpoint": "/html/mdata-public/liferay-favorites-service.jsp",
+          "beaconServiceEndpoint": "/html/mdata-public/liferay-beacons-service.jsp",
+          "apiVersion": "1.2"
+        },
+        "eventSurveyId": "Event Survey",
+        "beaconFetchFrequencyMins": 60,
+        "beaconGlobalFrequencyLimitSecs": 30,
+		"newsFrequencyMins": 1,
+		"backoffMultiplier": 2,
+		"initialBackoffSecs": 10,
+		"eventListFetchMins": 30,
+		"eventDataFetchMins": 20,
+        "singleValues": [
+            "end_time_minutes",
+            "start_time_minutes",
+            "end_time_hour",
+            "start_time_hour",
+            "room_uuid",
+            "session_type",
+            "rank",
+            "type",
+            "position",
+            "on"
+        ],
+        "multiValues": [
+            "multiselect",
+            "on_proximity",
+            "select_category"
+        ],
+        "docLibValues": [
+            "logo",
+            "speaker_image",
+            "sponsor_image",
+            "company_logo",
+            "docmedia",
+            "icon",
+            "image",
+            "picture"
+
+        ],
+        "fileUploadValues": [
+            "file_upload3878"
+        ],
+        "booleanValues": [
+            "display_on_live",
+            "display_in_mobile_app",
+            "enable_notes",
+            "enable_ratings",
+            "active",
+            "randomize_sponsors",
+            "display_as_track_heading",
+            "speaker_keynote",
+            "speaker_highlight",
+            "show_map",
+            "rateable",
+            "muted",
+            "cancelable"
+        ]
+    },
+	"screens": {
+		"all": {
+			"speaker_social_twitter": {
+				"image": "/images/MobApp-Icon-TwttrDrk.png",
+				"prefix": "http://twitter.com/"
+			},
+			"speaker_social_facebook": {
+				"image": "/images/MobApp-Icon-FBDrk.png",
+				"prefix": "http://facebook.com/"
+			},
+			"speaker_social_linkedin": {
+				"image": "/images/MobApp-Icon-LnkdInDrk.png",
+				"prefix": "http://linkedin.com/"
+			},
+			"speaker_social_youtube": {
+				"image": "/images/MobApp-Icon-YouTubeDrk.png",
+				"prefix": "http://youtube.com/"
+			},
+            "speaker_social_blog": {
+                "image": "/images/MobApp-Icon-BlogDrk.png",
+                "prefix": ""
+            },
+            "speaker_social_liferay": {
+                "image": "/images/MobApp-Icon-BlogDrk.png",
+                "prefix": "http://liferay.com/web/"
+            },
+			"layout": {
+				"header" : {
+					"backgroundImage": "/images/MobApp-BG-Top.png",
+					"backgroundColor": "white",
+					"width" : "100%",
+					"height": "10%",
+					"left": "0",
+					"top": "0"
+				},
+				"headerLabel" : {
+					"color": "white",
+                    "center": {
+                        "y": "50%"
+                    }
+				},
+				"footer" : {
+					"backgroundImage": "/images/MobApp-BG-Bottom.png",
+					"backgroundColor": "white",
+					"width" : "100%",
+					"height": "10%",
+					"left": "0",
+					"top": "90%"
+				},
+				"panelBg" : {
+					"backgroundColor" : "white",
+					"width" : "100%",
+					"height": "80%",
+					"left": "0%",
+					"top": "10%"
+				}
+			},
+			"buttons": {
+				"back": {
+					"backgroundImage": "/images/MobApp-Icon-BackArrow.png",
+					"backgroundImageAlt": "/images/MobApp-Icon-BackArrowGrn.png",
+					"left": "50%",
+					"leftAlt": "10%",
+					"psize": 0.05,
+					"touchEnabled": false
+				},
+                "news": {
+                    "backgroundImage": "/images/MobApp-MainMenu-Icon-News.png",
+                    "backgroundImageAlt": "/images/MobApp-MainMenu-Icon-NewsGrn.png",
+                    "center": {
+                        "x": "84.23%"
+                    },
+                    "psize": 0.08
+                },
+                "beacon": {
+                    "backgroundImage": "/images/ibeacon-icon.png",
+                    "backgroundImageAlt": "/images/ibeacon-icon-teal.png",
+                    "center": {
+                        "x": "72.81%"
+                    },
+                    "psize": 0.08
+                },
+                "beaconOff": {
+                    "backgroundImage": "/images/ibeacon-icon-off.png",
+                    "backgroundImageAlt": "/images/ibeacon-icon-teal-off.png",
+                    "center": {
+                        "x": "72.81%"
+                    },
+                    "psize": 0.08
+                },
+				"survey": {
+					"backgroundImage": "/images/MobApp-MainMenu-Icon-Surv.png",
+					"backgroundImageAlt": "/images/MobApp-MainMenu-Icon-SurvGrn.png",
+					"center": {
+						"x": "61.39%"
+					},
+					"psize": 0.08
+				},
+				"tag": {
+					"backgroundImage": "/images/MobApp-Cntcts-Icon-Scan.png",
+					"backgroundImageAlt": "/images/MobApp-Cntcts-Icon-ScanGrn.png",
+					"center": {
+						"x": "49.97%"
+					},
+					"psize": 0.08
+				},
+				"tweet": {
+					"backgroundImage": "/images/MobApp-Icon-Twttr.png",
+					"backgroundImageAlt": "/images/MobApp-Icon-TwttrDrk.png",
+					"center": {
+						"x": "15.7%"
+					},
+					"psize": 0.08
+				},
+                "fb": {
+                    "backgroundImage": "/images/MobApp-Icon-FB.png",
+                    "backgroundImageAlt": "/images/MobApp-Icon-FBDrk.png",
+                    "center": {
+                        "x": "27.13%"
+                    },
+                    "psize": 0.08
+                },
+                "slides": {
+                    "backgroundImage": "/images/slides.png",
+                    "backgroundImageAlt": "/images/slides.png",
+                    "center": {
+                        "x": "27.13%"
+                    },
+                    "psize": 0.08
+                }
+			}
+		},
+		"loader": {
+			"background": "/images/MobApp-BG-Splash.png",
+            "logo": "/images/Splash-Logo.png",
+			"dataFile": "data.json",
+			"surveyFile": "survey.json",
+            "ratingsFile": "ratings.json",
+            "achievementsFile": "achievements.json",
+			"favoritesFile": "favorites.json",
+			"galleryFile": "favorites.json",
+			"newsFile": "news.json",
+			"eventSelectPrefsFile": "eventprefs.json",
+            "notesFile": "notes.json",
+            "beaconDataFile": "beacondata.json",
+			"labels": {
+				"directions": {
+					"textid": "SKIP",
+					"top": "7%",
+					"width": "SIZE",
+					"height": "SIZE",
+					"touchEnabled": false,
+					"backgroundColor": "transparent",
+					"color": "#EEEEEE"
+				},
+				"news": {
+					"textid": "NEWS",
+					"touchEnabled": false,
+					"color": "#EEEEEE"
+				}
+			}
+		},
+		"front": {
+			"buttonsPerRow" : 2,
+			"borderWidth": 2,
+			"psize": 0.15,
+			"borderColor": "#EEEEEE",
+			"buttonOrder": ["agenda","maps", "sponsors", "contacts", "activities", "gallery"],
+			"buttons": {
+                "agenda": {
+                    "image": "/images/MobApp-MainMenu-Icon-Agenda.png",
+                    "imageSel": "/images/MobApp-MainMenu-Icon-AgendaGrn.png",
+                    "textid": "AGENDA"
+                },
+				"maps": {
+					"image": "/images/MobApp-MainMenu-Icon-Maps.png",
+					"imageSel": "/images/MobApp-MainMenu-Icon-MapsGrn.png",
+					"textid": "MAPS"
+				},
+				"sponsors": {
+					"image": "/images/MobApp-MainMenu-Icon-Spnsrs.png",
+					"imageSel": "/images/MobApp-MainMenu-Icon-SpnsrsGrn.png",
+					"textid": "SPONSORS"
+				},
+				"contacts": {
+					"image": "/images/MobApp-MainMenu-Icon-Cntcts.png",
+					"imageSel": "/images/MobApp-MainMenu-Icon-CntctsGrn.png",
+					"textid": "CONTACTS"
+				},
+				"activities": {
+					"image": "/images/MobApp-MainMenu-Icon-Actvts.png",
+					"imageSel": "/images/MobApp-MainMenu-Icon-ActvtsGrn.png",
+					"textid": "ACTIVITIES"
+				},
+				"gallery": {
+					"image": "/images/MobApp-MainMenu-Icon-Gllry.png",
+					"imageSel": "/images/MobApp-MainMenu-Icon-GllryGrn.png",
+					"textid": "GALLERY"
+				},
+				"eventSelect": {
+					"backgroundImage": "/images/MobApp-Icon-BcktoEvntSel.png",
+					"backgroundImageAlt": "/images/MobApp-Icon-BcktoEvntSelGrn.png",
+					"left": "5%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"psize": 0.08
+				}
+			},
+			"labels": {
+				"survey": {
+					"textid": "EVENT_SURVEY",
+					"touchEnabled": false,
+					"color": "#EEEEEE"
+				}
+			}
+		},
+		"survey": {
+			"buttons": {
+				"backgroundImage" : "/images/button.png",
+				"psize": 0.07,
+				"on": {
+					"image": "/images/RadioButton-on.png"
+				},
+				"off": {
+					"image": "/images/RadioButton-off.png"
+				}
+			}
+		},
+		"agenda": {
+			"defaultColor": "#DDDDDD",
+			"roomColors": [
+				"#1DA99E",
+				"#E95B27",
+				"#95B955",
+				"#0D8A9D"
+			],
+			"favoriteColor": "#FDEDA3",
+			"highlightColor": "#CCE1E7",
+			"favoriteHighlightColor": "#FBDE53",
+			"selectColor": "#00a9aa",
+			"selectFavoriteColor" : "#F9D319",
+			"typeIcons": [
+				{
+					"name":"Case Study",
+					"textId" : "CASE_STUDY",
+					"background":"/images/MobApp-Agenda-Icon-CseStdy.png"
+				},
+				{
+					"name":"Tech Session",
+					"textId" : "TECH_SESSION",
+					"background":"/images/MobApp-Agenda-Icon-TchSssn.png"
+				},
+				{
+					"name":"Partner Study",
+					"textId" : "PARTNER_STUDY",
+					"background":"/images/MobApp-Agenda-Icon-PrtnrStdy.png"
+				},
+				{
+					"name":"Workshop",
+					"textId" : "WORKSHOP",
+					"background":"/images/MobApp-Agenda-Icon-Wrkshp.png"
+				},
+				{
+					"name":"Business Session",
+					"textId" : "BUSINESS_SESSION",
+					"background": "/images/MobApp-Agenda-Icon-BusinessSession.png"
+				}
+			],
+			"layout": {
+				"typeIcon": {
+					"psize": 0.06
+				},
+				"arrowIcon": {
+					"psize": 0.06,
+					"backgroundImage": "/images/MobApp-Icon-Arrow.png"
+				},
+				"dayBtn": {
+					"backgroundImage": "/images/MobApp-Agenda-LghtTab.png",
+					"backgroundImageAlt": "/images/MobApp-Agenda-DrkTab.png"
+				},
+				"tabBase": {
+					"width" : "100%",
+					"height" : "1%",
+					"backgroundImage": "/images/MobApp-Agenda-TabBase.png"
+				}
+			}
+		},
+		"agendaDetail": {
+			"rotatePeriod": 4000,
+			"layout" : {
+				"imageView": {
+					"psize": 0.24,
+					"arrowSize": 0.04
+				},
+				"notesTextArea": {
+					"top": "8dp",
+					"left": 0,
+					"backgroundImage": "/images/notes.png",
+					"backgroundColor": "transparent",
+					"color": "#737373",
+					"textAlign": "left",
+					"suppressReturn": false
+				},
+				"arrowImage": "/images/MobApp-Icon-Arrow.png"
+			},
+			"buttons": {
+				"favorite": {
+					"favoritedBackground": "/images/Favorite-Icon-Yellow.png",
+					"unfavoritedBackground": "/images/Favorite-Icon-Gray.png"
+				},
+				"like": {
+					"left": "68%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"backgroundImage": "/images/MobApp-AgendaDet-Icon-ThumbUpGrn.png",
+					"backgroundImageAlt": "/images/MobApp-AgendaDet-Icon-ThumbUp.png",
+					"psize": 0.08
+				},
+				"unlike": {
+					"left": "82%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"backgroundImage": "/images/MobApp-AgendaDet-Icon-ThumbDwnGrn.png",
+					"backgroundImageAlt": "/images/MobApp-AgendaDet-Icon-ThumbDwn.png",
+					"psize": 0.08
+				}
+			},
+			"labels": {
+				"date": {
+					"left": 0,
+					"top": 0,
+					"width": "SIZE",
+					"height": "SIZE",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#444444"
+				},
+				"time": {
+					"left": 0,
+					"top": 0,
+					"width": "SIZE",
+					"height": "SIZE",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#444444"
+				},
+				"abstractTitle": {
+					"top": 0,
+					"left": 0,
+					"width": "100%",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#89A9C9"
+				},
+				"abstract": {
+					"left": 0,
+					"top": "4dp",
+					"width": "100%",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": true,
+					"color": "#444444"
+				},
+				"bioTitle": {
+					"left": 0,
+					"top": "10dp",
+					"width": "100%",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#89A9C9"
+				},
+				"bio": {
+					"left": 0,
+					"top": "4dp",
+					"width": "100%",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": true,
+					"color": "#444444"
+				},
+				"follow": {
+					"left": 0,
+					"top": "10dp",
+					"width": "100%",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#89A9C9"
+				},
+				"notes": {
+					"left": 0,
+					"top": "15dp",
+					"width": "100%",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#89A9C9",
+					"textid": "SESSION_NOTES"
+				},
+				"rate": {
+					"textid": "RATINGS_NOTE",
+					"left": "5%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"width": "60%",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#EEEEEE"
+				}
+			}
+		},
+		"contacts": {
+			"contactsFile": "contacts.json",
+			"contactsTSVFile": "contacts.txt",
+			"defaultPicture": "/images/MobApp-Cntcts-Default.png",
+			"buttons": {
+				"exportBtn": {
+					"left": "68%",
+					"center": {
+                        "y": "50%"
+                    },
+					"backgroundImage": "/images/MobApp-CntctsDet-Icon-Save.png",
+					"backgroundImageAlt": "/images/MobApp-CntctsDet-Icon-SaveGrn.png",
+					"psize": 0.08
+				},
+				"tag": {
+					"left": "82%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"backgroundImage": "/images/MobApp-Cntcts-Icon-Scan.png",
+					"backgroundImageAlt": "/images/MobApp-Cntcts-Icon-ScanGrn.png",
+					"psize": 0.08
+				}
+			}
+		},
+		"contactsDetail": {
+			"buttons": {
+				"remove": {
+					"left": "68%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"backgroundImage": "/images/MobApp-CntctsDet-Icon-Delete.png",
+					"backgroundImageAlt": "/images/MobApp-CntctsDet-Icon-DeleteGrn.png",
+					"psize": 0.08
+				},
+				"addressBook": {
+					"left": "82%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"backgroundImage": "/images/MobApp-CntctsDet-Icon-Save.png",
+					"backgroundImageAlt": "/images/MobApp-CntctsDet-Icon-SaveGrn.png",
+					"psize": 0.08
+				}
+			},
+			"labels": {
+				"name": {
+					"left": 0,
+					"top": "12%",
+					"width": "SIZE",
+					"height": "SIZE",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#89A9C9"
+				},
+				"companyName": {
+					"left": 0,
+					"top": 0,
+					"width": "SIZE",
+					"height": "SIZE",
+					"textAlign": "left",
+					"touchEnabled": true,
+					"color": "#444444"
+				},
+				"sendMsg": {
+					"left": 0,
+					"top": 0,
+					"width": "SIZE",
+					"height": "SIZE",
+					"textAlign": "left",
+					"touchEnabled": true,
+					"color": "#89A9C9"
+				}
+			}
+		},
+		"gallery": {
+			"itemsPerPage": 400,
+			"buttons": {
+				"library": {
+					"left": "68%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"backgroundImage": "/images/MobApp-Gllry-Icon-ChoosePic.png",
+					"backgroundImageAlt": "/images/MobApp-Gllry-Icon-ChoosePicGrn.png",
+					"psize": 0.08
+				},
+				"camera": {
+					"left": "82%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"backgroundImage": "/images/MobApp-Gllry-Icon-TakePic.png",
+					"backgroundImageAlt": "/images/MobApp-Gllry-Icon-TakePicGrn.png",
+					"psize": 0.08
+				},
+				"cancelUpload": {
+					"touchEnabled": true,
+					"top": "10%",
+					"backgroundImage": "/images/MobApp-CntctsDet-Icon-Delete.png",
+					"backgroundImageAlt": "/images/MobApp-CntctsDet-Icon-DeleteGrn.png",
+					"psize": 0.10
+				}
+			},
+			"labels": {
+				"streamSponsor": {
+					"textid": "STREAM_SPONSORED_BY",
+					"top": "5%",
+					"width": "SIZE",
+					"height": "SIZE",
+					"touchEnabled": false,
+					"color": "#EEEEEE"
+				}
+			}
+		},
+		"galleryDetail": {
+			"buttons": {
+				"prev": {
+					"left": "35%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"touchEnabled": true,
+					"backgroundImage": "/images/MobApp-GllryDet-Icon-Prev.png",
+					"backgroundImageAlt": "/images/MobApp-GllryDet-Icon-PrevGrn.png",
+					"psize": 0.08
+				},
+				"next": {
+					"left": "60%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"touchEnabled": true,
+					"backgroundImage": "/images/MobApp-GllryDet-Icon-Next.png",
+					"backgroundImageAlt": "/images/MobApp-GllryDet-Icon-NextGrn.png",
+					"psize": 0.08
+				},
+				"save": {
+					"left": "82%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"touchEnabled": true,
+					"backgroundImage": "/images/MobApp-CntctsDet-Icon-Save.png",
+					"backgroundImageAlt": "/images/MobApp-CntctsDet-Icon-SaveGrn.png",
+					"psize": 0.08
+				},
+				"info": {
+					"touchEnabled": true,
+					"backgroundImage": "/images/MobApp-AgendaDet-Icon-ThumbUp.png",
+					"backgroundImageAlt": "/images/MobApp-AgendaDet-Icon-ThumbUpGrn.png",
+					"psize": 0.08
+				}
+			}
+		},
+		"mapsDetail": {
+			"buttons": {
+				"googlemaps": {
+					"left": "82%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"backgroundImage": "/images/MobApp-MpsDet-Icon-MpApp.png",
+					"backgroundImageAlt": "/images/MobApp-MpsDet-Icon-MpAppGrn.png",
+					"psize": 0.08
+				}
+			},
+			"labels": {
+				"name": {
+					"left": 0,
+					"top": "7%",
+					"width": "SIZE",
+					"height": "SIZE",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#89A9C9"
+				},
+				"address": {
+					"left": 0,
+					"top": 0,
+					"width": "SIZE",
+					"height": "SIZE",
+					"textAlign": "left",
+					"touchEnabled": true,
+					"color": "#444444"
+				},
+				"directions": {
+					"textid": "MAPS_DIRECTIONS",
+					"left": "5%",
+					"center": {
+                        "y": "50%"
+                    },
+					"width": "74%",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#EEEEEE"
+				}
+			}
+		},
+		"eventSelect": {
+			"defaultPicture": "/images/silo-icon.png",
+			"buttons": {
+				"locate": {
+					"left": "82%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"backgroundImage": "/images/MobApp-EvntSlct-Icon-Locate.png",
+					"backgroundImageAlt": "/images/MobApp-EvntSlct-Icon-LocateGrn.png",
+					"focusable": true,
+					"psize": 0.07
+				}
+			},
+			"labels" : {
+				"directions": {
+					"textid": "EVENT_SELECT_DIRECTIONS",
+					"left": "5%",
+                    "center": {
+                        "y": "50%"
+                    },
+					"width": "74%",
+					"height": "60%",
+					"textAlign": "left",
+					"touchEnabled": true,
+					"color": "#EEEEEE"
+				}
+			},
+			"layout": {
+				"arrowView": {
+					"backgroundImage": "/images/MobApp-Icon-Arrow.png",
+					"left": "20%",
+					"top": "27%"
+				}
+			}
+		},
+		"sponsors": {
+			"buttons": {
+                "map": {
+                    "left": "82%",
+                    "center": {
+                        "y": "50%"
+                    },
+                    "backgroundImage": "/images/MobApp-Spnsrs-Icon-Floorpln.png",
+                    "backgroundImageAlt": "/images/MobApp-Spnsrs-Icon-FloorplnGrn.png",
+                    "psize": 0.08
+                },
+                "reset": {
+                    "left": "15%",
+                    "center": {
+                        "y": "50%"
+                    },
+                    "backgroundImage": "/images/MobApp-Icon-Refresh.png",
+                    "backgroundImageAlt": "/images/MobApp-Icon-RefreshGrn.png",
+                    "psize": 0.08
+                }
+			},
+			"layout": {
+                "badge": {
+                    "achieved": "/images/Teal-Star.png",
+                    "unachieved": "/images/Gray-Star.png"
+                }
+            }
+		},
+		"activitiesDetail": {
+			"layout" : {
+				"scrollView" : {
+					"width": "90%",
+					"height": "100%",
+					"scrollType": "vertical",
+					"contentWidth": "auto",
+					"contentHeight": "SIZE",
+					"top": 0,
+					"left": "5%",
+					"showVerticalScrollIndicator": true,
+					"showHorizontalScrollIndicator": false
+
+				},
+				"topContainer" : {
+					"layout": "horizontal",
+					"width": "100%",
+					"horizontalWrap": false
+				},
+				"sideContainer" : {
+					"layout": "vertical",
+					"width": "SIZE",
+					"height": "SIZE",
+					"left": "5%"
+				},
+				"imageView": {
+					"psize": 0.24
+				}
+			},
+			"labels": {
+				"title": {
+					"left": 0,
+					"top": "12%",
+					"width": "auto",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#89A9C9"
+				},
+				"date": {
+					"left": 0,
+					"top": 0,
+					"width": "SIZE",
+					"height": "SIZE",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#444444"
+				},
+				"time": {
+					"left": 0,
+					"top": 0,
+					"width": "SIZE",
+					"height": "SIZE",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#444444"
+				},
+				"descriptionTitle": {
+					"textid": "WHATS_HAPPENING",
+					"left": 0,
+					"top": 0,
+					"width": "100%",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#89A9C9"
+				},
+				"description": {
+					"left": 0,
+					"top": 0,
+					"width": "100%",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#444444"
+				},
+				"locationTitle": {
+					"textid": "LOCATION",
+					"left": 0,
+					"top": "3%",
+					"width": "100%",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#89A9C9"
+				},
+				"location": {
+					"left": 0,
+					"top": 0,
+					"width": "100%",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#444444"
+				},
+				"hostedbyTitle": {
+					"textid": "HOSTED_BY",
+					"left": 0,
+					"top": "3%",
+					"width": "auto",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#89A9C9"
+				},
+				"hostedby": {
+					"left": 0,
+					"top": 0,
+					"width": "auto",
+					"height": "auto",
+					"textAlign": "left",
+					"touchEnabled": false,
+					"color": "#444444"
+				}
+			}
+		}
+	}
+}

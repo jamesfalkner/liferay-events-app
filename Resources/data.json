@@ -1,0 +1,33 @@
+
+
+
+{"events": [
+{
+"booth_map_name": "Solutions Forum",
+"metadata_types": "agenda:25748398,contacts:25897179,activities:25897224,maps:25897214,galleries:25898293,sponsors:25897232",
+"track_colors": "",
+"event_tz": "-2",
+"news_type": "25898306",
+"end_date": "2014-05-21",
+"title": "Loading Liferay 2014 Events...",
+"eventid": "foo",
+"survey_questions": "",
+"location_label": "Worldwide",
+"microsite_name": "Fake",
+"longitude": "8.655274",
+"register_url": "",
+"logo": "/documents/14/25894445/SoFo.png/bec1a54c-c5e6-4aca-b2cf-523dfacc3b4e?t=1372098695052",
+"menutitle": "Liferay 2014 Events",
+"event_url": "http://liferay.com/events",
+"end_time": "23:59",
+"ordered_sponsor_levels": "diamond:1:large,platinum:2:small,gold:2:small,silver:2:small,exhibitors:2:small",
+"start_time": "09:00",
+"active": false,
+"upload_photosetid": "blah",
+"latitude": "50.098188",
+"randomize_sponsors": "true",
+"start_date": "2014-05-20",
+"inactive_msg": "Please wait while Liferay's 2014 events are loaded. Be sure to visit liferay.com/events for details."
+}
+], "currentEventData": {}, "lastEventListFetch": 0, "allEventData": [], "lastEventDataFetch": 0}
+
