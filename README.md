@@ -34,6 +34,8 @@ So you want to build and use this app yourself? No problem! But you'll need to b
 
 Just send pull requests! Also, ensure your code is bug-free, well-tested, architecturally sound, and practically perfect in *every* way.
 
+You can contribute code fixes, new or updated translations (see the [i18n directory](i18n/README.md), or new features! Please try to avoid sending in giant PRs that contain thousands of lines of change. If possible, break into multiple, smaller, functionally isolated changes.
+
 ## Future Ideas
 
 * Use Alloy MVC
