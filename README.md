@@ -25,10 +25,10 @@ We wish to thank LEVEL Studios and Rosetta for their donation and commitment to 
 So you want to build and use this app yourself? No problem! But you'll need to build it yourself, so read all of these:
 
 1. [Quick Overview and Features](docs/OVERVIEW.md)
-2. [Dev Environment Setup and Build Instructions](BUILDING.md)
-3. [Setting up the Liferay Backend](LIFERAY.md)
-4. [Data Formats](DATA.md)
-5. [How to brand this app (aka white-labelling)](BRANDING.md)
+2. [Dev Environment Setup and Build Instructions](docs/BUILDING.md)
+3. [Setting up the Liferay Backend](docs/LIFERAY.md)
+4. [Data Formats](docs/DATA.md)
+5. [How to brand this app (aka white-labelling)](docs/BRANDING.md)
 
 ## How to Contribute
 

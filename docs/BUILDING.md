@@ -173,8 +173,15 @@ The rest of the settings should be left alone until you know what you are doing!
 Once you've created and configured your `tiapp.xml` and `settings.json`, it's time to build the app! You should consult the [Titanium documentation for details on how to build and run Titanium apps](http://docs.appcelerator.com/titanium/latest/#!/guide/Running_Titanium_Applications). You can build and deploy it using Titanium Studio (the GUI), or the Titanium CLI.
 If you're able to build and run it successfully, pat yourself on the back and congratulate yourself!
 
-Here is an example of using the CLI to build the app and run it in the iOS Simulator, which will probably not work for you since Device IDs change
-with each XCode build.
+## Using Titanium Studio
+
+Note that if you import this project into Titanium Studio *before* you have created your customized `tiapp.xml` file, then Titanium Studio will probably not recognize the project as a Titanium project, and not offer the convenient *Run* or *Run as* menu.
+
+Once you have created a proper `tiapp.xml`, you must force Titanium Studio to recognize your project as a real app, by right-clicking on the project in the *Project Explorer* window, and selecting *Properties* then clicking *Project Natures*, and selecting the *Mobile* nature, then clicking OK, and then follow the instructions to close and re-open the project.
+
+## Using the Titanium CLI
+
+Here is an example of using the CLI to build the app and run it in the iOS Simulator, which will probably not work for you since Device IDs change with each Xcode build. If this command fails, it will hopefully show you the valid Device IDs to use in your next attempt!
 
 ```bash
     # make sure you have created your tiapp.xml file!
