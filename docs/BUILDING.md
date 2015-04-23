@@ -8,7 +8,8 @@ The Liferay Events app consists of several major components that must be built a
 2. The app talks to a Liferay server, so you'll need to [install and have Liferay running](https://liferay.com/downloads) so the app can talk to it.
 3. The Liferay Server requires two plugins to be installed (one is part of this git repo, the other is an off-the-shelf plugin in the Liferay Marketplace):
     * [Skinny JSON Provider](https://www.liferay.com/marketplace/-/mp/application/52188778). Use the [Liferay Marketplace](https://dev.liferay.com/discover/portal/-/knowledge_base/6-2/accessing-the-liferay-marketplace) to install it on your Liferay server.
-    * The Liferay Events Hook. You'll need to build this with Liferay Studio or Maven (see below)
+    * The [Liferay Events Hook](https://github.com/jamesfalkner/liferay-events-hook). You'll need to build this with Liferay Studio or Maven (see
+    below)
 
 ## Step-by-Step to build and run
 
@@ -16,7 +17,7 @@ The Liferay Events app consists of several major components that must be built a
 2. Install the required Titanium Modules from below
 3. Install Liferay somewhere on a server
 4. Fork or otherwise obtain a copy of this repo
-5. Build and deploy the *Liferay Events Hook* to your Liferay server
+5. Build and deploy the [Liferay Events Hook](https://github.com/jamesfalkner/liferay-events-hook) to your Liferay server
 6. Install the [Skinny JSON Provider](https://www.liferay.com/marketplace/-/mp/application/52188778) to your Liferay server using the Liferay Marketplace
 7. Populate Liferay with the necessary content (Dynamic Data Lists, see the [Liferay](LIFERAY.md) docs for details)
 8. Configure the `tiapp.xml` and `settings.json` file.
@@ -77,18 +78,7 @@ You'll need a copy of the source code to this app to build it. You can use git's
 * In Titanium Studio: *File -> Import -> Git ->Git Repo as New Project*
     * Fill out URI Field (all others leave as default): https://github.com/jamesfalkner/liferay-events.git
 
-The source code is split into these major directories:
-
-* `liferay-events-hook/` - This is the *Liferay Events Hook* that delivers some web service endpoints to Liferay for use by the app
-* `liferay-events-app/` - This is the Titanium project representing the cross-platform Liferay Events mobile app
-* `docs/` - The docs
-
-# Filesystem structure of the Liferay Events Hook
-
-* `pom.xml` - The Maven project file
-* `src/` - The source code to the hook
-
-# Filesystem structure of the Liferay Events App
+# Filesystem structure of this project
 
 * `i18n` - XML files in here contain translated strings in different languages of the world
 * `platform` - Holds platform-specific files
@@ -186,13 +176,19 @@ If you're able to build and run it successfully, pat yourself on the back and co
 Here is an example of using the CLI to build the app and run it in the iOS Simulator, which will probably not work for you since Device IDs change
 with each XCode build.
 
-    cd liferay-events-app
+```bash
+    # make sure you have created your tiapp.xml file!
+    cd my-workspace
     ti build --platform iphone --target simulator --device-id 2E852AB5-E53B-44E2-91F5-95E61A7599DC --sim-type iphone
+```
 
 For Android:
 
-    cd liferay-events-app
+```bash
+    # make sure you have created your tiapp.xml file!
+    cd my-workspace
     ti build --platform android --output-dir /tmp --target emulator
+```
 
 Note that if you intend to publish the app to the app stores, you'll have to setup the cryptographic signing infrastructure (which is different for Android vs. iOS) and way out of scope for this doc. See the Titanium docs above for details on how to set it up.
 
@@ -201,26 +197,6 @@ Note that if you intend to publish the app to the app stores, you'll have to set
 Several modules used by this app have not yet been updated to support 64-bit ARM architectures by their maintainers. If you intend to submit an app
 to Apple's iOS app store, be advised of their [64-bit requirement](https://developer.apple.com/news/?id=10202014a) and contact the maintainers of each
 library and ask them to update their module! Alternatively, since they are all open source, you could download and re-build the modules yourself!
-
-# Configuring, building, and deploying the Liferay Events Hook
-
-The Liferay Events Hook allows a Liferay server to act as an endpoint for the app, for several services related to user activities like rating a photo, "favoriting" a session, responding to a survey, or recording their presence near iBeacons.
-
-It is a standard Liferay Hook using Maven that can be built and deployed to your Liferay server by following the [instructions in the Liferay Developer's Guide](https://dev.liferay.com/develop/tutorials/-/knowledge_base/6-2/deploying-liferay-plugins-with-maven).
-
-Here is an example command line to build and deploy the hook to your Liferay instance (configured with the Maven profile named `liferay62ga4`).
-
-    mvn -Pliferay62ga4 package liferay:deploy
-
-There are some security things to know about (see the *Read/write data security* section the [Data](DATA.md) guide for details).
-Part of its security relies on a *shared secret* which is shared between the mobile app (in your `tiapp.xml` file) and in the Liferay Events Hook.
-You will need to ensure they match, by configuring the `liferay.json_shared_secret` to be the same as that which you configure in Liferay using the
-`liferay.events.shared.secret` portal property. To set this value, create a `portal-ext.properties` file in your *Liferay Home* directory, and add
-the line `liferay.events.shared.secret=some-difficult-to-guess-string` and ensure that string matches the one in the `tiapp.xml` file.
-
-The hook creates several *public* endpoints that are anonymously accessible, and several *private* endpoints requiring Basic Authentication to access. It will be accessible to any registered user on your Liferay instance, but that can be tuned with more advanced Liferay configuration and the `web.xml` file that is out of scope for this doc.
-
-For more details on this hook, see the [Liferay Integration](LIFERAY.md) docs.
 
 # Putting it all together
 

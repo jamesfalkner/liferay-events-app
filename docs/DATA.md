@@ -35,7 +35,7 @@ For example, suppose you want to make an HTTP GET request to an endpoint, with a
 you would concatenate the arguments (in alphabetical order) along with a a secret that must be known to both sides, for example `secret`. So you would end up with `a=1b=2c=3secret`. The SHA-256 hash of this string is `e7f7348920807e402c5911b4b39e188f61c6041d42e9a95e16b170f1646335bc`.
 So the actual request would look like `http://foo.com?api_key=e7f7348920807e402c5911b4b39e188f61c6041d42e9a95e16b170f1646335bc&a=1&b=2&c=3` (but keep in mind these arguments are NOT encoded as part of the URL - they are sent via a multi-part HTTP POST).
 
-Even with signed APIs, there is still a possibility of abuse via replay attacks. Therefore, the Liferay Events Hook attempts to disallow repeat requests using the exact same arguments. While not completely foolproof,
+Even with signed APIs, there is still a possibility of abuse via replay attacks. Therefore, the [Liferay Events Hook](https://github.com/jamesfalkner/liferay-events-hook) attempts to disallow repeat requests using the exact same arguments. While not completely foolproof,
 it is this author's opinion that it's "good enough" for the purposes of our use case. If you want something better, then code it up and send it in!
 
 Furthermore, the app uses TLS at all times, via built-in support for https. The app also uses HTTP POST whenever feasible, to avoid encoding parameters into the HTTP request URLs (which show up in web server log files and elsewhere).
@@ -64,7 +64,7 @@ Note that none of these are nested or repeatable fields! Also note that the name
 * `event_type_dict`: DDL Field Type: Text. translations for select options for sponsor levels, session types, and agenda filter names. Format: comma-separated name=value pairs. E.g. `diamond=DIAMANT,gold=Gold` means the level with key "diamond" should be displayed as "DIAMANT" (German translation of Diamond) and key "gold" should be displayed as "Gold".
 * `event_tz`: DDL Field Type: Text. number of hours ahead or behind GMT (negative numbers indicate ahead, e.g. France is -2 in summer, can be used to correct for phones that are set to a different timezone than the event itself to calculate 'local event time' based on device time.
 * `event_url`: Web URL to the event microsite
-* `eventid`: DDL Field Type: Text. identifier used to namespace the writeable data in the Liferay Events Hook for this event
+* `eventid`: DDL Field Type: Text. identifier used to namespace the writeable data in the [Liferay Events Hook](https://github.com/jamesfalkner/liferay-events-hook) for this event
 * `inactive_msg`: DDL Field Type: Text. message to show user when trying to access inactive event via mobile app
 * `latitude`: DDL Field Type: Text. Decimal degrees of latitude for event location (approximate, used for the 'pick the closest location' button in app)
 * `location_label`: DDL Field Type: Text. Name of location (usually a city name, e.g. Paris or Boston)
@@ -131,7 +131,7 @@ The agenda DDL Definition is the most complicated of all the schemas. Note that 
 
 ### Survey Question fields
 
-The `survey_questions` and `session_survey_questions` fields in the Event Listing DDL, and the `survey_questions` field in the Agenda DDL represent a form that users can fill out, and the results are stored using the Liferay Events Hook `surveyServiceEndpoint` web service endpoint.
+The `survey_questions` and `session_survey_questions` fields in the Event Listing DDL, and the `survey_questions` field in the Agenda DDL represent a form that users can fill out, and the results are stored using the [Liferay Events Hook](https://github.com/jamesfalkner/liferay-events-hook) `surveyServiceEndpoint` web service endpoint.
 
 The format of this field are a set of questions (one per line). Each line is of the format:
 
