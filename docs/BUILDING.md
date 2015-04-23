@@ -76,7 +76,7 @@ Then use *gittio* to install these:
 You'll need a copy of the source code to this app to build it. You can use git's command line (the `clone` command) to fork the project, or use Titanium Studio's UI to fork a copy. You could even just download a ZIP file of the repo!
 
 * In Titanium Studio: *File -> Import -> Git ->Git Repo as New Project*
-    * Fill out URI Field (all others leave as default): https://github.com/jamesfalkner/liferay-events.git
+    * Fill out URI Field (all others leave as default): https://github.com/jamesfalkner/liferay-events-app.git
 
 # Filesystem structure of this project
 
