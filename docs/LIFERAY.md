@@ -29,7 +29,7 @@ If instead you put all your DDLs into a single Site, then you'll have a lot of D
 Follow these steps to create data that will be used by the app.
 
 1. [Understand what a Dynamic Data List is](https://dev.liferay.com/discover/portal/-/knowledge_base/6-2/using-web-forms-and-dynamic-data-lists) and how to create them.
-2. Create a Dynamic Data List Definition representing the list of events on the server with the Skinny JSON Provider installed. See the [Data docs](DATA.md] for details about the fields you will need to create.
+2. Create a Dynamic Data List Definition representing the list of events on the server with the Skinny JSON Provider installed. See the [Data docs](DATA.md) for details about the fields you will need to create.
 3. Create a Dynamic Data List Definition representing Agenda, Activities, Contacts, Galleries (Photostream), Maps, Rooms, Speakers, Sponsors, News, and Beacon Data. See the [Data docs](DATA.md] for details about the fields you will need to create.
 4. Create a Dynamic Data List for events, and populate it with one or more events.
 5. For each event, create multiple lists to house the different kinds of data (Agenda, Activities, etc). In some cases (e.g. the `metadata_types` field in the Event Listing DDL) you'll need to insert references to other DDLs by using their IDs. In other cases you'll need the UUID. See below for strategies for getting these IDs easily via Liferay's Control Panel.

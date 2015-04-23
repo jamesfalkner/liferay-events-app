@@ -6,7 +6,7 @@ The Liferay Events app consists of several major components that must be built a
 
 1. The native mobile app, built with Titanium. This is the thing that runs on the phone (or in a simulator/emulator in your dev environment)
 2. The app talks to a Liferay server, so you'll need to [install and have Liferay running](https://liferay.com/downloads) so the app can talk to it.
-3. The Liferay Server requires two plugins to be installed (one is part of this git repo, the other is an off-the-shelf plugin in the Liferay Marketplace):
+3. The Liferay Server requires two plugins to be installed (one is in a git repo, the other is an off-the-shelf plugin in the Liferay Marketplace):
     * [Skinny JSON Provider](https://www.liferay.com/marketplace/-/mp/application/52188778). Use the [Liferay Marketplace](https://dev.liferay.com/discover/portal/-/knowledge_base/6-2/accessing-the-liferay-marketplace) to install it on your Liferay server.
     * The [Liferay Events Hook](https://github.com/jamesfalkner/liferay-events-hook). You'll need to build this with Liferay Studio or Maven (see
     below)
