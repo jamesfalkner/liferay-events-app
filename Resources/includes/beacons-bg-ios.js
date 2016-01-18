@@ -481,59 +481,40 @@ var incrementCountAndLastTriggerTime = function(evt) {
 
 var stopService = function() {
 
+    if (!TiBeacons.checkAvailability()) {
+        return;
+    }
 //    TiBeacons.removeEventListener("enteredRegion", bgRegionEnter);
 //    TiBeacons.removeEventListener("exitedRegion", bgRegionExit);
 //    TiBeacons.stopMonitoringAllRegions();
 };
 
-if (regions && regions.length > 0) {
-    TiBeacons.addEventListener("enteredRegion", bgRegionEnter);
-    TiBeacons.addEventListener("exitedRegion", bgRegionExit);
-    regions.forEach(function(region) {
-        var reg = {
-            identifier: region.name,
-            uuid: region.beacon_uuid
-        };
+if (TiBeacons.checkAvailability()) {
+    if (regions && regions.length > 0) {
+        TiBeacons.addEventListener("enteredRegion", bgRegionEnter);
+        TiBeacons.addEventListener("exitedRegion", bgRegionExit);
+        regions.forEach(function (region) {
+            var reg = {
+                identifier: region.name,
+                uuid: region.beacon_uuid
+            };
 
-        if (region.beacon_major) {
-            reg.major = parseInt(region.beacon_major);
-        }
+            if (region.beacon_major) {
+                reg.major = parseInt(region.beacon_major);
+            }
 
-        if (region.beacon_minor) {
-            reg.minor = parseInt(region.beacon_minor);
-        }
+            if (region.beacon_minor) {
+                reg.minor = parseInt(region.beacon_minor);
+            }
 
-        TiBeacons.startMonitoringForRegion(reg);
-    });
+            TiBeacons.startMonitoringForRegion(reg);
+        });
 
-    Ti.App.currentService.addEventListener("stop", stopService);
-
-//    // TODO: TEST
-//    setInterval(function() {
-//        history = [];
-//        prefs = [];
-//        bgRegionEnter({
-//            identifier: 'Venue',
-//            uuid: 'B9407F30-F5F8-466E-AFF9-25556B57FE6D',
-//            major: 2,
-//            minor: 0
-//        })
-//    }, 10000);
-//    setTimeout(function() {
-//        history = [];
-//        prefs = [];
-//        bgRegionExit({
-//            identifier: 'Salon Bonaparte',
-//            uuid: 'B9407F30-F5F8-466E-AFF9-25556B57FE6D',
-//            major: 2,
-//            minor: 0
-//        })
-//    }, 10000);
-//
-} else {
-    TiBeacons.stopMonitoringAllRegions();
+        Ti.App.currentService.addEventListener("stop", stopService);
+    } else {
+        TiBeacons.stopMonitoringAllRegions();
+    }
 }
-
 
 var queueDeathRow = [];
 var queuedTriggers = [];

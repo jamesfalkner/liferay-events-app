@@ -11,6 +11,7 @@ Resources/fonts/*
 Resources/images/MobApp-BG-Splash*.png
 !Resources/fonts/*.md
 !Resources/Default-568h@2x.png
+keystore/
 
 # OS generated files #
 ######################
@@ -53,3 +54,6 @@ bin/
 *~.nib
 local.properties
 
+
+**/*DELETEME*
+*.sh

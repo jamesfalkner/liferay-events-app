@@ -148,7 +148,7 @@
 	<string name="SCAN_NO_DATA_FOUND">Pas de données de contact trouvé, veuillez réessayer</string>
 	<string formatted="false" name="SCAN_UNABLE">Impossible de numériser (%1$s), veuillez essayer à nouveau!</string>
 	<!-- I18N: MECARD is the standard for 2D barcodes we use for Liferay events -->
-	<string name="SCAN_NOT_CONTACT">Le code scanné n\'est pas un MECARD valide</string>
+	<string name="SCAN_NOT_CONTACT">Le code scanné n\'est pas un MECARD/VCARD valide</string>
 	<string name="SCAN_EXPORT_TITLE">Exporter les contacts</string>
 	<string name="SCAN_EXPORT_PROMPT">Comment voulez-vous exporter les contacts?</string>
 	<string name="SCAN_EXPORT_CLIPBOARD">Copy au Clipboard</string>
@@ -228,7 +228,7 @@
 	<string name="SURVEY_SEND">Envoi</string>
 	<string name="SURVEY_SAVE_FOR_LATER">Enregistrer</string>
 	<!-- error shown when blank survey is submitted -->
-	<string name="SURVEY_NO_ANSWERS">Veuillez noter que vous devrez répondre à une question </string>
+	<string name="SURVEY_NO_ANSWERS">Veuillez noter que vous devrez répondre à une question</string>
 	<!-- title of dialog box when submitting survey answers -->
 	<string name="SAVING_SURVEY">Envoi des réponses...</string>
 	<!-- instructions for entering survey answers -->
@@ -265,7 +265,6 @@
 	<string name="ADD_NAME_DESC">Voulez-vous ajouter votre nom sur les photos que vous téléchargez? Votre nom sera enregistré dans la description des photos que vous téléchargez.</string>
 	<string name="ADD_NAME_INSTRUCTIONS">Saisissez votre nom complet tel qu\'il apparaît sur votre badge. Votre nom sera ajouté dans chaque photo que vous téléchargez sur le photostream d\'événement public. Votre nom ne sera pas utilisé pour d\'autres fins.</string>
 	<string name="ADD_NAME_CONFIRM">Êtes-vous sûr que vous voulez enregistrer votre nom sur toutes les photos?</string>
-	<string name="PLEASE_ENTER_NAME">Veuillez saisir votre prénom et nom.</string>
 
 	<!--
 		Success and error messages when rating a photo
@@ -338,17 +337,17 @@
 	<string name="SPLASH_POWERED_BY">Réalisé par</string>
 	<string name="SURVEY_READONLY">Merci d’avoir répondu à cet questionnaire! Vous pouvez revoir vos réponses, mais ne pouvez pas les soumettre à nouveau.</string>
 	<string name="BEACON_UNSUPPORTED">Cet appareil ne prend pas en charge Bluetooth LE ou vous n\'avez pas donné l’autorisation à l\'application de l\'utiliser. Pour voir la liste des appareils supportés, cliquez sur Appareils Compatibles.</string>
-	<string name="BEACON_SUPPORTED_DEVICES"> Appareils Compatibles</string>
+	<string name="BEACON_SUPPORTED_DEVICES">Appareils Compatibles</string>
 	<string name="NOTIFICATION_AREAS">Les zones de notification</string>
 	<string name="MUTE">Couper le son</string>
 	<string name="MUTE_ALL">Couper tous les sons</string>
-	<string name="MUTE_AREA" formatted="false"> Couper le son %1$s</string>
+	<string name="MUTE_AREA" formatted="false">Couper le son %1$s</string>
 	<string name="UNMUTE_AREA" formatted="false">Rétablir le son%1$s</string>
 	<string name="NEW_NOTIFICATION">Nouvelle Notification</string>
 	<string name="MISSED_WHILE_LOCKED">Vous avez manqué des nouvelles notifications lorsque votre appareil été verrouillé! Appuyez sur OK pour continuer.</string>
-	<string name="TRY_LATER"> Veuillez réessayer plus tard.</string>
+	<string name="TRY_LATER">Veuillez réessayer plus tard.</string>
 	<string name="FINAL_ANSWER">Réponse Finale?</string>
-	<string name="IF_INCORRECT">Si votre réponse(s) est/sont incorrecte(s), vous pouvez réessayer plus tard! </string>
+	<string name="IF_INCORRECT">Si votre réponse(s) est/sont incorrecte(s), vous pouvez réessayer plus tard!</string>
 	<string name="RESET_BADGES_TITLE">Réinitialiser les Badges de Sponsors?</string>
 	<string name="RESET_BADGES">Etes-vous sûr(e) que vous voulez réinitialiser les badges de sponsors?</string>
 	<string name="RESET_BADGES_WAIT">Réinitialisation de badges, veuillez patienter...</string>
@@ -366,15 +365,391 @@
     <string name="MY_AGENDA">Mon Agenda</string>
     <string name="FILTERS">Filtres</string>
     <string name="FILTERS_SHOW_ALL">Voir tous</string>
-    <string name="NO_FILTER_MATCH"> Il n'y a pas de sessions correspondant à votre filtre sélectionné ce jour-là. Appuyez sur \"Filtres \" pour mettre à jour vos sélections, ou appuyez sur \"Voir tous\" pour afficher toutes les sessions.</string>
-    <string name="NO_FILTER_MATCH_MY_AGENDA"> Vous n'avez pas ajouté de séances à votre agenda. Tapez sur le bouton \"Ajouter à mon agenda\" construire votre agenda personnel en regardant une session ou appuyez sur le \"Tous Afficher\" pour afficher toutes les sessions.</string>
+    <string name="NO_FILTER_MATCH">Il n\'y a pas de sessions correspondant à votre filtre sélectionné ce jour-là. Appuyez sur \"Filtres\" pour mettre à jour vos sélections, ou appuyez sur \"Voir tous\" pour afficher toutes les sessions.</string>
+    <string name="NO_FILTER_MATCH_MY_AGENDA">Vous n\'avez pas ajouté de séances à votre agenda. Tapez sur le bouton \"Ajouter à mon agenda\" construire votre agenda personnel en regardant une session ou appuyez sur le \"Tous Afficher\" pour afficher toutes les sessions.</string>
 
     <string formatted="false" name="CANT_SAVE_PDF">Impossible de sauvegarder le fichier PDF: %1$s</string>
-    <string formatted="false" name="CANT_READ_PDF"> Impossible de lire le fichier PDF: %1$s</string>
+    <string formatted="false" name="CANT_READ_PDF">Impossible de lire le fichier PDF: %1$s</string>
     <string formatted="false" name="CANT_LOAD_PDF">Impossible de charger le fichier PDF: %1$s</string>
     <string name="NO_PDF_APP">Impossible d’affficher les diapositives. Aucune application installée peut lire le fichier PDF. Veuillez installer une application pour afficher des fichiers PDF et réessayer plus tard.</string>
     <string name="ADD_TO_MY_AGENDA">Ajouter à Mon Agenda</string>
-    <string name="ADDED_TO_MY_AGENDA"> Ajouté à Mon Agenda </string>
+    <string name="ADDED_TO_MY_AGENDA">Ajouté à Mon Agenda</string>
 
+    <!-- new for 2015 -->
+    <string name="FMT_LOCATION">Position</string>
+    <string name="FMT_SCORE">Score</string>
+    <string name="FMT_WHY">Pourquoi ?</string>
+    <string name="FMT_INDUSTRY">Secteur</string>
+    <string name="FMT_TOP_INTERESTS">Intérêts</string>
+    <string name="FMT_TOP_DESIRES">Besoins</string>
+    <string name="FMT_TOP_EXPERTISE">Expertise</string>
+	<string name="CONNECTIONS">Connexions</string>
+    <string name="FMT_LAST4">Code secret (4 derniers chiffres de votre numéro de téléphone ou code postal)</string>
+
+
+    <!-- Help screens -->
+    <string name="MSG_IMPORT_SOCIAL_SUCCESS">Les données de votre réseau social ont été ajoutées avec succès à votre profil. Pour voir de nouvelles recommandations, appuyez sur \"Recommandations\". Pour voir les données importées, appuyez sur \"Profil\".</string>
+    <string name="IMPORT_SOCIAL_SUCCESS">Import réussi</string>
+    <string name="IMPORT_SOCIAL">Importer...</string>
+
+    <!-- Time Estimates -->
+    <string name="MOMENTS_AGO">Il y a quelques instants</string>
+    <string name="YESTERDAY">Hier</string>
+    <string formatted="false" name="ABOUT_X_MINS_AGO">Il y a %1$s minute</string>
+    <string formatted="false" name="ABOUT_X_HOURS_AGO">Il y a %1$s heure</string>
+    <string formatted="false" name="ABOUT_X_DAYS_AGO">Il y a %1$s jour</string>
+
+    <!-- Connections -->
+    <string name="GOT_IT">Ok, c\'est bon !</string>
+    <string name="SEND">Envoyer</string>
+    <string name="VERIFY">Vérifier</string>
+    <string name="WELCOME_NO_PROFILE">Bienvenue à Liferay EventConnect! Avec EventConnect, rencontrez et échangez avec vos pairs lors de cet événement. Pour commencer, cliquez sur \"Configurer mon profil !\".</string>
+    <string name="SETUP_PROFILE">Configurer mon profil</string>
+    <string name="NO_CONNECTIONS">Vous n\'êtes connecté(e) à aucune personne. Pour parcourir et se connecter à d\'autres personnes, cliquez sur \"Recommandations\".</string>
+    <string name="NO_CONNECTIONS_ROW">Vous n\'êtes connecté(e) à aucune personne. Cliquez ici pour commencer avec Liferay EventConnect.</string>
+    <string name="SEE_RECOMMENDATIONS">Recommendations</string>
+    <string name="SEE_PROFILE">Profil</string>
+    <string name="CANT_SEND_MSG">Message non envoyé. Réessayez.</string>
+    <string name="MSG_FROM">Message de %1$s: %2$s</string>
+    <string name="IMPORT_PROFILE">Importer le profil</string>
+    <string name="IMPORT_PROFILE_PROMPT">Importer à partir de quel réseau social ?</string>
+    <string name="IMPORTING_PROFILE">Import des données en cours...</string>
+    <string formatted="false" name="PROFILE_VERIFY_FAILED">Echec de vérification: %1$s</string>
+    <string name="CONNECT_MUST_ENTER_DATA">Vous devez entrer une adresse email et un code vérification valides.</string>
+    <string name="PROFILE_COMPLETE">Votre profil contient les informations renseignées lors de l\'inscription à cet événement. Pour compléter votre profil, appuyez sur \"Importer...\" pour importer votre profil de réseaux sociaux. Pour voir les contacts recommandés, appuyez sur \"Recommandations\". Pour vérifier vos données de profil, appuyez sur \"Profil\".</string>
+    <string name="NEW">NOUVEAU</string>
+
+    <string name="WHAT_INTERESTED_IN">Que recherchez-vous ?</string>
+    <string name="WHAT_EXPERTISE">Quels sont vos domaines d\'expertise ?</string>
+    <string name="OTHER_INTERESTS">Veuillez décrire d\'autres intérêts :</string>
+    <string name="OTHER_INTERESTS_HINT">Entrez autant de texte que vous souhaitez pour décrire vos intérêts, y compris copier et coller votre profil social !</string>
+
+    <string name="ITS_A_MATCH">Vous êtes connecté(e) à %1$s</string>
+    <string name="NEW_CONNECTIONS_FROM">Vous êtes connecté(e) à %1$s. Contactez les sur Liferay EventConnect!</string>
+    <string name="MSG_ITS_A_MATCH">Vous êtes maintenant connectés. Pour lui envoyer un message, appuyez sur \"Envoyer un message\". Pour continuer à rechercher des contacts parmi les profils recommandés, appuyez sur \"Autres recommendations\".</string>
+    <string name="SEE_MORE_RECOMMENDATIONS">Autres recommendations</string>
+
+    <string name="NO_MORE_RECOMMENDATIONS">Plus de recommendation disponible</string>
+    <string name="MSG_NO_MORE_RECOMMENDATIONS">Vous avez passé en revue toutes les recommandations disponibles. Pour les voir à nouveau, appuyez sur \"Relancer\". Pour voir vos connexions, appuyez sur \"Connexions\". Pour accéder à votre profil, appuyez sur \"Profil\".</string>
+    <string name="NO_MORE_RECS_WAIT">Toutes les recommandations disponibles ont été consultées. Veuillez réessayer plus tard !</string>
+    <string name="SEE_PREVIOUS">Relancer</string>
+    <string name="SEE_CONNECTIONS">Connexions</string>
+    <string name="CLEAR_CONFIRM">Supprimer tous les messages ?</string>
+    <string name="UNLINK_CONFIRM">Souhaitez-vous vraiment vous déconnecter avec %1$s? Vous pourrez vous reconnecter plus tard.</string>
+    <string name="UNLINKED">Déconnecté(e).</string>
+    <string name="READ_MORE">Plus d\'infos...</string>
+    <string name="UNLINK_FAILED">Déconnexion impossible : veuillez réessayer lorsque vous serez connecté(e) au réseau.</string>
+    <string name="NOT_CONNECTED">Vous n\'êtes pas connecté(e) à %1$s</string>
+    <string name="CAMERA">Utiliser l\'appareil photo</string>
+    <string name="PHOTO_LIBRARY">Choisir une photo existante</string>
+    <string name="EDIT_PHOTO">Mettre à jour la photo de profil</string>
+    <string name="EDIT_PHOTO_MSG">Pour modifier votre photo de profil, choisissez une photo existante ou utilisez votre appareil photo pour prendre une nouvelle photo.</string>
+    <string name="EDIT_PHOTO_SUCCESS">Photo modifiée</string>
+
+    <!-- Likeness descriptions -->
+    <string name="HAS_EXPERTISE_IN_MY_AREAS">%1$s dispose de l\'expertise que vous recherchez (%2$s).</string>
+    <string name="HAS_NEEDS_IN_MY_AREAS">%1$s a un besoin corresponsand à vos domaines d\'expertise (%2$s).</string>
+    <string name="IS_NEARBY">%1$s est proche (%2$s).</string>
+    <string name="LIVES_WORKS_IN_COUNTRY">%1$s travaille et réside dans le même pays que vous</string>
+    <string name="SIMILAR_INDUSTRY">%1$s travaille dans le même secteur d\'activité que vous (%2$s).</string>
+    <string name="SIMILAR_JOB">%1$s exerce le même métier que vous (%2$s).</string>
+    <string name="SIMILAR_SKILLS_INTERESTS">Vos compétences et besoins sont très similaires (%1$s).</string>
+    <string name="MIGHT_BE_INTERESTED">Il se peut que vous ayez des centres d\'intérêts communs (%1$s).</string>
+
+
+    <!-- 2015 -->
+    <string name="VIEW">Voir</string>
+    <string formatted="false" name="UPLOADING_IMAGE_N">Téléchargement image %1$d of %2$d...</string>
+<string name="SHARE_IMAGE">Partagez une image</string>
+<string name="CHOOSE_MULTI_PHOTOS"> Choisissez vos photos (appuyez et maintenez pour voir un aperçu)</string>
+<string name="SCREEN_AGENDADETAIL_HELP_1">Créez votre agenda personnel en y ajoutant des sessions</string>
+<string name="SCREEN_AGENDADETAIL_HELP_2">Partagez votre présence sur les réseaux sociaux et accédez aux slides des sessions (quand disponibles).</string>
+<string name="SCREEN_AGENDADETAIL_HELP_3">Après chaque session, merci de noter l’intervenant et le contenu. Votre avis est important !</string>
+<string name="SCREEN_FRONT_HELP_1">Use the drawer to access most features and find out what's new.</string>
+<string name="SCREEN_FRONT_HELP_2">Utilisez les grandes icônes pour accéder rapidement aux infos de l’événement telles que l’agenda, les photos et plus encore...</string>
+<string name="SCREEN_FRONT_HELP_3"> Cliquez sur les icônes en bas de page pour accéder aux réseaux sociaux, participer à un sondage ou scanner un badge.</string>
+<string name="SCREEN_POLLS_HELP_1">LivePolls permet aux intervenants de VOUS demander votre avis sur un sujet en particulier, et de voir les résultats de l’ensemble des participants en temps réel ! </string>
+<string name="SCREEN_GALLERY_HELP_1">Pour importer vos photos, cliquez sur les boutons en bas pour sélectionner plusieurs photos à partir de votre bibliothèque ou prenez une photo et importez là directement ! </string>
+<string name="SCREEN_CONTACTS_HELP_1">Créez votre liste de contacts en scannant les QR codes, puis importez les dans un fichier Excel. Vous pouvez également sauvegarder les contacts dans votre liste personnelle en visualisant la fiche du contact.</string>
+<string name="PLEASE_ALLOW_PHOTO_ACCESS">Autorisez l’application à accéder à vos photos en allant sur Paramètres ->Privacy</string>
+<string name="LIVE_POLLS">Live Polls</string>
+<string name="SWITCH_EVENTS">Sélectionnez un nouvel événement</string>
+<string formatted="false" name="POLLS_FROM">Sondages à partir de %1$s</string>
+<string name="POLL_FETCH_ERROR">Uh oh ! Nous rencontrons des difficultés avec les questions. Veuillez patienter, nous relançons la recherche !</string>
+<string name="POLL_DISABLED">Trop tard ! Ce sondage est déjà terminé. Vous pouvez demander les résultats à l'intervenant</string>
+<string name="POLLS_INTRO">Merci de bien vouloir attendre le début du sondage. Une connexion internet est requise pour pouvoir participer !</string>
+<string name="POLLS_BEGIN">Veuillez patienter, le sondage commencera dans quelques instants !</string>
+<string name="POLL_ALREADY_ANSWERED">Vous avez répondu à ce sondage </string>
+<string name="ANSWERED">Déjà fait</string>
+<string name="POLL_SUCCESS">Merci pour votre participation ! </string>
+<string name="POLL_TEXT_HINT">Entrez votre réponse ici</string>
+    <string name="FMT_CITY">Ville</string>
+    <string name="FMT_COUNTRY">Pays</string>
+
+    <string name="SCREEN_FRONT_HELP_1"> Utilisez le menu déroulant pour voir plus de fonctionnalités et découvrir toutes les nouveautés.</string>
+
+<string name="PROFILE_VERIFY_INSTRUCTIONS">Veuillez vérifier vos données de profil ci-dessous et effectuer des corrections si nécessaire. En vérifiant votre profil ici, vous autorisez Liferay à partager votre nom, fonction, société, secteur d’activité ainsi que vos centres d’intérêts avec les sponsors et autres participants, dans le seul but d’établir des recommandations de mises en relation entre participants. Aucune autre information ne sera partagée.</string>
+<string name="ABOUT_APP">A propos</string>
+<string name="PASSWORD">Mot de passe</string>
+<string name="LOGIN">Se connecter</string>
+<string name="LOGIN_FAILED">Connexion impossible. Vérifiez votre identifiant, mot de passe et connexion internet.</string>
+<string name="LOGOUT">Se déconnecter</string>
+<string name="LOGOUT_CONFIRM">Souhaitez-vous vraiment vous déconnecter ?</string>
+<string name="REGISTER_SUCCESS">Merci pour votre inscription ! Vous pouvez désormais vous connecter avec votre adresse email et mot de passe.</string>
+<string name="SWAG_INTRO">Votre Liferay Digital SWAG Bag requière votre connexion à liferay.com. Si vous n’avez pas encore de compte, vous pouvez en créer un. Se connecter maintenant ?</string>
+<string name="PROFILE_INTRO">Liferay EventConnect requière votre connexion à liferay.com. Si vous n’avez pas encore de compte, vous pouvez en créer un. Se connecter maintenant ?</string>
+<string name="WRONG_EVENT">Cette notification concerne un événement différent de celui que vous consultez actuellement. Veuillez consulter l'autre événement pour obtenir toutes les dernières infos.</string>
+
+
+<string name="COUNTRY_NAME_AD">Andorre</string>
+    <string name="COUNTRY_NAME_AE">Émirats arabes unis</string>
+    <string name="COUNTRY_NAME_AF">Afghanistan</string>
+    <string name="COUNTRY_NAME_AG">Antigua-et-Barbuda</string>
+    <string name="COUNTRY_NAME_AI">Anguilla</string>
+    <string name="COUNTRY_NAME_AL">Albanie</string>
+    <string name="COUNTRY_NAME_AM">Arménie</string>
+    <string name="COUNTRY_NAME_AN">Antilles néerlandaises</string>
+    <string name="COUNTRY_NAME_AO">Angola</string>
+    <string name="COUNTRY_NAME_AQ">Antarctique</string>
+    <string name="COUNTRY_NAME_AR">Argentine</string>
+    <string name="COUNTRY_NAME_AS">Samoa américaines</string>
+    <string name="COUNTRY_NAME_AT">Autriche</string>
+    <string name="COUNTRY_NAME_AU">Australie</string>
+    <string name="COUNTRY_NAME_AW">Aruba</string>
+    <string name="COUNTRY_NAME_AX">Îles Åland</string>
+    <string name="COUNTRY_NAME_AZ">Azerbaïdjan</string>
+    <string name="COUNTRY_NAME_BA">Bosnie-Herzégovine</string>
+    <string name="COUNTRY_NAME_BB">Barbade</string>
+    <string name="COUNTRY_NAME_BD">Bangladesh</string>
+    <string name="COUNTRY_NAME_BE">Belgique</string>
+    <string name="COUNTRY_NAME_BF">Burkina Faso</string>
+    <string name="COUNTRY_NAME_BG">Bulgarie</string>
+    <string name="COUNTRY_NAME_BH">Bahreïn</string>
+    <string name="COUNTRY_NAME_BI">Burundi</string>
+    <string name="COUNTRY_NAME_BJ">Bénin</string>
+    <string name="COUNTRY_NAME_BL">Saint-Barthélémy</string>
+    <string name="COUNTRY_NAME_BM">Bermudes</string>
+    <string name="COUNTRY_NAME_BN">Brunéi Darussalam</string>
+    <string name="COUNTRY_NAME_BO">Bolivie</string>
+    <string name="COUNTRY_NAME_BR">Brésil</string>
+    <string name="COUNTRY_NAME_BS">Bahamas</string>
+    <string name="COUNTRY_NAME_BT">Bhoutan</string>
+    <string name="COUNTRY_NAME_BV">Île Bouvet</string>
+    <string name="COUNTRY_NAME_BW">Botswana</string>
+    <string name="COUNTRY_NAME_BY">Bélarus</string>
+    <string name="COUNTRY_NAME_BZ">Belize</string>
+    <string name="COUNTRY_NAME_CA">Canada</string>
+    <string name="COUNTRY_NAME_CC">Îles Cocos - Keeling</string>
+    <string name="COUNTRY_NAME_CD">République démocratique du Congo</string>
+    <string name="COUNTRY_NAME_CF">République centrafricaine</string>
+    <string name="COUNTRY_NAME_CG">Congo</string>
+    <string name="COUNTRY_NAME_CH">Suisse</string>
+    <string name="COUNTRY_NAME_CI">Côte d’Ivoire</string>
+    <string name="COUNTRY_NAME_CK">Îles Cook</string>
+    <string name="COUNTRY_NAME_CL">Chili</string>
+    <string name="COUNTRY_NAME_CM">Cameroun</string>
+    <string name="COUNTRY_NAME_CN">Chine</string>
+    <string name="COUNTRY_NAME_CO">Colombie</string>
+    <string name="COUNTRY_NAME_CR">Costa Rica</string>
+    <string name="COUNTRY_NAME_CS">Serbie-et-Monténégro</string>
+    <string name="COUNTRY_NAME_CU">Cuba</string>
+    <string name="COUNTRY_NAME_CV">Cap-Vert</string>
+    <string name="COUNTRY_NAME_CX">Île Christmas</string>
+    <string name="COUNTRY_NAME_CY">Chypre</string>
+    <string name="COUNTRY_NAME_CZ">République tchèque</string>
+    <string name="COUNTRY_NAME_DE">Allemagne</string>
+    <string name="COUNTRY_NAME_DJ">Djibouti</string>
+    <string name="COUNTRY_NAME_DK">Danemark</string>
+    <string name="COUNTRY_NAME_DM">Dominique</string>
+    <string name="COUNTRY_NAME_DO">République dominicaine</string>
+    <string name="COUNTRY_NAME_DZ">Algérie</string>
+    <string name="COUNTRY_NAME_EC">Équateur</string>
+    <string name="COUNTRY_NAME_EE">Estonie</string>
+    <string name="COUNTRY_NAME_EG">Égypte</string>
+    <string name="COUNTRY_NAME_EH">Sahara occidental</string>
+    <string name="COUNTRY_NAME_ER">Érythrée</string>
+    <string name="COUNTRY_NAME_ES">Espagne</string>
+    <string name="COUNTRY_NAME_ET">Éthiopie</string>
+    <string name="COUNTRY_NAME_FI">Finlande</string>
+    <string name="COUNTRY_NAME_FJ">Fidji</string>
+    <string name="COUNTRY_NAME_FK">Îles Malouines</string>
+    <string name="COUNTRY_NAME_FM">États fédérés de Micronésie</string>
+    <string name="COUNTRY_NAME_FO">Îles Féroé</string>
+    <string name="COUNTRY_NAME_FR">France</string>
+    <string name="COUNTRY_NAME_GA">Gabon</string>
+    <string name="COUNTRY_NAME_GB">Royaume-Uni</string>
+    <string name="COUNTRY_NAME_GD">Grenade</string>
+    <string name="COUNTRY_NAME_GE">Géorgie</string>
+    <string name="COUNTRY_NAME_GF">Guyane française</string>
+    <string name="COUNTRY_NAME_GG">Guernesey</string>
+    <string name="COUNTRY_NAME_GH">Ghana</string>
+    <string name="COUNTRY_NAME_GI">Gibraltar</string>
+    <string name="COUNTRY_NAME_GL">Groenland</string>
+    <string name="COUNTRY_NAME_GM">Gambie</string>
+    <string name="COUNTRY_NAME_GN">Guinée</string>
+    <string name="COUNTRY_NAME_GP">Guadeloupe</string>
+    <string name="COUNTRY_NAME_GQ">Guinée équatoriale</string>
+    <string name="COUNTRY_NAME_GR">Grèce</string>
+    <string name="COUNTRY_NAME_GS">Géorgie du Sud et les îles Sandwich du Sud</string>
+    <string name="COUNTRY_NAME_GT">Guatemala</string>
+    <string name="COUNTRY_NAME_GU">Guam</string>
+    <string name="COUNTRY_NAME_GW">Guinée-Bissau</string>
+    <string name="COUNTRY_NAME_GY">Guyana</string>
+    <string name="COUNTRY_NAME_HK">R.A.S. chinoise de Hong Kong</string>
+    <string name="COUNTRY_NAME_HM">Îles Heard et MacDonald</string>
+    <string name="COUNTRY_NAME_HN">Honduras</string>
+    <string name="COUNTRY_NAME_HR">Croatie</string>
+    <string name="COUNTRY_NAME_HT">Haïti</string>
+    <string name="COUNTRY_NAME_HU">Hongrie</string>
+    <string name="COUNTRY_NAME_ID">Indonésie</string>
+    <string name="COUNTRY_NAME_IE">Irlande</string>
+    <string name="COUNTRY_NAME_IL">Israël</string>
+    <string name="COUNTRY_NAME_IM">Île de Man</string>
+    <string name="COUNTRY_NAME_IN">Inde</string>
+    <string name="COUNTRY_NAME_IO">Territoire britannique de l\'océan Indien</string>
+    <string name="COUNTRY_NAME_IQ">Irak</string>
+    <string name="COUNTRY_NAME_IR">Iran</string>
+    <string name="COUNTRY_NAME_IS">Islande</string>
+    <string name="COUNTRY_NAME_IT">Italie</string>
+    <string name="COUNTRY_NAME_JE">Jersey</string>
+    <string name="COUNTRY_NAME_JM">Jamaïque</string>
+    <string name="COUNTRY_NAME_JO">Jordanie</string>
+    <string name="COUNTRY_NAME_JP">Japon</string>
+    <string name="COUNTRY_NAME_KE">Kenya</string>
+    <string name="COUNTRY_NAME_KG">Kirghizistan</string>
+    <string name="COUNTRY_NAME_KH">Cambodge</string>
+    <string name="COUNTRY_NAME_KI">Kiribati</string>
+    <string name="COUNTRY_NAME_KM">Comores</string>
+    <string name="COUNTRY_NAME_KN">Saint-Kitts-et-Nevis</string>
+    <string name="COUNTRY_NAME_KP">Corée du Nord</string>
+    <string name="COUNTRY_NAME_KR">Corée du Sud</string>
+    <string name="COUNTRY_NAME_KW">Koweït</string>
+    <string name="COUNTRY_NAME_KY">Îles Caïmans</string>
+    <string name="COUNTRY_NAME_KZ">Kazakhstan</string>
+    <string name="COUNTRY_NAME_LA">Laos</string>
+    <string name="COUNTRY_NAME_LB">Liban</string>
+    <string name="COUNTRY_NAME_LC">Sainte-Lucie</string>
+    <string name="COUNTRY_NAME_LI">Liechtenstein</string>
+    <string name="COUNTRY_NAME_LK">Sri Lanka</string>
+    <string name="COUNTRY_NAME_LR">Libéria</string>
+    <string name="COUNTRY_NAME_LS">Lesotho</string>
+    <string name="COUNTRY_NAME_LT">Lituanie</string>
+    <string name="COUNTRY_NAME_LU">Luxembourg</string>
+    <string name="COUNTRY_NAME_LV">Lettonie</string>
+    <string name="COUNTRY_NAME_LY">Libye</string>
+    <string name="COUNTRY_NAME_MA">Maroc</string>
+    <string name="COUNTRY_NAME_MC">Monaco</string>
+    <string name="COUNTRY_NAME_MD">Moldavie</string>
+    <string name="COUNTRY_NAME_ME">Monténégro</string>
+    <string name="COUNTRY_NAME_MF">Saint-Martin</string>
+    <string name="COUNTRY_NAME_MG">Madagascar</string>
+    <string name="COUNTRY_NAME_MH">Îles Marshall</string>
+    <string name="COUNTRY_NAME_MK">Macédoine</string>
+    <string name="COUNTRY_NAME_ML">Mali</string>
+    <string name="COUNTRY_NAME_MM">Myanmar</string>
+    <string name="COUNTRY_NAME_MN">Mongolie</string>
+    <string name="COUNTRY_NAME_MO">R.A.S. chinoise de Macao</string>
+    <string name="COUNTRY_NAME_MP">Îles Mariannes du Nord</string>
+    <string name="COUNTRY_NAME_MQ">Martinique</string>
+    <string name="COUNTRY_NAME_MR">Mauritanie</string>
+    <string name="COUNTRY_NAME_MS">Montserrat</string>
+    <string name="COUNTRY_NAME_MT">Malte</string>
+    <string name="COUNTRY_NAME_MU">Maurice</string>
+    <string name="COUNTRY_NAME_MV">Maldives</string>
+    <string name="COUNTRY_NAME_MW">Malawi</string>
+    <string name="COUNTRY_NAME_MX">Mexique</string>
+    <string name="COUNTRY_NAME_MY">Malaisie</string>
+    <string name="COUNTRY_NAME_MZ">Mozambique</string>
+    <string name="COUNTRY_NAME_NA">Namibie</string>
+    <string name="COUNTRY_NAME_NC">Nouvelle-Calédonie</string>
+    <string name="COUNTRY_NAME_NE">Niger</string>
+    <string name="COUNTRY_NAME_NF">Île Norfolk</string>
+    <string name="COUNTRY_NAME_NG">Nigéria</string>
+    <string name="COUNTRY_NAME_NI">Nicaragua</string>
+    <string name="COUNTRY_NAME_NL">Pays-Bas</string>
+    <string name="COUNTRY_NAME_NO">Norvège</string>
+    <string name="COUNTRY_NAME_NP">Népal</string>
+    <string name="COUNTRY_NAME_NR">Nauru</string>
+    <string name="COUNTRY_NAME_NU">Niue</string>
+    <string name="COUNTRY_NAME_NZ">Nouvelle-Zélande</string>
+    <string name="COUNTRY_NAME_OM">Oman</string>
+    <string name="COUNTRY_NAME_PA">Panama</string>
+    <string name="COUNTRY_NAME_PE">Pérou</string>
+    <string name="COUNTRY_NAME_PF">Polynésie française</string>
+    <string name="COUNTRY_NAME_PG">Papouasie-Nouvelle-Guinée</string>
+    <string name="COUNTRY_NAME_PH">Philippines</string>
+    <string name="COUNTRY_NAME_PK">Pakistan</string>
+    <string name="COUNTRY_NAME_PL">Pologne</string>
+    <string name="COUNTRY_NAME_PM">Saint-Pierre-et-Miquelon</string>
+    <string name="COUNTRY_NAME_PN">Pitcairn</string>
+    <string name="COUNTRY_NAME_PR">Porto Rico</string>
+    <string name="COUNTRY_NAME_PS">Territoire palestinien</string>
+    <string name="COUNTRY_NAME_PT">Portugal</string>
+    <string name="COUNTRY_NAME_PW">Palaos</string>
+    <string name="COUNTRY_NAME_PY">Paraguay</string>
+    <string name="COUNTRY_NAME_QA">Qatar</string>
+    <string name="COUNTRY_NAME_QO">régions éloignées de l’Océanie</string>
+    <string name="COUNTRY_NAME_QU">Union européenne</string>
+    <string name="COUNTRY_NAME_RE">Réunion</string>
+    <string name="COUNTRY_NAME_RO">Roumanie</string>
+    <string name="COUNTRY_NAME_RS">Serbie</string>
+    <string name="COUNTRY_NAME_RU">Russie</string>
+    <string name="COUNTRY_NAME_RW">Rwanda</string>
+    <string name="COUNTRY_NAME_SA">Arabie saoudite</string>
+    <string name="COUNTRY_NAME_SB">Îles Salomon</string>
+    <string name="COUNTRY_NAME_SC">Seychelles</string>
+    <string name="COUNTRY_NAME_SD">Soudan</string>
+    <string name="COUNTRY_NAME_SE">Suède</string>
+    <string name="COUNTRY_NAME_SG">Singapour</string>
+    <string name="COUNTRY_NAME_SH">Sainte-Hélène</string>
+    <string name="COUNTRY_NAME_SI">Slovénie</string>
+    <string name="COUNTRY_NAME_SJ">Svalbard et Île Jan Mayen</string>
+    <string name="COUNTRY_NAME_SK">Slovaquie</string>
+    <string name="COUNTRY_NAME_SL">Sierra Leone</string>
+    <string name="COUNTRY_NAME_SM">Saint-Marin</string>
+    <string name="COUNTRY_NAME_SN">Sénégal</string>
+    <string name="COUNTRY_NAME_SO">Somalie</string>
+    <string name="COUNTRY_NAME_SR">Suriname</string>
+    <string name="COUNTRY_NAME_ST">Sao Tomé-et-Principe</string>
+    <string name="COUNTRY_NAME_SV">El Salvador</string>
+    <string name="COUNTRY_NAME_SY">Syrie</string>
+    <string name="COUNTRY_NAME_SZ">Swaziland</string>
+    <string name="COUNTRY_NAME_TC">Îles Turks et Caïques</string>
+    <string name="COUNTRY_NAME_TD">Tchad</string>
+    <string name="COUNTRY_NAME_TF">Terres australes françaises</string>
+    <string name="COUNTRY_NAME_TG">Togo</string>
+    <string name="COUNTRY_NAME_TH">Thaïlande</string>
+    <string name="COUNTRY_NAME_TJ">Tadjikistan</string>
+    <string name="COUNTRY_NAME_TK">Tokelau</string>
+    <string name="COUNTRY_NAME_TL">Timor oriental</string>
+    <string name="COUNTRY_NAME_TM">Turkménistan</string>
+    <string name="COUNTRY_NAME_TN">Tunisie</string>
+    <string name="COUNTRY_NAME_TO">Tonga</string>
+    <string name="COUNTRY_NAME_TR">Turquie</string>
+    <string name="COUNTRY_NAME_TT">Trinité-et-Tobago</string>
+    <string name="COUNTRY_NAME_TV">Tuvalu</string>
+    <string name="COUNTRY_NAME_TW">Taïwan</string>
+    <string name="COUNTRY_NAME_TZ">Tanzanie</string>
+    <string name="COUNTRY_NAME_UA">Ukraine</string>
+    <string name="COUNTRY_NAME_UG">Ouganda</string>
+    <string name="COUNTRY_NAME_UM">Îles Mineures Éloignées des États-Unis</string>
+    <string name="COUNTRY_NAME_US">États-Unis</string>
+    <string name="COUNTRY_NAME_UY">Uruguay</string>
+    <string name="COUNTRY_NAME_UZ">Ouzbékistan</string>
+    <string name="COUNTRY_NAME_VA">État de la Cité du Vatican</string>
+    <string name="COUNTRY_NAME_VC">Saint-Vincent-et-les Grenadines</string>
+    <string name="COUNTRY_NAME_VE">Venezuela</string>
+    <string name="COUNTRY_NAME_VG">Îles Vierges britanniques</string>
+    <string name="COUNTRY_NAME_VI">Îles Vierges des États-Unis</string>
+    <string name="COUNTRY_NAME_VN">Viêt Nam</string>
+    <string name="COUNTRY_NAME_VU">Vanuatu</string>
+    <string name="COUNTRY_NAME_WF">Wallis-et-Futuna</string>
+    <string name="COUNTRY_NAME_WS">Samoa</string>
+    <string name="COUNTRY_NAME_YE">Yémen</string>
+    <string name="COUNTRY_NAME_YT">Mayotte</string>
+    <string name="COUNTRY_NAME_ZA">Afrique du Sud</string>
+    <string name="COUNTRY_NAME_ZM">Zambie</string>
+    <string name="COUNTRY_NAME_ZW">Zimbabwe</string>
+    <string name="COUNTRY_NAME_ZZ">région indéterminée</string>
 
 </resources>

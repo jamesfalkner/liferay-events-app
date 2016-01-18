@@ -122,7 +122,7 @@ The agenda DDL Definition is the most complicated of all the schemas. Note that 
 * `session_summary`: Type: Text. The human-readable abstract/summary of the session
 * `session_type`: Multi-select representing the type ("Technical", "Case Study", "Workshop", etc. used to put cool icons on the display)
 * `speakers_uuid`:  Type: Text. A comma-separated list of speaker UUIDs for the session.
-* `select_category`:  Type: Multi-select. E.g. all Mobile-related talks would have mobile as a category, or perhaps mobile, responsive. These are free-form tags that are used on the website and mobile app to allow attendees to only show certain kinds of sessions. The display name of the filters can be found in the event_type_dict dictionary for the event.
+* `select_category` or `filter_categories`:  Type: Multi-select. E.g. all Mobile-related talks would have mobile as a category, or perhaps mobile, responsive. These are free-form tags that are used on the website and mobile app to allow attendees to only show certain kinds of sessions. The display name of the filters can be found in the event_type_dict dictionary for the event.
 * `sponsors_uuid`: A comma-separated list of sponsor UUIDs that are sponsoring the session (e.g. for sponsored after-parties, etc)
 * `start_time_hour`: Type: Multi-Select (1, 2, ..., 23). When it starts.
 * `start_time_minutes`:Type: Multi-Select (00, 05, ..., 55).  When it starts.

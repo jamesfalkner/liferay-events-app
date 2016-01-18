@@ -1,6 +1,6 @@
 All Image files found in this project are subject to the following copyright and license:
 
-Copyright 2015 Liferay, Inc.
+Copyright 2016 Liferay, Inc.
 
 This work is licensed under the
 Creative Commons Attribution-NoDerivatives 4.0 International License.
@@ -8,7 +8,7 @@ To view a copy of this license, visit http://creativecommons.org/licenses/by-nd/
 
 All other content of this project is subject to the following copyright and license:
 
-Copyright 2015 Liferay, Inc.
+Copyright 2016 Liferay, Inc.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.

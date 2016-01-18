@@ -17,13 +17,30 @@
 liferay.screens.contacts = new liferay.classes.window();
 liferay.screens.contacts.className = 'liferay.screens.contacts';
 
-var Barcode = require("ti.barcode");
-
-Barcode.allowInstructions = false;
-Barcode.allowMenu = false;
-Barcode.allowRotation = false;
-liferay.screens.contacts.BarcodeSuccessListeners = [];
-liferay.screens.contacts.BarcodeErrorListeners = [];
+liferay.screens.contacts.helpData = [
+	{
+		top: '50%',
+		left: '10%',
+		width: '85%',
+		font: liferay.fonts.h4b,
+		textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
+		text: L('SCREEN_CONTACTS_HELP_1')
+	},
+	{
+		view: {
+			center : {
+				x: '75%',
+				y: '95%'
+			},
+			width: '40%',
+			height: '9%',
+			backgroundColor: 'transparent',
+			borderWidth: '5dp',
+			borderRadius: '3dp',
+			borderColor: '#FF6666'
+		}
+	}
+];
 
 liferay.screens.contacts.render = function() {
 	//Ti.API.info(this.className + ".render()");
@@ -39,43 +56,36 @@ liferay.screens.contacts.render = function() {
 	tagBtn.width = liferay.tools.getDp(liferay.settings.screens.contacts.buttons.tag.psize * Titanium.Platform.displayCaps.platformWidth);
 	tagBtn.height = tagBtn.width;
 
-	var sponsor = null;
-	liferay.data.currentEventData.sponsors.forEach(function(sponsorIt) {
-		if (sponsorIt.type && sponsorIt.type == 'scan') {
-			sponsor = sponsorIt;
-		}
-	});
+	tagBtn.addEventListener('click', function(e) {
 
-	var overlay = sponsor ? liferay.screens.contacts.getOverlay(sponsor) : null;
-
-    Barcode.displayedMessage = (sponsor ? null : L('SCAN_TITLE')) + "\n\n";
-
-	tagBtn.addEventListener('click', function() {
-
-		liferay.screens.contacts.BarcodeSuccessListeners.forEach(function(el) {
-			Barcode.removeEventListener('success', el);
-		});
-		liferay.screens.contacts.BarcodeErrorListeners.forEach(function(el) {
-			Barcode.removeEventListener('error', el);
-		});
-		liferay.screens.contacts.BarcodeSuccessListeners = [];
-		liferay.screens.contacts.BarcodeErrorListeners = [];
-
-		Barcode.addEventListener('success', liferay.screens.contacts.onTagSuccess);
-		Barcode.addEventListener('error', liferay.screens.contacts.onTagError);
-		liferay.screens.contacts.BarcodeSuccessListeners.push(liferay.screens.contacts.onTagSuccess);
-		liferay.screens.contacts.BarcodeErrorListeners.push(liferay.screens.contacts.onTagError);
 		liferay.tools.flashButton({
-			control : tagBtn,
+			control : e.source,
 			onRestore : function() {
-				var dic = {
-					animate: true
+				var sponsor = null;
+				liferay.data.currentEventData.sponsors.forEach(function(sponsorIt) {
+					if (sponsorIt.type && sponsorIt.type == 'scan') {
+						sponsor = sponsorIt;
+					}
+				});
 
-                };
-				if (overlay != null) {
-					dic.overlay = overlay;
-				}
-				Barcode.capture(dic);
+				liferay.scan.doScan({
+					message: sponsor ? String.format(L('SCAN_SPONSORED_BY'), sponsor.name) : L('SCAN_TITLE'),
+					logo: sponsor ? sponsor.docmedia : null,
+					onSuccess: function(result) {
+						liferay.scan.parseBarcode(result, function(contact) {
+							liferay.screens.contacts.saveNewContact(contact);
+							var view = liferay.screens.contactsDetail;
+							liferay.controller.open(view.render(), view, true);
+							view.loadDetails(contact);
+						}, function(err) {
+							liferay.tools.alert(L('ALERT'), err);
+						});
+
+					},
+					onFailure: function(err) {
+						liferay.tools.alert(L('ALERT'), String.format(L('SCAN_UNABLE'), err));
+					}
+				});
 			}
 		});
 	});
@@ -103,25 +113,6 @@ liferay.screens.contacts.render = function() {
 	});
 
 	return this.window;
-};
-
-liferay.screens.contacts.onTagError = function(e) {
-	liferay.tools.alert(L('ALERT'), String.format(L('SCAN_UNABLE'), e.message));
-}
-
-liferay.screens.contacts.onTagSuccess = function(e) {
-	var raw = e.result;
-	if (raw) {
-		if (e.contentType != Barcode.CONTACT) {
-			liferay.tools.alert(L('ALERT'), String.format(L('SCAN_INVALID_TYPE'), liferay.screens.contacts.parseContentType(e.contentType)));
-		} else {
-			liferay.screens.contacts.parseBarcode(e, function(inf) {
-				liferay.screens.contacts.openDetail(inf);
-			});
-		}
-	} else {
-		liferay.tools.alert(L('ALERT'), L('SCAN_NO_DATA_FOUND'));
-	}
 };
 
 liferay.screens.contacts.getOverlay = function(sponsor) {
@@ -319,33 +310,6 @@ liferay.screens.contacts.emailContacts = function(text) {
 	emailDialog.open();
 };
 
-liferay.screens.contacts.parseContentType = function(contentType) {
-	switch (contentType) {
-		case Barcode.URL:
-			return 'URL';
-		case Barcode.SMS:
-			return 'SMS';
-		case Barcode.TELEPHONE:
-			return 'TELEPHONE';
-		case Barcode.TEXT:
-			return 'TEXT';
-		case Barcode.CALENDAR:
-			return 'CALENDAR';
-		case Barcode.GEOLOCATION:
-			return 'GEOLOCATION';
-		case Barcode.EMAIL:
-			return 'EMAIL';
-		case Barcode.CONTACT:
-			return 'CONTACT';
-		case Barcode.BOOKMARK:
-			return 'BOOKMARK';
-		case Barcode.WIFI:
-			return 'WIFI';
-		default:
-			return 'UNKNOWN';
-	}
-};
-
 liferay.screens.contacts.loadContacts = function() {
 
 	var file = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory, liferay.settings.screens.contacts.contactsFile);
@@ -420,6 +384,11 @@ liferay.screens.contacts.getEventContacts = function() {
 };
 
 liferay.screens.contacts.displayContacts = function() {
+
+	if (!this.panelBg) {
+		// ui not initialized
+		return;
+	}
 	//Ti.API.info(this.className + ".displayContacts()");
 	var self = this;
 
@@ -472,7 +441,9 @@ liferay.screens.contacts.displayContacts = function() {
     });
 
     if (!this.listViewSection) {
-        this.listViewSection = Ti.UI.createListSection();
+        this.listViewSection = Ti.UI.createListSection({
+			headerTitle: L('CONTACTS')
+		});
     }
 
     this.listViewSection.setItems(data);
@@ -484,7 +455,10 @@ liferay.screens.contacts.displayContacts = function() {
         });
         this.listView.setSections([this.listViewSection]);
         this.listView.addEventListener('itemclick', function(e) {
-            liferay.screens.contacts.openDetail(liferay.screens.contacts.mergedContacts[e.itemIndex]);
+
+			var view = liferay.screens.contactsDetail;
+			liferay.controller.open(view.render(), view, true);
+			view.loadDetails(liferay.screens.contacts.mergedContacts[e.itemIndex]);
         });
         this.panelBg.add(this.listView);
     }
@@ -495,6 +469,10 @@ liferay.screens.contacts.displayContacts = function() {
 
 liferay.screens.contacts.getImage = function(contact) {
 
+		if (!contact.picture) {
+			return liferay.settings.screens.contacts.defaultPicture;
+		}
+
     var lcl = liferay.screens.contacts.getLocalImage({
         url: contact.picture
     });
@@ -503,7 +481,6 @@ liferay.screens.contacts.getImage = function(contact) {
         return lcl;
     } else {
         var tmpView = Ti.UI.createImageView();
-
         liferay.screens.contacts.loadImage({
             url: contact.picture,
             imageView: tmpView,
@@ -524,18 +501,11 @@ liferay.screens.contacts.setListImage = function(contact, img) {
     for (var i = 0; i < items.length; i++) {
         if (items[i] && items[i].properties && items[i].properties.itemId == contact.uuid) {
             items[i].image.image = img;
-            liferay.screens.contacts.listViewSection.updateItemAt(i, items[i], {animated: true});
+					liferay.screens.contacts.listViewSection.updateItemAt(i, items[i], {animated: true});
             break;
         }
     }
 
-};
-
-liferay.screens.contacts.openDetail = function(contact) {
-	//Ti.API.info(this.className + ".openDetail()");
-
-	liferay.controller.open(liferay.screens.contactsDetail.render(), liferay.screens.contactsDetail);
-	liferay.screens.contactsDetail.loadDetails(contact);
 };
 
 liferay.screens.contacts.saveNewContact = function(contact) {
@@ -575,59 +545,6 @@ liferay.screens.contacts.deleteContact = function(id) {
 			}
 		}
 	}
-};
-
-liferay.screens.contacts.parseBarcode = function(event, cb) {
-	if (event.contentType != Barcode.CONTACT) {
-		return;
-	}
-
-	var data = event.result;
-	if (/(MECARD:).*(;;)/.test(data) == false) {
-		liferay.tools.alert(L('ALERT'), L('SCAN_NOT_CONTACT'));
-		return;
-	}
-
-	var contact = {};
-
-	var name = [].concat(data.match(/(N:)([^;]+)(;)/))[2];
-	if (name) {
-		var parts = name.split(',');
-		if (parts.length > 1) {
-			contact.firstname = parts[1];
-			contact.lastname = parts[0];
-		} else {
-			contact.firstname = parts[0];
-		}
-	}
-
-	contact.companyname = [].concat(data.match(/(ORG:)([^;]+)(;)/))[2] || '';
-	contact.title = [].concat(data.match(/(TITLE:)([^;]+)(;)/))[2] || '';
-	contact.phone = [].concat(data.match(/(TEL:)([^;]+)(;)/))[2] || '';
-	contact.email = [].concat(data.match(/(EMAIL:)([^;]+)(;)/))[2] || '';
-	contact.notes = [].concat(data.match(/(NOTE:)([^;]+)(;)/))[2] || '';
-	contact.url = [].concat(data.match(/(URL:)([^;]+)(;)/))[2] || '';
-	contact.readonly = false;
-	var address = [].concat(data.match(/(ADR:)([^;]+)(;)/))[2];
-	if (address) {
-		var parts = address.split(',');
-		contact.street = parts[0];
-		contact.city = parts[1];
-		contact.state = parts[2];
-		contact.zip = parts[3];
-		contact.country = parts[4];
-	}
-
-	if (contact.email) {
-		var hash = Ti.Utils.md5HexDigest(contact.email);
-		var picUrl = 'http://gravatar.com/avatar/' + hash;
-
-		contact.picture = picUrl;
-	}
-	// console.log(contact);
-
-	this.saveNewContact(contact);
-	cb(contact);
 };
 
 //Ti.API.info("contacts.js loaded");

@@ -23,15 +23,18 @@ var liferay = {
 
 var version = Ti.Platform.version.split('.');
 
+var isIOS = (Ti.Platform.name == 'iPhone OS' || Ti.Platform.name.toLowerCase() == 'ios');
+
 liferay.model = {
 	android: Ti.Platform.name == 'android',
     iPhone: Ti.Platform.osname == 'iphone',
 	iPad: Ti.Platform.osname == 'ipad',
 	iPad3: (Ti.Platform.osname == 'ipad' && Ti.Platform.displayCaps.density == 'high'),
-    iOS: (Ti.Platform.name == 'iPhone OS'),
-    iOS7: ((Ti.Platform.name == 'iPhone OS') && version && version[0] && parseInt(version[0]) >= 7),
-    iOS8: ((Ti.Platform.name == 'iPhone OS') && version && version[0] && parseInt(version[0]) >= 8),
-	retina: ((Ti.Platform.name == 'iPhone OS') && Ti.Platform.displayCaps.density == 'high')
+    iOS: isIOS,
+    iOS7: (isIOS && version && version[0] && parseInt(version[0]) >= 7),
+	  iOS8: (isIOS && version && version[0] && parseInt(version[0]) >= 8),
+	  iOS9: (isIOS && version && version[0] && parseInt(version[0]) >= 9),
+	retina: (isIOS && Ti.Platform.displayCaps.density == 'high')
 };
 
 /**
@@ -69,7 +72,7 @@ liferay.classes.window.prototype.testAction = function(msgTemplate, action, id) 
 };
 
 liferay.classes.window.prototype.getLocalImage = function(options) {
-    var filename = Ti.Utils.md5HexDigest(options.url) + '.png';
+    var filename = Ti.Utils.md5HexDigest(options.url + JSON.stringify(options.bounds)) + '.png';
     var cacheFilePath = liferay.cache.getFilePath(filename);
     var cacheFile = Titanium.Filesystem.getFile(cacheFilePath);
     if (cacheFile.exists()) {
@@ -81,7 +84,7 @@ liferay.classes.window.prototype.getLocalImage = function(options) {
 
 liferay.classes.window.prototype.loadImage = function(options) {
 
-	var filename = Ti.Utils.md5HexDigest(options.url) + '.png';
+	var filename = Ti.Utils.md5HexDigest(options.url + JSON.stringify(options.bounds)) + '.png';
 	var url = options.url;
 	if (url.substring(0, 1) == '/')
 		url = liferay.settings.server.dataHost.host + url;
@@ -98,6 +101,9 @@ liferay.classes.window.prototype.loadImage = function(options) {
 	} else {
 		if (Titanium.Network.online) {
 			liferay.cache.downloadFile(url, filename, function(localpath) {
+				if (options.bounds) {
+					liferay.tools.clipImage(localpath, options.bounds);
+				}
 				if (!options.setImage) {
 					options.imageView.backgroundImage = localpath;
 				} else {

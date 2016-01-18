@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var ImageFactory = require('ti.imagefactory');
 
 liferay.flickr = {};
 
@@ -57,7 +56,7 @@ liferay.flickr.checkToken = function (token, success, failure) {
         if (authobj.stat != "ok") {
             failure(authobj.code + ": " + authobj.message);
         } else {
-            fullKey = authobj.auth.token._content;
+            var fullKey = authobj.auth.token._content;
             success(fullKey);
         }
     };
@@ -69,7 +68,7 @@ liferay.flickr.checkToken = function (token, success, failure) {
 
     xhr.open('GET', url);
     xhr.send();
-}
+};
 
 liferay.flickr.uploadPhoto = function (name, win, take, success, fail) {
 
@@ -97,75 +96,26 @@ liferay.flickr.selectAndUploadPhoto = function (name, auth_token, win, take, suc
             mediaTypes: [Titanium.Media.MEDIA_TYPE_PHOTO],
             saveToPhotoGallery: true,
             success: function (pic) {
-                liferay.flickr.uploadToFlickr(name, pic, auth_token, win, success, fail);
+                liferay.flickr.uploadToFlickr(name, [pic], auth_token, win, success, fail);
             }
         });
 
     } else {
-        Titanium.Media.openPhotoGallery({
-            allowEditing: false,
-            animated: true,
-            autohide: true,
-            mediaTypes: [Titanium.Media.MEDIA_TYPE_PHOTO],
-            success: function (pic) {
-                liferay.flickr.uploadToFlickr(name, pic, auth_token, win, success, fail)
-            },
-            error: function (err) {
-                fail(err.code);
-            },
-            cancel: function (object) {
-            }
+
+        liferay.tools.selectPhotos(function(items) {
+            liferay.flickr.uploadToFlickr(name, items, auth_token, win, success, fail);
+
         });
     }
 };
 
-liferay.flickr.uploadToFlickr = function (name, pic, auth_token, win, success, failure) {
-    var ind;
-    var progressBg;
+liferay.flickr.uploadToFlickr = function (name, pics, auth_token, win, success, failure) {
 
-    var flickrXhr = Titanium.Network.createHTTPClient();
-    flickrXhr.timeout = 60000 * 5;
-
-    flickrXhr.onload = function () {
-        // close window once uploaded
-        ind.hide();
-        win.remove(progressBg);
-        var resXML = Ti.XML.parseString(this.responseText);
-        var status = resXML.getElementsByTagName("rsp").item(0).getAttributes().getNamedItem("stat").getValue();
-        if (status != "ok") {
-            failure("Upload failed:" + status);
-        } else {
-            var photoid = resXML.getElementsByTagName("photoid").item(0).text;
-            liferay.flickr.addToPhotoset(auth_token, photoid, function () {
-                success();
-            }, function (err) {
-                failure(err);
-            });
-        }
-    };
-    flickrXhr.onerror = function (err) {
-        ind.hide();
-        win.remove(progressBg);
-        failure(err.error);
-    };
-
-    flickrXhr.onsendstream = function (e) {
-        ind.value = e.progress;
-    };
-    var url = 'https://api.flickr.com/services/upload/';
-    var d = new Date();
-    var title = String.format(L('PICTURE_FROM'), liferay.controller.selectedEvent.menutitle) + ': ' + name;
-    var tagsHash = liferay.controller.selectedEvent.event_hashtag ? liferay.controller.selectedEvent.event_hashtag : Ti.App.Properties.getString('liferay.default_event_hashtag', "#liferay");
-    var tags = tagsHash.replace('#', '');
-    var desc = title + " - " + String.formatDate(d, 'long') + ' - ' + String.formatTime(d, 'short');
-    var signature_string = Ti.App.Properties.getString('liferay.flickr.shared_secret') + "api_key" + Ti.App.Properties.getString('liferay.flickr.api_key') + "auth_token" + auth_token + "description" + desc + "is_public" + "0" + "perms" + "write" + "tags" + tags + "title" + title;
-    var api_sig = Ti.Utils.md5HexDigest(signature_string);
-
-    ind = Titanium.UI.createProgressBar({
+    var progressBar = Titanium.UI.createProgressBar({
         min: 0,
         max: 1,
         value: 0,
-        message: L('UPLOADING_IMAGE'),
+        message: pics.length > 1 ? String.format(L('UPLOADING_IMAGE_N'), 1, pics.length): L('UPLOADING_IMAGE'),
         font: liferay.fonts.h2,
         top: "30%",
         color: 'white',
@@ -174,7 +124,7 @@ liferay.flickr.uploadToFlickr = function (name, pic, auth_token, win, success, f
     });
 
 
-    progressBg = Titanium.UI.createView({
+    var progressBg = Titanium.UI.createView({
         width: "80%",
         height: "50%",
         backgroundColor: 'black',
@@ -192,19 +142,24 @@ liferay.flickr.uploadToFlickr = function (name, pic, auth_token, win, success, f
     cancelButton.height = cancelButton.width;
     cancelButton.zIndex = 200;
     if (liferay.model.iOS) {
-        ind.style = Titanium.UI.iPhone.ProgressBarStyle.DEFAULT;
+        progressBar.style = Titanium.UI.iPhone.ProgressBarStyle.DEFAULT;
     }
     cancelButton.addEventListener('click', function (e) {
         liferay.tools.flashButton({
             control: e.source,
             onRestore: function () {
-                flickrXhr.abort();
-                ind.hide();
+
+                liferay.flickr.uploadsInProgress.forEach(function(xhr) {
+                    xhr.abort();
+                });
+                liferay.flickr.uploadsInProgress = [];
+
+                progressBar.hide();
                 win.remove(progressBg);
             }
         });
     });
-    progressBg.add(ind);
+    progressBg.add(progressBar);
     progressBg.add(cancelButton);
 
     var sponsor = null;
@@ -215,7 +170,7 @@ liferay.flickr.uploadToFlickr = function (name, pic, auth_token, win, success, f
     });
 
     if (sponsor) {
-        ind.top = "15%";
+        progressBar.top = "15%";
         var sponsorLabel = Ti.UI.createLabel(liferay.settings.screens.gallery.labels.streamSponsor);
         sponsorLabel.font = liferay.tools.h3;
         sponsorLabel.width = Ti.UI.SIZE;
@@ -253,59 +208,130 @@ liferay.flickr.uploadToFlickr = function (name, pic, auth_token, win, success, f
     }
     win.add(progressBg);
 
-    ind.show();
+    progressBar.show();
 
-    var resizedPic = pic.media;
-    var picWidth = 0, picHeight = 0;
+    var completedPics = 0;
+    var progressTrackingArr = pics.map(function(pic) {
+        return 0;
+    });
+    var progressTrackingHash = [];
 
-    if (pic.width > 0 && pic.height > 0) {
-        picWidth = pic.width;
-        picHeight = pic.height;
-    } else if (pic.media.width > 0 && pic.media.height > 0) {
-        picWidth = pic.media.width;
-        picHeight = pic.media.height;
-    } else {
-        try {
-            var tmpcompress = ImageFactory.compress(image, 1.0);
-            if (tmpcompress && tmpcompress.width > 0 && tmpcompress.height > 0) {
-                picWidth = tmpcompress.width;
-                picHeight = tmpcompress.height;
-            }
-            tmpcompress = null;
-        } catch (ex) {
+    function addProgress(hash, val, theProgressIdx) {
+        // override
+        var idx = progressTrackingHash.indexOf(hash);
+        if (idx == -1) {
+            progressTrackingHash.push(hash);
+            idx = progressTrackingHash.length - 1;
         }
+
+        progressTrackingArr[idx] = val > 1 ? 1 : val;
+        var newTotal = 0;
+        progressTrackingArr.forEach(function(trackingVal) {
+            newTotal += trackingVal;
+        });
+        progressBar.value = newTotal / pics.length;
     }
 
+    var fns = pics.map(function(pic, idx, arr) {
 
-    if (picWidth > 0 && picHeight > 0) {
-        var longestSide = Math.max(picWidth, picHeight);
-        if (longestSide > 640) {
-            var scale = 640 / longestSide;
-            resizedPic = ImageFactory.imageAsResized(resizedPic, {
-                width: Math.floor(picWidth * scale),
-                height: Math.floor(picHeight * scale),
-                format: ImageFactory.JPEG,
-                quality: 0.7
+        return function(callback) {
+            liferay.flickr.uploadSinglePhotoToFlickr(name, pic, idx, auth_token, addProgress, function() {
+                completedPics++;
+                progressBar.message = String.format(L('UPLOADING_IMAGE_N'), completedPics, pics.length);
+                callback(null, null);
+            }, function(err) {
+                callback(err, null);
             });
-        }
-    }
-
-    flickrXhr.open('POST', url);
-    flickrXhr.setRequestHeader('enctype', 'multipart/form-data');
-
-    flickrXhr.send({
-        api_key: Ti.App.Properties.getString('liferay.flickr.api_key'),
-        auth_token: Ti.App.Properties.getString('liferay.flickr.auth_token'),
-        description: desc,
-        is_public: "0",
-        perms: "write",
-        tags: tags,
-        title: title,
-        api_sig: api_sig,
-        photo: resizedPic
+        };
     });
 
-    resizedPic = null;
+    async.parallelLimit(fns, 3, function(err, results) {
+        progressBar.hide();
+        win.remove(progressBg);
+        if (err) {
+            failure(err);
+        } else {
+            success();
+        }
+    });
+};
+
+liferay.flickr.uploadsInProgress = [];
+
+liferay.flickr.uploadSinglePhotoToFlickr = function (name, picBlobOrAsset, picIndex, auth_token, onProgress, onSuccess, onFailure) {
+
+
+
+    liferay.tools.downsizePic(picBlobOrAsset, 640, function (blob) {
+
+        var url = 'https://api.flickr.com/services/upload/';
+
+        var pics = [];
+
+        var hash = Ti.Utils.md5HexDigest(blob);
+
+        var d = new Date();
+        var title = String.format(L('PICTURE_FROM'), liferay.controller.selectedEvent.menutitle) + ': ' + name;
+        var tagsHash = liferay.controller.selectedEvent.event_hashtag ? liferay.controller.selectedEvent.event_hashtag : Ti.App.Properties.getString('liferay.default_event_hashtag', "#liferay");
+        var tags = tagsHash.replace('#', '');
+        var desc = title + " - " + String.formatDate(d, 'long') + ' - ' + String.formatTime(d, 'short');
+        var signature_string = Ti.App.Properties.getString('liferay.flickr.shared_secret') + "api_key" + Ti.App.Properties.getString('liferay.flickr.api_key') + "auth_token" + auth_token + "description" + desc + "is_public" + "1" + "perms" + "write" + "tags" + tags + "title" + title;
+        var api_sig = Ti.Utils.md5HexDigest(signature_string);
+
+        var flickrXhr = Titanium.Network.createHTTPClient({
+            timeout: 60000 * 5,
+            idx: picIndex,
+            onload: function () {
+                var resXML = Ti.XML.parseString(this.responseText);
+                var status = resXML.getElementsByTagName("rsp").item(0).getAttributes().getNamedItem("stat").getValue();
+                if (status != "ok") {
+                    onFailure(L('UPLOAD_FAILED') + ': ' + status);
+                } else {
+                    var photoid = resXML.getElementsByTagName("photoid").item(0).text;
+                    liferay.flickr.addToPhotoset(auth_token, photoid, function () {
+                        onSuccess();
+                    }, function (err) {
+                        onFailure(err);
+                    });
+                }
+                var thisReq = this;
+                liferay.flickr.uploadsInProgress = liferay.flickr.uploadsInProgress.filter(function(e) {
+                    return (e != thisReq);
+                });
+            },
+            onerror: function (err) {
+                liferay.flickr.uploadsInProgress = liferay.flickr.uploadsInProgress.filter(function(e) {
+                    return (e != thisReq);
+                });
+                onFailure(err.error);
+            },
+            onsendstream: function (e) {
+                onProgress && onProgress(hash, e.progress, picIndex);
+            }
+        });
+
+        //console.log("opening xhr to " + url + " whose xhr index is " + flickrXhr.idx + " whereas the captured picIdx is " + picIndex);
+
+        flickrXhr.open('POST', url);
+
+        flickrXhr.setRequestHeader('enctype', 'multipart/form-data');
+
+        liferay.flickr.uploadsInProgress.push(flickrXhr);
+
+        flickrXhr.send({
+            api_key: Ti.App.Properties.getString('liferay.flickr.api_key'),
+            auth_token: Ti.App.Properties.getString('liferay.flickr.auth_token'),
+            description: desc,
+            is_public: "1",
+            perms: "write",
+            tags: tags,
+            title: title,
+            api_sig: api_sig,
+            photo: blob
+        });
+    });
+
+
 };
 
 liferay.flickr.addToPhotoset = function (auth_token, photo_id, success, failure) {

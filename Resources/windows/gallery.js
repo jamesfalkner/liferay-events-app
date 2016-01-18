@@ -17,6 +17,31 @@
 liferay.screens.gallery = new liferay.classes.window();
 liferay.screens.gallery.className = 'liferay.screens.gallery';
 
+liferay.screens.gallery.helpData = [
+	{
+		top: '50%',
+		left: '10%',
+		width: '85%',
+		font: liferay.fonts.h4b,
+		textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
+		text: L('SCREEN_GALLERY_HELP_1')
+	},
+	{
+		view: {
+			center : {
+				x: '75%',
+				y: '95%'
+			},
+			width: '40%',
+			height: '9%',
+			backgroundColor: 'transparent',
+			borderWidth: '5dp',
+			borderRadius: '3dp',
+			borderColor: '#FF6666'
+		}
+	}
+];
+
 liferay.screens.gallery.render = function() {
 	//Ti.API.info(this.className + ".render()");
 	var self = this;
@@ -32,8 +57,9 @@ liferay.screens.gallery.render = function() {
             onRestore: function() {
                 liferay.screens.gallery.confirmName(function(name) {
                     liferay.flickr.uploadPhoto(name, liferay.screens.gallery.window, false, function() {
-                        liferay.tools.toastNotification(e.source, L('GALLERY_THANKS'));
-                    }, function(err) {
+                        liferay.tools.toastNotification(null, L('GALLERY_THANKS'));
+						liferay.screens.gallery.selectEvent(liferay.screens.gallery.selectedEvent);
+						}, function(err) {
                         switch (err) {
                             case Titanium.Media.DEVICE_BUSY:
                                 liferay.tools.alert(L('ALERT'), L('GALLERY_CAMERA_BUSY'));
@@ -70,8 +96,9 @@ liferay.screens.gallery.render = function() {
             onRestore: function() {
                 liferay.screens.gallery.confirmName(function(name) {
                     liferay.flickr.uploadPhoto(name, liferay.screens.gallery.window, true, function() {
-                        liferay.tools.toastNotification(e.source, L('GALLERY_THANKS'));
-                    }, function(err) {
+                        liferay.tools.toastNotification(null, L('GALLERY_THANKS'));
+												liferay.screens.gallery.selectEvent(liferay.screens.gallery.selectedEvent);
+					}, function(err) {
                         switch (err) {
                             case Titanium.Media.DEVICE_BUSY:
                                 liferay.tools.alert(L('ALERT'), L('GALLERY_CAMERA_BUSY'));
@@ -104,7 +131,7 @@ liferay.screens.gallery.render = function() {
 
     this.window = liferay.ui.makeWindow({
         backEnabled: true,
-        swipe: true,
+        swipe: false,
         panelBg: this.panelBg,
         footerButtons: [libButton, camButton],
         headerListeners: [{
@@ -220,36 +247,37 @@ liferay.screens.gallery.confirmName = function(cb) {
 	alertDialog.addEventListener('click', function(e) {
 		if (e.index == 0) {
 			var evt = liferay.controller.selectedEvent;
-			var questions = [liferay.screens.gallery.makeHeaderField("NAME", L('FMT_NAME').toUpperCase(),
+			var question = liferay.forms.makeSimpleHeaderField("NAME", L('FMT_NAME').toUpperCase(),
 				null, '15dp', function (e) {
 					liferay.screens.gallery.recordConfirmedName(e.value, false);
 					liferay.screens.gallery.saveConfirmedNames();
-				})];
+				});
+			var questions = [{
+				question: question,
+				validateEvent: 'return'
+			}];
 
-			liferay.screens.gallery.showSimpleForm({
+			liferay.forms.showSimpleForm({
 				title : L('ADD_NAME'),
 				subTitle: liferay.controller.selectedEvent.menutitle,
 				subHeading: liferay.controller.selectedEvent.location_label.toUpperCase(),
 				instructions: L('ADD_NAME_INSTRUCTIONS'),
 				questions: questions,
-				submitTitle: L('OK'),
+				sendButtonText: L('OK'),
 				submitConfirm: L('ADD_NAME_CONFIRM'),
-				closeTitle: L('CANCEL'),
+				dismissText: L('CANCEL'),
+				confirm: true,
 				onSubmit: function(onSuccess, onFail) {
 					var newname = liferay.screens.gallery.getConfirmedName().name;
 					if (onSuccess) onSuccess();
 					cb(newname.trim());
-				}, validate: function() {
-					var newname = questions[0].value;
+				}, validate: function(cb) {
+					var newname = questions[0].question.value;
 					if (!newname || !newname.trim()) {
-						return {
-							result: false,
-							msg: L('PLEASE_ENTER_NAME')
-						};
+						cb(false, L('PLEASE_ENTER_NAME'));
+					} else {
+						cb(true);
 					}
-					return {
-						result: true
-					};
 				}
 			});
 
@@ -302,14 +330,15 @@ liferay.screens.gallery.loadPictures = function(gallery) {
 			buttonNames : [L('OK')]
 		});
 		dialog.addEventListener('click', function() {
-			liferay.controller.closeLast(true);
+			liferay.controller.closeLast(true, true);
 		});
 		dialog.show();
 		return;
 	}
 
 	liferay.tools.createFloatingMessage({
-		container : liferay.screens.gallery.window
+		container : liferay.screens.gallery.window,
+		top: '20%'
 	});
 
 	var xhr = Titanium.Network.createHTTPClient();
@@ -346,6 +375,8 @@ liferay.screens.gallery.loadPictures = function(gallery) {
 					el.photosetid = photoset;
 				});
 
+				self.data.photo.sortBy('-dateupload');
+
 				try {
 					self.displayPictures(canRate);
 				} catch (e) {
@@ -362,12 +393,43 @@ liferay.screens.gallery.loadPictures = function(gallery) {
 
 	var url = "https://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos" + "&api_key=" +
 	Ti.App.Properties.getString('liferay.flickr.api_key') + "&photoset_id=" + photoset + "&per_page=" +
-		liferay.settings.screens.gallery.itemsPerPage + "&format=json&nojsoncallback=1&extras=url_s,url_m,url_t,url_sq";
+		liferay.settings.screens.gallery.itemsPerPage + "&format=json&nojsoncallback=1&extras=url_s,url_m,url_t,url_sq,date_upload";
 
 	xhr.open('GET', url);
 	xhr.send();
 };
 
+liferay.screens.gallery.countEventPics = function(onSuccess) {
+	if (!liferay.data.currentEventData.galleries[0]) {
+		return 0;
+	}
+	var photosetid = liferay.data.currentEventData.galleries[0].photosetid;
+
+	var xhr = Titanium.Network.createHTTPClient();
+	xhr.timeout = liferay.settings.server.requestTimeout;
+	xhr.onload = function() {
+		var resp;
+		try {
+			resp = JSON.parse(this.responseText);
+		} catch (ex) {
+			return;
+		}
+		if (resp.stat == "ok") {
+			var photosetdata = resp.photoset;
+			var photos = photosetdata.photo;
+			var photocount = photosetdata.total;
+			onSuccess(photocount);
+		}
+	};
+
+	var url = "https://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos" + "&api_key=" +
+			Ti.App.Properties.getString('liferay.flickr.api_key') + "&photoset_id=" + photosetid + "&per_page=2" +
+			"&format=json&nojsoncallback=1";
+
+	xhr.open('GET', url);
+	xhr.send();
+
+}
 liferay.screens.gallery.displayPictures = function(canRate) {
 	var self = this;
 
@@ -445,15 +507,18 @@ liferay.screens.gallery.displayPictures = function(canRate) {
 				pIndex : i + j
 			});
 			imgView.addEventListener('click', function(e) {
+
+			//	liferay.screens.gallery.showScroller(self.data.photo, e.source.pIndex);
+			//	return;
 				if (liferay.model.android) {
 					liferay.controller.open(liferay.screens.galleryDetail.render(), liferay.screens.galleryDetail);
-					liferay.screens.galleryDetail.loadDetails(e.source.pIndex);
+					liferay.screens.galleryDetail.loadDetails(self.data.photo[e.source.pIndex], e.source.pIndex, self.data.photo);
 				} else {
 					liferay.tools.expandButton({
 						control: e.source,
 						onRestore: function() {
 							liferay.controller.open(liferay.screens.galleryDetail.render(), liferay.screens.galleryDetail);
-							liferay.screens.galleryDetail.loadDetails(e.source.pIndex);
+							liferay.screens.galleryDetail.loadDetails(self.data.photo[e.source.pIndex], e.source.pIndex, self.data.photo);
 						}
 					});
 				}
@@ -465,8 +530,12 @@ liferay.screens.gallery.displayPictures = function(canRate) {
 
 	this.panelBg.add(this.scrollView);
 	liferay.tools.hideFloatingMessage();
-};
 
+	liferay.drawer.setNotificationValue(L('GALLERY'), 0);
+	liferay.controller.setAppPreference("seenPhotoCount", self.data.photo.length, liferay.controller.selectedEvent);
+
+
+};
 
 //confirmedNames: [
 //	{
@@ -535,245 +604,3 @@ liferay.screens.gallery.saveConfirmedNames = function () {
 	file.remoteBackup = true;
 };
 
-liferay.screens.gallery.showSimpleForm = function(options) {
-    var formShader = Ti.UI.createView({
-        left: 0,
-        top: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'black',
-        opacity:0.85
-    });
-
-    var formRound = Ti.UI.createView({
-        left: '5%',
-        top: '5%',
-        width: '90%',
-        height: '90%',
-        backgroundColor: 'white',
-        borderRadius: '10dp',
-        borderWidth: '5dp',
-        borderColor: 'white',
-        layout: 'vertical'
-    });
-
-    var formScroll = Ti.UI.createScrollView({
-
-        left: '5%',
-        top: '2.5%',
-        width: '90%',
-        height: '80%',
-        scrollType: 'vertical',
-        showHorizontalScrollIndicator:false,
-        showVerticalScrollIndicator: true,
-        contentWidth: 'auto',
-        backgroundColor: 'transparent',
-        contentHeight: 'auto'
-    });
-
-    var formContainer = Ti.UI.createView({
-        left: 0,
-        top: 0,
-        width: Ti.UI.FILL,
-        height: Ti.UI.SIZE,
-        backgroundColor: 'transparent',
-        layout: 'vertical'
-    });
-
-    formContainer.add(Ti.UI.createLabel({
-        top: 0,
-        left: 0,
-        width: Ti.UI.FILL,
-        height: Ti.UI.SIZE,
-        text: options.title.toUpperCase(),
-        textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
-        font: liferay.fonts.h4,
-        color: '#84A8C8'
-    }));
-
-    formContainer.add(Ti.UI.createLabel({
-        top: '2dp',
-        left: 0,
-        width: Ti.UI.FILL,
-        height: Ti.UI.SIZE,
-        text: options.subTitle,
-        textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
-        font: liferay.fonts.h3,
-        color: '#84A8C8'
-    }));
-
-    formContainer.add(Ti.UI.createLabel({
-        top: '2dp',
-        left: 0,
-        width: Ti.UI.FILL,
-        height: Ti.UI.SIZE,
-        text: options.subHeading,
-        textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
-        font: liferay.fonts.h1,
-        color: '#84A8C8'
-    }));
-
-    formContainer.add(Ti.UI.createLabel({
-        top: '5dp',
-        left: 0,
-        width: Ti.UI.FILL,
-        height: Ti.UI.SIZE,
-        text: options.instructions,
-        textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
-        font: liferay.fonts.h2,
-        color: 'black'
-    }));
-
-    options.questions.forEach(function(el) {
-        formContainer.add(el);
-    });
-
-    // a little space at the bottom
-    formContainer.add(Ti.UI.createView({
-        left: 0,
-        top: 0,
-        width: Ti.UI.FILL,
-        height: '25dp',
-        backgroundColor: 'transparent'
-    }));
-
-    var btnContainer = Ti.UI.createView({
-        bottom: 0,
-        left: 0,
-        width: Ti.UI.FILL,
-        height: '15%'
-    });
-
-    var btnCenterer = Ti.UI.createView({
-        width: Ti.UI.SIZE,
-        height: Ti.UI.SIZE,
-        layout: 'horizontal'
-    });
-
-    var submitBtn = Ti.UI.createButton({
-        title: '  ' + options.submitTitle + '  ',
-        font: {
-            fontSize: liferay.fonts.H4Size
-        },
-        backgroundImage: liferay.settings.screens.survey.buttons.backgroundImage,
-        backgroundColor: 'transparent',
-        color: 'white'
-    });
-    var closebtn = Ti.UI.createButton({
-        title: '  ' + options.closeTitle + '  ',
-        font: {
-            fontSize: liferay.fonts.H4Size
-        },
-        left: '50dp',
-        backgroundImage: liferay.settings.screens.survey.buttons.backgroundImage,
-        backgroundColor: 'transparent',
-        color: 'white'
-    });
-
-    closebtn.addEventListener('click', function(e) {
-        liferay.controller.getCurrentWindow().remove(formShader);
-        liferay.controller.getCurrentWindow().remove(formRound);
-    });
-    submitBtn.addEventListener('click', function(e) {
-
-        if (options.validate) {
-            var result = options.validate();
-            if (!result.result) {
-                liferay.tools.alert(L('ALERT'), result.msg);
-                return;
-            }
-        }
-
-        var alertDialog = Titanium.UI.createAlertDialog({
-            title : options.title,
-            message : options.submitConfirm,
-            buttonNames : [L('YES'), L('NO')]
-        });
-        alertDialog.addEventListener('click', function(e) {
-            if (e.index == 0) {
-                options.onSubmit(function() {
-                    liferay.controller.getCurrentWindow().remove(formShader);
-                    liferay.controller.getCurrentWindow().remove(formRound);
-                });
-            }
-        });
-
-        alertDialog.show();
-    });
-
-    options.questions[0].addEventListener('return', function(e) {
-        if (options.validate) {
-            var result = options.validate();
-            if (!result.result) {
-                liferay.tools.alert(L('ALERT'), result.msg);
-                return;
-            }
-        }
-
-        var alertDialog = Titanium.UI.createAlertDialog({
-            title : options.title,
-            message : options.submitConfirm,
-            buttonNames : [L('YES'), L('NO')]
-        });
-        alertDialog.addEventListener('click', function(e) {
-            if (e.index == 0) {
-                options.onSubmit(function() {
-                    liferay.controller.getCurrentWindow().remove(formShader);
-                    liferay.controller.getCurrentWindow().remove(formRound);
-                });
-            }
-        });
-
-        alertDialog.show();
-
-    });
-
-    btnCenterer.add(submitBtn);
-    btnCenterer.add(closebtn);
-
-    btnContainer.add(Ti.UI.createView({
-        left: 0,
-        top: 0,
-        width: Ti.UI.FILL,
-        height: '3dp',
-        backgroundColor: '#CCCCCC'
-    }));
-    btnContainer.add(btnCenterer);
-
-    formScroll.add(formContainer);
-    formRound.add(formScroll);
-    formRound.add(btnContainer);
-
-    liferay.controller.getCurrentWindow().add(formShader);
-    liferay.controller.getCurrentWindow().add(formRound);
-};
-
-liferay.screens.gallery.makeHeaderField = function(questionId, hintText, currentVal, top, onChange) {
-    var tf = Ti.UI.createTextField({
-        top: top,
-        left: 0,
-        width: '95%',
-        height: liferay.model.iPad ? (liferay.fonts.H2Size * 1.5) : Ti.UI.SIZE,
-        borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
-        font: liferay.fonts.h2,
-        color: 'black',
-        hintText: hintText,
-        value: currentVal ? currentVal : ""
-    });
-
-    if (liferay.model.android) {
-        tf.backgroundColor = 'transparent';
-        tf.backgroundImage = '/images/notes.png';
-    }
-
-    if (questionId.toLowerCase().indexOf("email") != -1) {
-
-        tf.keyboardType = Ti.UI.KEYBOARD_EMAIL;
-    }
-    if (onChange) {
-        tf.addEventListener('change', onChange);
-    }
-
-    return tf;
-
-};

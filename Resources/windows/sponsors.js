@@ -127,7 +127,7 @@ liferay.screens.sponsors.render = function() {
             }
         });
     });
-    this.resetBtn.visible = (liferay.controller.selectedEvent.metadata_types.indexOf('beacon') >= 0);
+    this.resetBtn.visible = (liferay.controller.selectedEvent.metadata_types.indexOf('beaconSponsors') >= 0);
 
     var footerButtons = [this.resetBtn];
     if (mapIndex > 0) footerButtons.push(mapButton);
@@ -324,10 +324,22 @@ liferay.screens.sponsors.loadSponsorScroll = function() {
 						link: sponsor.link
 					});
 
+					var bounds = null;
+					if (liferay.controller.selectedEvent.custom_config &&
+						liferay.controller.selectedEvent.custom_config.sponsors &&
+						liferay.controller.selectedEvent.custom_config.sponsors.bounds) {
+						bounds = liferay.controller.selectedEvent.custom_config.sponsors.bounds[sponsor.name];
+						if (!bounds) {
+							bounds = liferay.controller.selectedEvent.custom_config.sponsors.bounds.all;
+						}
+					}
+
 					liferay.screens.sponsors.loadImage({
 						imageView : image,
 						setImage: true,
-						url : sponsor.docmedia
+						url : sponsor.docmedia,
+						bounds: bounds
+
 					});
 
 					image.addEventListener('click', function (e) {
@@ -423,6 +435,20 @@ liferay.screens.sponsors.loadSponsorScroll = function() {
 
 //		liferay.tools.alert(L('ALERT'), L('SPONSORS_NONE'));
 	}
+};
+
+liferay.screens.sponsors.getSponsor = function (name) {
+	if (liferay.data.currentEventData.sponsors && liferay.data.currentEventData.sponsors.length) {
+		for (var i = 0, l = liferay.data.currentEventData.sponsors.length; i < l; i++) {
+			var sponsor = liferay.data.currentEventData.sponsors[i];
+			if (sponsor.name === name) {
+				return sponsor;
+			}
+		}
+
+	}
+
+	return null;
 };
 
 liferay.screens.sponsors.fadeIn = function(view, opacity, time) {
@@ -628,7 +654,7 @@ liferay.screens.sponsors.resetStars = function() {
 
             Request({
                 method	: 'POST',
-                url      : liferay.settings.server.servicesHost.host + liferay.settings.servicesHost.surveyServiceEndpoint,
+                url      : liferay.settings.server.servicesHost.host + liferay.settings.server.servicesHost.surveyServiceEndpoint,
                 params   : {
                     event: liferay.controller.selectedEvent.eventid,
                     cmd: "reset",

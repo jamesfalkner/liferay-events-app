@@ -187,7 +187,7 @@ liferay.screens.agenda.buildAndShowAgenda = function() {
 	this.dayBtns = [];
 
 	var tabWidth = liferay.tools.getDp(.25 * Titanium.Platform.displayCaps.platformWidth);
-	for (var i = 0; i < liferay.screens.agenda.processedAgenda.length; i++) {
+	for (i = 0; i < liferay.screens.agenda.processedAgenda.length; i++) {
 		item = liferay.screens.agenda.processedAgenda[i].items[0];
 		var monthName = liferay.screens.agenda.getMonthNameForEvent(item, false);
 		var day = parseInt(liferay.screens.agenda.getDayForEvent(item), 10);
@@ -311,8 +311,12 @@ liferay.screens.agenda.stopTimer = function() {
 
 liferay.screens.agenda.refresh = function(options) {
 	this.processAgenda();
-    liferay.screens.agenda.selectDay(liferay.screens.agenda.daySelected);
-//	this.buildAndShowAgenda();
+
+    if (liferay.screens.agenda.dayBtns && liferay.screens.agenda.dayBtns.length > 0) {
+        liferay.screens.agenda.selectDay(liferay.screens.agenda.daySelected);
+    } else if (this.processedAgenda.length > 0) {
+        this.buildAndShowAgenda();
+    }
 };
 
 liferay.screens.agenda.selectDay = function(day) {
@@ -727,15 +731,16 @@ liferay.screens.agenda.checkFilter = function(event, allFavorites) {
         // my agenda selected
         return (allFavorites.indexOf(event.uuid) != -1);
     }
+    var cats = event.select_category || event.filter_categories;
 
-    if (!event.select_category ||
-        event.select_category.indexOf('_') != -1 ||
-        event.select_category.indexOf('blank') != -1) {
+    if (!cats ||
+        cats.indexOf('_') != -1 ||
+        cats.indexOf('blank') != -1) {
         return false;
     }
 
-    for (var i = 0; i < event.select_category.length; i++) {
-        if (liferay.screens.agenda.selectedFilters.indexOf(event.select_category[i]) != -1) {
+    for (var i = 0; i < cats.length; i++) {
+        if (liferay.screens.agenda.selectedFilters.indexOf(cats[i]) != -1) {
             return true;
         }
     }
@@ -1089,8 +1094,9 @@ liferay.screens.agenda.processAgenda = function() {
 
 		if (!rawItem.title || !rawItem.display_in_mobile_app) continue;
 
-        if (rawItem.select_category) {
-            rawItem.select_category.forEach(function(el) {
+      var cats = rawItem.select_category || rawItem.filter_categories;
+        if (cats) {
+            cats.forEach(function(el) {
                 var cat = el.trim();
                 if (cat.toLowerCase() != "blank" && cat.toLowerCase() != "_") {
                     liferay.screens.agenda.filtersEnabled = true;
@@ -1101,12 +1107,13 @@ liferay.screens.agenda.processAgenda = function() {
             });
         }
 
-		var bucket = liferay.screens.agenda.findAgendaBucket(rawItem.date, liferay.screens.agenda.processedAgenda);
+        var normalizedDateString = liferay.screens.agenda.normalizeDateString(rawItem.date);
+		var bucket = liferay.screens.agenda.findAgendaBucket(normalizedDateString, liferay.screens.agenda.processedAgenda);
 		if (bucket != -1) {
 			liferay.screens.agenda.processedAgenda[bucket].items.push(rawItem);
 		} else {
 			liferay.screens.agenda.processedAgenda.push({
-				date: rawItem.date,
+				date: normalizedDateString,
 				items: [rawItem]
 			});
 		}
@@ -1127,7 +1134,16 @@ liferay.screens.agenda.processAgenda = function() {
 
 	// sort buckets first
 	liferay.screens.agenda.processedAgenda.sort(function (a, b) {
-		return a.date.localeCompare(b.date);
+        var dateA = new liferay.classes.date().setFromISO8601(a.date + "T00:00:00");
+        var dateB = new liferay.classes.date().setFromISO8601(b.date + "T00:00:00");
+        var res = dateA.date.getTime() - dateB.date.getTime();
+        if (res > 0) {
+            return 1;
+        } else if (res < 0) {
+            return -1;
+        } else {
+            return 0;
+        }
 	});
 
 	// now sort each bucket and mark track events
@@ -1192,9 +1208,9 @@ liferay.screens.agenda.processAgenda = function() {
 	// now parse event type dictionary, if any
 	if (liferay.controller.selectedEvent.event_type_dict) {
 		liferay.screens.agenda.eventTypeDict = [];
-		var allTrans = liferay.controller.selectedEvent.event_type_dict.split(',');
+		var allTrans = liferay.controller.selectedEvent.event_type_dict.split(',').map(function(el) { return el.trim();});
 		allTrans.forEach(function(el) {
-			var parts = el.split('=');
+			var parts = el.split('=').map(function(el) { return el.trim();});
 			if (parts.length != 2) return;
 			liferay.screens.agenda.eventTypeDict.push({
 				key: parts[0],
@@ -1216,9 +1232,11 @@ liferay.screens.agenda.getDateForAgendaItem = function(item, start) {
 
 };
 liferay.screens.agenda.getMonthNameForEvent = function(event, lng) {
-	var startStr = event.date;
-	var month = startStr.substr(5, 2);
-	return liferay.screens.agenda.getMonthName(month, lng);
+	//var startStr = event.date;
+	//var month = startStr.substr(5, 2);
+    var parts = event.date.match(/\d+/g);
+
+    return liferay.screens.agenda.getMonthName(parts[1], lng);
 };
 
 liferay.screens.agenda.getMonthName = function(month, lng) {
@@ -1238,8 +1256,17 @@ liferay.screens.agenda.getMonthName = function(month, lng) {
 };
 
 liferay.screens.agenda.getDayForEvent = function(event) {
-	var startStr = event.date;
-    // 2014-01-02
-	return startStr.substr(8, 2);
+
+    var parts = event.date.match(/\d+/g);
+
+    //var startStr = event.date;
+    //// 2014-01-02
+	//return startStr.substr(8, 2);
+    return parts[2];
 };
 
+liferay.screens.agenda.normalizeDateString = function(str) {
+    var dobj = new liferay.classes.date().setFromISO8601(str + "T00:00:00").date;
+    return (dobj.getFullYear() + '-' + (dobj.getMonth() + 1) + '-' + dobj.getDate());
+
+};

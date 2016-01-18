@@ -108,7 +108,7 @@ You will need to create this file in one of two ways:
 
 OR
 
-* Copy `tich.cfg` to something like `tich-mycompany.cfg`, and edit it, then run `tich --in tiapp-default.xml --cfgfile tich-mycompany.cfg`. This will auto-generate `tiapp.xml` for you, and substitute the values found in `tich-mycompany.cfg`. This is the preferred method (and is how I maintain different `tiapp.xml`'s for various testing scenarios)
+* Copy `tich.cfg` to something like `tich-mycompany.cfg`, and edit it, then run `tich --in tiapp-default.xml --cfgfile tich-mycompany.cfg --select default`. This will auto-generate `tiapp.xml` for you, and substitute the values found in `tich-mycompany.cfg`. This is the preferred method (and is how I maintain different `tiapp.xml`'s for various testing scenarios)
 
 You will want to customize the following settings found in your tich config file, some of which are sensitive/private and should not be revealed to anyone:
 
@@ -119,7 +119,7 @@ You will want to customize the following settings found in your tich config file
     * `liferay.twitter.consumerKey` - The twitter app consumer key. You'll need a [Twitter app](https://apps.twitter.com/) if you want attendees to do Twitter from within the app.
     * `liferay.twitter.consumerSecret` - The twitter app consumer secret. You'll need a [Twitter app](https://apps.twitter.com/) if you want attendees to do Twitter from within the app.
     * `liferay.json_shared_secret` - This is a string which is used to sign API requests to the Liferay Hook. The value here will need to match the value in the Liferay Hook, but it can be anything you want, preferably something hard to guess.
-    * `liferay.flickr_sets_baseurl` - The URL to your main Flickr page. This link is used when posting images to Twitter/Facebook from the photo gallery.
+    * `liferay.flickr.sets_baseurl` - The URL to your main Flickr page. This link is used when posting images to Twitter/Facebook from the photo gallery.
     * `liferay.flickr.api_key` - Your Flickr API key. You'll need to get this from your Flickr account to enable attendees to upload and view images from your event. [Get one here.](https://www.flickr.com/services/apps/create/apply/)
     * `liferay.flickr.auth_token` - Your Flickr Auth token. You'll need to get this from your Flickr account to enable attendees to upload and view images from your event. [Get one here.](https://www.flickr.com/services/apps/create/apply/)
     * `liferay.flickr.mini_token` - Your Flickr Mini token. You'll need to get this from your Flickr account to enable attendees to upload and view images from your event. [Get one here.](https://www.flickr.com/services/apps/create/apply/)

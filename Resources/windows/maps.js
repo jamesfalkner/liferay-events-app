@@ -117,7 +117,9 @@ liferay.screens.maps.loadMaps = function() {
     });
 
     if (!this.listViewSection) {
-        this.listViewSection = Ti.UI.createListSection();
+        this.listViewSection = Ti.UI.createListSection({
+            headerTitle: L('MAPS')
+        });
     }
 
     this.listViewSection.setItems(data);

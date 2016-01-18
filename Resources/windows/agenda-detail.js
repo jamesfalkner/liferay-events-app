@@ -17,9 +17,81 @@
 liferay.screens.agendaDetail = new liferay.classes.window();
 liferay.screens.agendaDetail.className = 'liferay.screens.agendaDetail';
 
+liferay.screens.agendaDetail.helpData = [
+	{
+		top: '5%',
+		left: '2%',
+		width: '35%',
+		font: liferay.fonts.h4b,
+		textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
+		text: L('SCREEN_AGENDADETAIL_HELP_1')
+	},
+	{
+		view: {
+			center : {
+				x: '70%',
+				y: '18%'
+			},
+			width: '55%',
+			height: '10%',
+			backgroundColor: 'transparent',
+			borderWidth: '5dp',
+			borderRadius: '3dp',
+			borderColor: '#FF6666'
+		}
+	},
+	{
+		top: '44%',
+		left: '20%',
+		width: '50%',
+		font: liferay.fonts.h4b,
+		textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
+		text: L('SCREEN_AGENDADETAIL_HELP_2')
+	},
+	{
+		view: {
+			center : {
+				x: '87%',
+				y: '55%'
+			},
+			width: '18%',
+			height: '25%',
+			backgroundColor: 'transparent',
+			borderWidth: '5dp',
+			borderRadius: '3dp',
+			borderColor: '#FF6666'
+		}
+	},
+	{
+		top: '75%',
+		left: '5%',
+		width: '90%',
+		font: liferay.fonts.h4b,
+		textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
+		text: L('SCREEN_AGENDADETAIL_HELP_3')
+	},
+	{
+		view: {
+			center : {
+				x: '70%',
+				y: '95%'
+			},
+			width: '40%',
+			height: '9%',
+			backgroundColor: 'transparent',
+			borderWidth: '5dp',
+			borderRadius: '3dp',
+			borderColor: '#FF6666'
+		}
+	}
+
+];
+
 liferay.screens.agendaDetail.render = function () {
 
 	var self = this;
+
+	this.currentInfo = null;
 
 	this.likeBtn = Titanium.UI.createView(liferay.settings.screens.agendaDetail.buttons.like);
 	this.likeBtn.width = liferay.tools.getDp(liferay.settings.screens.agendaDetail.buttons.like.psize * Titanium.Platform.displayCaps.platformWidth);
@@ -31,7 +103,7 @@ liferay.screens.agendaDetail.render = function () {
 	this.ratingLabel.font = liferay.fonts.h0;
 
 	this.panelBg = Ti.UI.createView(liferay.settings.screens.all.layout.panelBg);
-
+	var longCount = 0;
 	this.window = liferay.ui.makeWindow({
         backEnabled: true,
 		swipe: false,
@@ -40,7 +112,20 @@ liferay.screens.agendaDetail.render = function () {
 			self.cancelRatingTimer();
 		},
 		panelBg: this.panelBg,
-		footerButtons: [this.ratingLabel, this.likeBtn, this.unlikeBtn]
+		footerButtons: [this.ratingLabel, this.likeBtn, this.unlikeBtn],
+		headerListeners: [{
+			event: 'longpress',
+			listener: function(e) {
+				longCount++;
+				if (longCount > 2) {
+					self.ratingDebug = true;
+					if (self.currentInfo) {
+						self.updateRatingFooter(self.currentInfo);
+					}
+				}
+			}
+		}]
+
 	});
 
 	return this.window;
@@ -58,7 +143,7 @@ liferay.screens.agendaDetail.loadAction = function(actionSpec, event_uuid, cb) {
 
     if (actionSpec[0].toUpperCase() == "SESSION") {
         cb();
-        var date = actionSpec[1];
+        var date = liferay.screens.agenda.normalizeDateString(actionSpec[1]);
         var title = actionSpec[2].toUpperCase();
 
 
@@ -177,6 +262,8 @@ liferay.screens.agendaDetail.loadDetails = function (info) {
 	//Ti.API.info(this.className + ".loadDetails()");
 	var self = this;
 
+	this.currentInfo = info;
+
 	liferay.screens.agendaDetail.loadNotes();
 	liferay.screens.agendaDetail.loadFavorites();
 
@@ -254,21 +341,22 @@ liferay.screens.agendaDetail.loadDetails = function (info) {
     if (speakers && speakers.length > 0) {
         var speakerUrl = liferay.screens.agendaDetail.getSpeakerURL(info, 0);
 
-        this.loadImage({
-            setImage: true,
-            imageView: this.image,
-            url: speakerUrl,
-            onLoad: function () {
-                if (liferay.model.android && speakerUrl) {
-                    setTimeout(function () {
-                        var ifi = liferay.screens.agendaDetail.image.toBlob();
-                        ifi = ifi.imageAsResized(ifi.width * 2, ifi.height * 2);
-                        liferay.screens.agendaDetail.image.setImage(ifi);
-                    }, 100);
-                }
-            }
-        });
-
+				if (speakerUrl) {
+					this.loadImage({
+						setImage: true,
+						imageView: this.image,
+						url: speakerUrl,
+						onLoad: function () {
+							if (liferay.model.android && speakerUrl) {
+								setTimeout(function () {
+									var ifi = liferay.screens.agendaDetail.image.toBlob();
+									ifi = ifi.imageAsResized(ifi.width * 2, ifi.height * 2);
+									liferay.screens.agendaDetail.image.setImage(ifi);
+								}, 100);
+							}
+						}
+					});
+				}
         if (speakers.length > 1) {
             this.currentImageInfo = info;
             this.currentImageIndex = 0;
@@ -353,6 +441,9 @@ liferay.screens.agendaDetail.loadDetails = function (info) {
 
 		liferay.screens.agendaDetail.recordFavorite(info, !isCurrentFav);
 		liferay.screens.agendaDetail.saveCurrentFavorites();
+		// force a sync
+		liferay.controller.fetchNewsPeriodically(liferay.controller.selectedEvent);
+
 	});
 
 	titleLabelContainer.add(favContainer);
@@ -604,7 +695,7 @@ liferay.screens.agendaDetail.loadDetails = function (info) {
             var tweetUrl = liferay.controller.selectedEvent.event_url ? liferay.controller.selectedEvent.event_url : Ti.App.Properties.getString("liferay.default_event_url", "");
             var tweetHash = liferay.controller.selectedEvent.event_hashtag ? liferay.controller.selectedEvent.event_hashtag : Ti.App.Properties.getString('liferay.default_event_hashtag');
 
-            var tweetTxt = liferay.tools.stripTags(info.title) + ' - ' + speakerNames + ' ' + tweetHash + ' ' + tweetUrl;
+            var tweetTxt = tweetHash + ' ' + tweetUrl;
             liferay.screens.front.tweet(tweetTxt, null);
 		});
 
@@ -644,10 +735,9 @@ liferay.screens.agendaDetail.loadDetails = function (info) {
 			var data = {
 				link : placeUrl,
 				name : fbName,
-				message : "Wish you were here!",
+				description : fbName,
 				caption : speakerNames,
 				picture : placePic,
-				description : placeDesc,
 				actions: '{"name": "' + L('FMT_WEBSITE') + '", "link" : "' + placeUrl + '"}'
 			};
 
@@ -825,72 +915,36 @@ liferay.screens.agendaDetail.loadDetails = function (info) {
             });
         });
 
-		this.updateRatingFooter(info);
 	}
+
+	this.updateRatingFooter(info);
 
 	/* Notes */
 	if (info.enable_notes) {
 		label = Titanium.UI.createLabel(liferay.settings.screens.agendaDetail.labels.notes);
 		label.font = liferay.fonts.h2;
+
+		if (!liferay.model.android) {
+			label.text = L(liferay.settings.screens.agendaDetail.labels.notes.textid) + ' (' + L('HINT_TEXT') + ')';
+		}
 		var notesHeight = liferay.tools.getDp(Ti.Platform.displayCaps.platformHeight * .3);
 
 		this.textArea = Ti.UI.createTextArea(liferay.settings.screens.agendaDetail.layout.notesTextArea);
 		this.textArea.height = notesHeight;
 		this.textArea.width = Ti.UI.FILL;
 		this.textArea.hintText = L('HINT_TEXT');
+		this.textArea.hintTextColor = '#444444';
+		this.textArea.hintColorText = '#444444';
 		this.textArea.font = liferay.fonts.h2;
 
 		var notes = this.getNote(info);
-		if (!notes || notes == "") {
-			if (!liferay.model.android) {
-				this.textArea.value = this.textArea.hintText;
-			}
-		} else {
-			this.textArea.value = notes;
-		}
+		this.textArea.value = notes;
 
-		if (!liferay.model.android) {
-			this.textArea.addEventListener('focus', function (e) {
-				//Ti.API.info("TXT FOCUS 1");
-				if (e.source.value == e.source.hintText) {
-					e.source.value = "";
-				}
-			});
-			this.textArea.addEventListener('blur', function (e) {
-				//Ti.API.info("TXT BLUR 1");
-				liferay.screens.agendaDetail.recordNote(info, liferay.screens.agendaDetail.textArea.value);
-				liferay.screens.agendaDetail.saveCurrentNotes();
-				if (e.source.value == "") {
-					e.source.value = e.source.hintText;
-				}
-			});
-			this.window.addEventListener('click', function (e) {
-				if (!/(TextField|TextArea)/.test(e.source.toString())) {
-					liferay.screens.agendaDetail.textArea.blur();
-				}
-			});
-
-		} else {
-			this.textArea.softKeyboardOnFocus = Ti.UI.Android.SOFT_KEYBOARD_HIDE_ON_FOCUS;
-			// workaround weird android random focus events - see TIMOB-6745
-			this.textArea.setEnabled(false);
-			this.textArea.addEventListener('click', function (e) {
-				liferay.screens.agendaDetail.textArea.softKeyboardOnFocus = Ti.UI.Android.SOFT_KEYBOARD_SHOW_ON_FOCUS;
-				liferay.screens.agendaDetail.textArea.focus();
-			});
-			this.textArea.addEventListener('blur', function (e) {
-				liferay.screens.agendaDetail.textArea.softKeyboardOnFocus = Ti.UI.Android.SOFT_KEYBOARD_HIDE_ON_FOCUS;
-				liferay.screens.agendaDetail.recordNote(info, liferay.screens.agendaDetail.textArea.value);
-				liferay.screens.agendaDetail.saveCurrentNotes();
-			});
-			this.textArea.addEventListener('focus', function (e) {
-			});
-			this.window.addEventListener('open', function (e) {
-				// workaround weird android random focus events - see TIMOB-6745
-				setTimeout(function () {
-					liferay.screens.agendaDetail.textArea.setEnabled(true);
-				}, 5000);
-			});
+		this.textArea.addEventListener('blur', function (e) {
+			liferay.screens.agendaDetail.recordNote(info, liferay.screens.agendaDetail.textArea.value);
+			liferay.screens.agendaDetail.saveCurrentNotes();
+		});
+		if (liferay.model.android) {
 			this.window.addEventListener('click', function (e) {
 				if (!/(TextField|TextArea)/.test(e.source.toString())) {
 					liferay.screens.agendaDetail.recordNote(info, liferay.screens.agendaDetail.textArea.value);
@@ -1446,7 +1500,7 @@ liferay.screens.agendaDetail.showRatingForm = function(info, readOnly, cb) {
         submitDialogText : L('SURVEY_SUBMIT_PROMPT'),
         onSuccess: function(result) {
             liferay.screens.agendaDetail.disableRatingButtons(info);
-            liferay.tools.toastNotification(L('EVENT_SURVEY_THANKS'));
+            liferay.tools.toastNotification(null, L('EVENT_SURVEY_THANKS'));
             cb && cb();
         },
         onFail: function(err) {

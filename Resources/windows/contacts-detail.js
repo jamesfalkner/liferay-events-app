@@ -29,52 +29,34 @@ liferay.screens.contactsDetail.render = function() {
 	tagBtn.width = liferay.tools.getDp(liferay.settings.screens.contacts.buttons.tag.psize * Titanium.Platform.displayCaps.platformWidth);
 	tagBtn.height = tagBtn.width;
 
-	var sponsor = null;
-	liferay.data.currentEventData.sponsors.forEach(function(sponsorIt) {
-		if (sponsorIt.type && sponsorIt.type == 'scan') {
-			sponsor = sponsorIt;
-		}
-	});
-
-	var overlay = sponsor ? liferay.screens.contacts.getOverlay(sponsor) : null;
-
-	var Barcode = require("ti.barcode");
-
-	Barcode.allowInstructions = false;
-	Barcode.allowMenu = false;
-	Barcode.allowRotation = false;
-	Barcode.displayedMessage = (sponsor ? null : L('SCAN_TITLE')) + "\n\n";
-
-	tagBtn.addEventListener('click', function() {
-
-		liferay.screens.contacts.BarcodeSuccessListeners.forEach(function(el) {
-			Barcode.removeEventListener('success', el);
-		});
-		liferay.screens.contacts.BarcodeSuccessListeners = [];
-		liferay.screens.contacts.BarcodeErrorListeners.forEach(function(el) {
-			Barcode.removeEventListener('error', el);
-		});
-		liferay.screens.contacts.BarcodeErrorListeners = [];
-
-		Barcode.addEventListener('success', liferay.screens.contactsDetail.onTagSuccess);
-		Barcode.addEventListener('error', liferay.screens.contactsDetail.onTagError);
-		liferay.screens.contacts.BarcodeSuccessListeners.push(liferay.screens.contactsDetail.onTagSuccess);
-		liferay.screens.contacts.BarcodeErrorListeners.push(liferay.screens.contactsDetail.onTagError);
+	tagBtn.addEventListener('click', function(e) {
 
 		liferay.tools.flashButton({
-			control : tagBtn,
+			control : e.source,
 			onRestore : function() {
-				var dic = {
-					animate: true,
-					acceptedFormats: [
-						Barcode.FORMAT_QR_CODE
-					]
+				var sponsor = null;
+				liferay.data.currentEventData.sponsors.forEach(function(sponsorIt) {
+					if (sponsorIt.type && sponsorIt.type == 'scan') {
+						sponsor = sponsorIt;
+					}
+				});
 
-				};
-				if (overlay != null) {
-					dic.overlay = overlay;
-				}
-				Barcode.capture(dic);
+				liferay.scan.doScan({
+					message: sponsor ? String.format(L('SCAN_SPONSORED_BY'), sponsor.name) : L('SCAN_TITLE'),
+					logo: sponsor ? sponsor.docmedia : null,
+					onSuccess: function(result) {
+						liferay.scan.parseBarcode(result, function(contact) {
+							liferay.screens.contacts.saveNewContact(contact);
+							self.loadDetails(contact);
+						}, function(err) {
+							liferay.tools.alert(L('ALERT'), err);
+						});
+
+					},
+					onFailure: function(err) {
+						liferay.tools.alert(L('ALERT'), String.format(L('SCAN_UNABLE'), err));
+					}
+				});
 			}
 		});
 	});
@@ -535,25 +517,6 @@ liferay.screens.contactsDetail.loadAction = function(action, event_uuid, cb) {
     cb();
 };
 
-liferay.screens.contactsDetail.onTagError = function(e) {
-	liferay.tools.alert(L('ALERT'), String.format(L('SCAN_UNABLE'), e.message));
-};
-
-liferay.screens.contactsDetail.onTagSuccess = function(e) {
-	var raw = e.result;
-	if (raw) {
-		if (e.contentType != Barcode.CONTACT) {
-			liferay.tools.alert(L('ALERT'), String.format(L('SCAN_INVALID_TYPE'), liferay.screens.contacts.parseContentType(e.contentType)));
-		} else {
-			liferay.screens.contacts.parseBarcode(e, function(inf) {
-				liferay.screens.contactsDetail.loadDetails(inf);
-			});
-		}
-	} else {
-		liferay.tools.alert(L('ALERT'), L('SCAN_NO_DATA_FOUND'));
-	}
-};
-
 liferay.screens.contactsDetail.saveContactToAddressBook = function(info) {
 	//Ti.API.info(this.className + ".saveContactToAddressBook()");
 	var self = this;
@@ -598,10 +561,20 @@ liferay.screens.contactsDetail.saveToDevice = function(info) {
 
     var newperson = null;
     try {
-        newperson = Titanium.Contacts.createPerson({
+			var first = info.firstname || '';
+			if ((first.constructor === Array) && first[0]) {
+				first = first[0];
+			}
+
+			var last = info.lastname || '';
+			if ((last.constructor === Array) && last[0]) {
+				last = last[0];
+			}
+
+			newperson = Titanium.Contacts.createPerson({
             image: imgBlob,
-            firstName: info.firstname || '',
-            lastName: info.lastname || '',
+            firstName: first,
+            lastName: last,
             organization: info.companyname || '',
             jobTitle: info.title || '',
             phone: {
@@ -627,7 +600,6 @@ liferay.screens.contactsDetail.saveToDevice = function(info) {
             }
         });
     } catch (ex) {
-        console.log("Could not save person ");
         newperson = null;
     }
     if (newperson) {

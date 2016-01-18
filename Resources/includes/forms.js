@@ -16,6 +16,212 @@
 liferay.forms = {};
 
 
+liferay.forms.showSimpleForm = function(options) {
+
+    var formShader = Ti.UI.createView({
+        left: 0,
+        top: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'black',
+        opacity:0.85
+    });
+
+    var formRound = Ti.UI.createView({
+        left: '5%',
+        top: '5%',
+        width: '90%',
+        height: '90%',
+        backgroundColor: 'white',
+        borderRadius: '10dp',
+        borderWidth: '5dp',
+        borderColor: 'white',
+        layout: 'vertical'
+    });
+
+    var formScroll = Ti.UI.createScrollView({
+
+        left: '5%',
+        top: '2.5%',
+        width: '90%',
+        height: '80%',
+        scrollType: 'vertical',
+        showHorizontalScrollIndicator:false,
+        showVerticalScrollIndicator: true,
+        contentWidth: 'auto',
+        backgroundColor: 'transparent',
+        contentHeight: 'auto'
+    });
+
+    var formContainer = Ti.UI.createView({
+        left: 0,
+        top: 0,
+        width: Ti.UI.FILL,
+        height: Ti.UI.SIZE,
+        backgroundColor: 'transparent',
+        layout: 'vertical'
+    });
+
+    formContainer.add(Ti.UI.createLabel({
+        top: 0,
+        left: 0,
+        width: Ti.UI.FILL,
+        height: Ti.UI.SIZE,
+        text: options.title.toUpperCase(),
+        textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
+        font: liferay.fonts.h4,
+        color: '#84A8C8'
+    }));
+
+    formContainer.add(Ti.UI.createLabel({
+        top: '2dp',
+        left: 0,
+        width: Ti.UI.FILL,
+        height: Ti.UI.SIZE,
+        text: options.subTitle,
+        textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
+        font: liferay.fonts.h3,
+        color: '#84A8C8'
+    }));
+
+    formContainer.add(Ti.UI.createLabel({
+        top: '2dp',
+        left: 0,
+        width: Ti.UI.FILL,
+        height: Ti.UI.SIZE,
+        text: options.subHeading,
+        textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
+        font: liferay.fonts.h1,
+        color: '#84A8C8'
+    }));
+
+    formContainer.add(Ti.UI.createLabel({
+        top: '5dp',
+        left: 0,
+        width: Ti.UI.FILL,
+        height: Ti.UI.SIZE,
+        text: options.instructions,
+        textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+        font: liferay.fonts.h2,
+        color: 'black'
+    }));
+
+    options.questions.forEach(function(el) {
+        formContainer.add(el.question);
+    });
+
+    // a little space at the bottom
+    formContainer.add(Ti.UI.createView({
+        left: 0,
+        top: 0,
+        width: Ti.UI.FILL,
+        height: '25dp',
+        backgroundColor: 'transparent'
+    }));
+
+    var btnContainer = Ti.UI.createView({
+        bottom: 0,
+        left: 0,
+        width: Ti.UI.FILL,
+        backgroundColor: 'transparent',
+        height: '20%'
+    });
+
+    var btnCenterer = Ti.UI.createView({
+        layout: 'vertical',
+        width: Ti.UI.SIZE,
+        height: Ti.UI.SIZE
+    });
+
+    var submitBtn = Ti.UI.createButton({
+        title: '  ' + options.sendButtonText + '  ',
+        font:  liferay.fonts.h4
+    });
+    var closebtn = Ti.UI.createButton({
+        title: '  ' + options.dismissText + '  ',
+        font: liferay.fonts.h4,
+        top: options.readOnly? 0 : '10dp'
+    });
+
+    closebtn.addEventListener('click', function(e) {
+        liferay.controller.getCurrentWindow().remove(formShader);
+        liferay.controller.getCurrentWindow().remove(formRound);
+        options.onClose && options.onClose();
+    });
+
+    function processSubmit(e) {
+        if (options.confirm) {
+            var alertDialog = Titanium.UI.createAlertDialog({
+                title: options.title,
+                message: options.submitConfirm,
+                buttonNames: [L('YES'), L('NO')]
+            });
+            alertDialog.addEventListener('click', function (e) {
+                if (e.index == 0) {
+                    options.onSubmit(function () {
+                        liferay.controller.getCurrentWindow().remove(formShader);
+                        liferay.controller.getCurrentWindow().remove(formRound);
+                    }, function(err) {
+                        e.source.setTouchEnabled(true);
+                    });
+                }
+            });
+
+            alertDialog.show();
+        } else {
+            options.onSubmit(function () {
+                liferay.controller.getCurrentWindow().remove(formShader);
+                liferay.controller.getCurrentWindow().remove(formRound);
+            }, function(err) {
+                e.source.setTouchEnabled(true);
+            });
+        }
+    }
+
+    function submit(e) {
+        e.source.setTouchEnabled(false);
+        if (options.validate) {
+            options.validate(function (success, err) {
+                if (!success) {
+                    e.source.setTouchEnabled(true);
+                    liferay.tools.alert(L('ALERT'), err);
+                } else {
+                    processSubmit(e);
+                }
+            });
+        } else {
+            processSubmit(e);
+        }
+    }
+
+    submitBtn.addEventListener('click', submit);
+
+    options.questions.forEach(function(el) {
+        if (el.validateEvent) {
+            el.question.addEventListener(el.validateEvent, submit);
+        }
+    });
+
+    btnCenterer.add(submitBtn);
+    btnCenterer.add(closebtn);
+
+    btnContainer.add(Ti.UI.createView({
+        left: 0,
+        top: 0,
+        width: Ti.UI.FILL,
+        height: '3dp',
+        backgroundColor: '#CCCCCC'
+    }));
+    btnContainer.add(btnCenterer);
+
+    formScroll.add(formContainer);
+    formRound.add(formScroll);
+    formRound.add(btnContainer);
+
+    liferay.controller.getCurrentWindow().add(formShader);
+    liferay.controller.getCurrentWindow().add(formRound);
+};
+
 liferay.forms.showForm = function(options) {
 
     var surveyShader = Ti.UI.createView({
@@ -363,7 +569,7 @@ liferay.forms.submitAnswers = function(event, surveyId, onSuccess, onError) {
     });
     Request({
         method	: 'POST',
-        url      : liferay.settings.server.servicesHost.host + liferay.settings.servicesHost.surveyServiceEndpoint,
+        url      : liferay.settings.server.servicesHost.host + liferay.settings.server.servicesHost.surveyServiceEndpoint,
         params   : {
             event: eventid,
             surveyId: surveyId,
@@ -396,6 +602,8 @@ liferay.forms.makeHeaderField = function(questionId, ratingIds, hintText, curren
         font: liferay.fonts.h2,
         color: 'black',
         hintText: hintText,
+        hintTextColor: '#444444',
+        hintColorText: '#444444',
         value: currentVal ? currentVal : ""
     });
 
@@ -479,6 +687,9 @@ liferay.forms.makeTextAreaQuestion = function(questionId, ratingId, currentAnswe
         color: 'black',
         font: liferay.fonts.h2,
         textAlign: 'left',
+        enableReturnKey: true,
+        autocorrect : true,
+        tintColor : "black",
         suppressReturn: false,
         value: currentAnswer?currentAnswer:""
     });
@@ -532,6 +743,7 @@ liferay.forms.makeSlider = function(questionId, ratingId, currentAnswer, top, ma
         text: slider.value,
         width: '15%',
         left: '3%',
+        color: 'black',
         height: Ti.UI.SIZE,
         font: liferay.fonts.h3,
         textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT
@@ -776,7 +988,7 @@ liferay.forms.makeOptionAndroid = function(questionId, ratingId, options, curren
 
         var swContainer = Ti.UI.createView({
             left: 0,
-            top: 0,
+            top: '2dp',
             width: '15%',
             height: Ti.UI.SIZE
         });
@@ -794,7 +1006,8 @@ liferay.forms.makeOptionAndroid = function(questionId, ratingId, options, curren
             titleOff: '',
             style: Ti.UI.Android.SWITCH_STYLE_CHECKBOX,
             answerValue: el,
-            touchEnabled: true
+            borderColor: 'black',
+            borderWidth: '1dp'
         });
 
         switches.push(sw);
@@ -813,7 +1026,7 @@ liferay.forms.makeOptionAndroid = function(questionId, ratingId, options, curren
             textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
             color: 'black',
             font: liferay.fonts.h3,
-            touchEnabled: false
+            lrsw: sw
         });
 
         lblContainer.add(optLbl);
@@ -821,6 +1034,13 @@ liferay.forms.makeOptionAndroid = function(questionId, ratingId, options, curren
         rowContainer.add(swContainer);
         rowContainer.add(lblContainer);
         optContainer.add(rowContainer);
+
+        optLbl.addEventListener('click', function(e) {
+            if (e.source.lrsw) {
+                e.source.lrsw.value = !e.source.lrsw.value;
+            }
+        });
+
 
         sw.addEventListener('change', function(e) {
             // if we are being turned off, then ignore
@@ -865,9 +1085,8 @@ liferay.forms.makeOptionMultipleAndroid = function(questionId, ratingId, options
 
         var swContainer = Ti.UI.createView({
             left: 0,
-            top: 0,
-            width: '15%',
-            height: Ti.UI.SIZE
+            top: '2dp',
+            width: '15%'
         });
 
         var lblContainer = Ti.UI.createView({
@@ -882,8 +1101,9 @@ liferay.forms.makeOptionMultipleAndroid = function(questionId, ratingId, options
             titleOff: '',
             style: Ti.UI.Android.SWITCH_STYLE_CHECKBOX,
             top: 0,
-            answerValue: el,
-            touchEnabled: true
+            borderColor: 'black',
+            borderWidth: '1dp',
+            answerValue: el
         });
 
         switches.push(sw);
@@ -905,7 +1125,7 @@ liferay.forms.makeOptionMultipleAndroid = function(questionId, ratingId, options
             textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
             color: 'black',
             font: liferay.fonts.h3,
-            touchEnabled: false
+            lrsw: sw
         });
 
         lblContainer.add(optLbl);
@@ -913,6 +1133,12 @@ liferay.forms.makeOptionMultipleAndroid = function(questionId, ratingId, options
         rowContainer.add(swContainer);
         rowContainer.add(lblContainer);
         optContainer.add(rowContainer);
+
+        optLbl.addEventListener('click', function(e) {
+            if (e.source.lrsw) {
+                e.source.lrsw.value = !e.source.lrsw.value;
+            }
+        });
 
         sw.addEventListener('change', function(e) {
 
@@ -1046,4 +1272,278 @@ liferay.forms.saveSurveyAnswers = function () {
 
     file.write(JSON.stringify(liferay.tools.surveyAnswers));
     file.remoteBackup = true;
+};
+
+liferay.forms.makeSimpleHeaderField = function(questionId, hintText, currentVal, top, onChange) {
+    var tf = Ti.UI.createTextField({
+        top: top,
+        left: 0,
+        width: '95%',
+        height: liferay.model.iPad ? (liferay.fonts.H2Size * 1.5) : Ti.UI.SIZE,
+        borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
+        font: liferay.fonts.h2,
+        color: 'black',
+        hintText: hintText,
+        hintTextColor: '#444444',
+        hintColorText: '#444444',
+        value: currentVal ? currentVal : ""
+    });
+
+    if (liferay.model.android) {
+        tf.backgroundColor = 'transparent';
+        tf.backgroundImage = '/images/notes.png';
+    }
+
+    if (questionId.toLowerCase().indexOf("email") != -1) {
+
+        tf.keyboardType = Ti.UI.KEYBOARD_EMAIL;
+    }
+    if (onChange) {
+        tf.addEventListener('change', onChange);
+    }
+
+    return tf;
+
+};
+
+liferay.forms.makeSimpleTextAreaQuestion = function(questionId, hintText, currentVal, top, win, onChange) {
+
+    var ta = Ti.UI.createTextArea({
+        top: top,
+        left: 0,
+        width: '95%',
+        height: '200dp',
+        backgroundImage: "/images/notes.png",
+        backgroundColor: "transparent",
+        borderRadius: '5dp',
+        borderWidth: '1dp',
+        borderColor: '#DDDDDD',
+        color: 'black',
+        enableReturnKey: true,
+        autocorrect : true,
+        tintColor : "black",
+        font: liferay.fonts.h2,
+        textAlign: 'left',
+        suppressReturn: false,
+        hintText: hintText,
+        hintTextColor: '#444444',
+        hintColorText: '#444444',
+        value: currentVal?currentVal:""
+    });
+
+    if (win) {
+        win.addEventListener('click', function (e) {
+            if (!/(TextField|TextArea)/.test(e.source.toString())) {
+                ta.blur();
+            }
+        });
+    }
+
+    if (liferay.model.android) {
+        ta.color = 'black';
+    }
+    ta.addEventListener('change', onChange);
+
+    return ta;
+};
+
+liferay.forms.makeSimpleOptionMultiple = function(questionId, options, currentVal, top, onChange) {
+
+    var btnSize = liferay.tools.getDp(liferay.settings.screens.survey.buttons.psize *
+    Titanium.Platform.displayCaps.platformWidth);
+
+    var optContainer = Ti.UI.createView({
+        top: top,
+        left: 0,
+        width: Ti.UI.FILL,
+        height: Ti.UI.SIZE,
+        layout: 'vertical'
+    });
+
+    var icons = [];
+    var answers = [];
+    options.forEach(function(el, idx) {
+
+        var rowContainer = Ti.UI.createView({
+            top: '4dp',
+            left: 0,
+            width: Ti.UI.FILL,
+            height: Ti.UI.SIZE,
+            rowIndex: idx,
+            touchEnabled: true,
+            answerValue: el
+        });
+
+        var swContainer = Ti.UI.createView({
+            left: 0,
+            width: '15%',
+            height: Ti.UI.SIZE,
+            touchEnabled: false
+        });
+
+        var lblContainer = Ti.UI.createView({
+            left: '15%',
+            top: 0,
+            width: '85%',
+            height: Ti.UI.SIZE,
+            touchEnabled: false
+        });
+
+        var icon = Ti.UI.createImageView({
+            top: 0,
+            width: btnSize,
+            height: btnSize,
+            image: liferay.settings.screens.survey.buttons.off.image,
+            iconIndex: idx,
+            touchEnabled: false
+        });
+
+        icons.push(icon);
+
+        swContainer.add(icon);
+        answers.push(el);
+        currentVal.forEach(function(ans) {
+            if (ans == el) {
+                icon.image = liferay.settings.screens.survey.buttons.on.image;
+            }
+        });
+
+
+        var optLbl = Ti.UI.createLabel({
+            top: '4dp',
+            width: Ti.UI.FILL,
+            height: Ti.UI.SIZE,
+            verticalAlign: Ti.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
+            textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+            text: el,
+            color: 'black',
+            font: liferay.fonts.h3,
+            touchEnabled: false
+        });
+
+        lblContainer.add(optLbl);
+
+        rowContainer.add(swContainer);
+        rowContainer.add(lblContainer);
+        optContainer.add(rowContainer);
+
+        rowContainer.addEventListener('click', function(e) {
+            var selectedRow = e.source.rowIndex;
+            if (icons[selectedRow].image == liferay.settings.screens.survey.buttons.on.image) {
+                icons[selectedRow].image = liferay.settings.screens.survey.buttons.off.image;
+            } else {
+                icons[selectedRow].image = liferay.settings.screens.survey.buttons.on.image;
+            }
+
+            var newAnswerSet = [];
+            answers.forEach(function(ansEl, ansIdx) {
+                if (icons[ansIdx].image == liferay.settings.screens.survey.buttons.on.image) {
+                    newAnswerSet.push(ansEl);
+                }
+            });
+            if (onChange) {
+                onChange(newAnswerSet);
+            }
+        });
+    });
+
+    return optContainer;
+};
+
+liferay.forms.makeSimpleOptionMultipleAndroid = function(questionId, options, currentVal, top, onChange) {
+
+    var optContainer = Ti.UI.createView({
+        top: top,
+        left: 0,
+        width: Ti.UI.FILL,
+        height: Ti.UI.SIZE,
+        layout: 'vertical'
+    });
+
+    var switches = [];
+
+    options.forEach(function(el, idx) {
+
+        var rowContainer = Ti.UI.createView({
+            top: '4dp',
+            left: 0,
+            width: Ti.UI.FILL,
+            height: Ti.UI.SIZE
+        });
+
+        var swContainer = Ti.UI.createView({
+            left: 0,
+            top: '2dp',
+            width: '15%',
+            height: Ti.UI.SIZE
+        });
+
+        var lblContainer = Ti.UI.createView({
+            left: '15%',
+            top: 0,
+            width: '85%',
+            height: Ti.UI.SIZE
+        });
+
+        var sw = Ti.UI.createSwitch({
+            titleOn: '',
+            titleOff: '',
+            style: Ti.UI.Android.SWITCH_STYLE_CHECKBOX,
+            borderColor: 'black',
+            borderWidth: '1dp',
+            top: 0,
+            color: 'black',
+            answerValue: el
+        });
+
+        switches.push(sw);
+
+        swContainer.add(sw);
+
+        currentVal.forEach(function(ans) {
+            if (ans == el) {
+                sw.setValue(true);
+            }
+        });
+
+
+        var optLbl = Ti.UI.createLabel({
+            text: el,
+            width: Ti.UI.FILL,
+            height: Ti.UI.FILL,
+            verticalAlign: Ti.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
+            textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT,
+            color: 'black',
+            font: liferay.fonts.h3,
+            touchEnabled: true,
+            lrsw: sw
+        });
+
+        optLbl.addEventListener('click', function(e) {
+            if (e.source.lrsw) {
+                e.source.lrsw.value = !e.source.lrsw.value;
+            }
+        });
+
+        lblContainer.add(optLbl);
+
+        rowContainer.add(swContainer);
+        rowContainer.add(lblContainer);
+        optContainer.add(rowContainer);
+
+        sw.addEventListener('change', function(e) {
+
+            var newAnswerSet = [];
+            switches.forEach(function(swEl) {
+                if (swEl.getValue()) {
+                    newAnswerSet.push(swEl.answerValue);
+                }
+            });
+            if (onChange) {
+                onChange(newAnswerSet);
+            }
+        });
+    });
+
+    return optContainer;
 };

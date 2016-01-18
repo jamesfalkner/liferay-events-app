@@ -273,6 +273,9 @@ liferay.beacons.startRegionMonitoring = function() {
 };
 
 liferay.beacons.handleBgEvent = function(e) {
+
+    if (!e.userInfo || !e.userInfo.event || !e.userInfo.action) return;
+
     var region_name = e.userInfo.event;
     var action = e.userInfo.action;
     var event_override_uuid = e.userInfo.event_override_uuid;
@@ -455,7 +458,12 @@ liferay.beacons.handleRegionEnter = function(e) {
     }
 
     // turn on ranging
-    TiBeacons.startRangingForBeacons(e);
+    TiBeacons.startRangingForBeacons({
+        identifier: region.name,
+        uuid: region.beacon_uuid,
+        major: region.major ? region.major : null,
+        minor: region.minor ? region.minor : null
+    });
 
     liferay.beacons.manageDeathRow(region, "entry", "exit");
 
@@ -731,7 +739,7 @@ liferay.beacons.executeEventTrigger = function(event, recordFlag) {
         return;
     }
 
-    finalButtons.push(L('MUTE'));
+    finalButtons.push(L('MUTE') + '...');
     finalActions.push("mute;;" + event.region_name);
 
     if (liferay.model.iOS) {
@@ -1079,6 +1087,12 @@ liferay.beacons.stopRegionMonitoring = function() {
     if (!TiBeacons) {
         return;
     }
+
+    if (!liferay.beacons.hasBeaconSupport()) {
+        return;
+    }
+
+
     liferay.beacons.currentBeacons = [];
     liferay.beacons.currentRegions = [];
 
@@ -1296,6 +1310,9 @@ liferay.beacons.fetchBeaconData = function(event, onSuccess, onFail) {
     var metadata = event.metadata_types.split(',').map(function(el) { return el.trim();});
     for (var i = 0; i < metadata.length; i++) {
         var parts = metadata[i].split(":");
+        if (parts.length != 2) {
+            continue;
+        }
         types[parts[0].trim()] = parts[1].trim();
     }
 

@@ -17,489 +17,486 @@
 liferay.screens.galleryDetail = new liferay.classes.window();
 liferay.screens.galleryDetail.className = 'liferay.screens.galleryDetail';
 
-liferay.screens.galleryDetail.render = function() {
-	//Ti.API.info(this.className + ".render()");
-	var self = this;
+liferay.screens.galleryDetail.render = function () {
+  //Ti.API.info(this.className + ".render()");
+  var self = this;
 
-    this.panelBg = Titanium.UI.createView(liferay.settings.screens.all.layout.panelBg);
+  this.panelBg = Titanium.UI.createView(liferay.settings.screens.all.layout.panelBg);
 
-    this.prevBtn = Titanium.UI.createView(liferay.settings.screens.galleryDetail.buttons.prev);
-    this.prevBtn.width = liferay.tools.getDp(liferay.settings.screens.galleryDetail.buttons.prev.psize * Titanium.Platform.displayCaps.platformWidth);
-    this.prevBtn.height = this.prevBtn.width;
+  this.scrollableView = null;
+  this.allImageViews = [];
 
-    this.prevBtn.addEventListener('click', function() {
-        if (self.currentIndex > 0) {
-            liferay.tools.flashButton({
-                control : self.prevBtn,
-                onRestore : function() {
-                    if (self.currentIndex > 0) {
-                        self.loadDetails(--self.currentIndex);
-                    }
-                }
+  this.saveBtn = Titanium.UI.createView(liferay.settings.screens.galleryDetail.buttons.save);
+  this.saveBtn.width = liferay.tools.getDp(liferay.settings.screens.galleryDetail.buttons.save.psize * Titanium.Platform.displayCaps.platformWidth);
+  this.saveBtn.height = this.saveBtn.width;
+  this.saveBtn.addEventListener('click', function () {
+    var currentImage = liferay.screens.galleryDetail.allImageViews[self.scrollableView.currentPage];
+    if (!currentImage) {
+      liferay.tools.toastNotification(null, String.format(L('GALLERY_SAVE_ERROR'), 'no image at ' + self.scrollableView.currentPage));
+      return;
+    }
+    liferay.tools.flashButton({
+      control: self.saveBtn,
+      onRestore: function () {
+        var alertDialog = Titanium.UI.createAlertDialog({
+          title: L('GALLERY_SAVE_TITLE'),
+          message: L('GALLERY_SAVE_PROMPT'),
+          buttonNames: [L('YES'), L('NO')]
+        });
+        alertDialog.addEventListener('click', function (e) {
+          if (e.index == 0) {
+
+            var imgFile = Ti.Filesystem.getFile(currentImage);
+
+            Ti.Media.saveToPhotoGallery(imgFile, {
+              success: function () {
+                liferay.tools.toastNotification(null, L('GALLERY_SAVE_SAVED'));
+              },
+              error: function (err) {
+                liferay.tools.alert(L('ALERT'), String.format(L('GALLERY_SAVE_ERROR'), JSON.stringify(err)));
+              }
             });
-        }
-    });
-
-    this.nextBtn = Titanium.UI.createView(liferay.settings.screens.galleryDetail.buttons.next);
-    this.nextBtn.width = liferay.tools.getDp(liferay.settings.screens.galleryDetail.buttons.next.psize * Titanium.Platform.displayCaps.platformWidth);
-    this.nextBtn.height = this.nextBtn.width;
-    this.nextBtn.addEventListener('click', function() {
-        if (self.currentIndex < liferay.screens.gallery.data.photo.length - 1) {
-            liferay.tools.flashButton({
-                control : self.nextBtn,
-                onRestore : function() {
-                    if (self.currentIndex < liferay.screens.gallery.data.photo.length - 1) {
-                        self.loadDetails(++self.currentIndex);
-                    }
-                }
-            });
-        }
-    });
-
-    this.infoBtn = Titanium.UI.createView(liferay.settings.screens.galleryDetail.buttons.info);
-    this.infoBtn.width = liferay.tools.getDp(liferay.settings.screens.galleryDetail.buttons.info.psize * Titanium.Platform.displayCaps.platformWidth);
-    this.infoBtn.height = this.infoBtn.width;
-    this.infoBtn.addEventListener('click', function(e) {
-        liferay.screens.galleryDetail.infoBtn.setTouchEnabled(false);
-        liferay.tools.flashButton({
-            control : e.source,
-            onRestore : function() {
-                var info = liferay.screens.gallery.data.photo[self.currentIndex];
-                if (info && info.id) {
-                    if (!info.canRate) {
-                        liferay.tools.alert(L('NOTE'), L('RATINGS_DISABLED_FOR_PHOTO'));
-                        liferay.screens.galleryDetail.infoBtn.setTouchEnabled(true);
-                        return;
-                    }
-
-                    var photoRatingId = "PHOTO:" + info.id;
-                    liferay.tools.createFloatingMessage({
-                        container: liferay.screens.galleryDetail.window,
-                        text     : L('SAVING_RATING')
-                    });
-                    liferay.screens.galleryDetail.postRating({
-                        id: photoRatingId,
-                        rating: "like",
-                        alreadyRatedText: L('ALREADY_RATED_PHOTO'),
-                        onSuccess: function() {
-                            liferay.tools.hideFloatingMessage();
-                            liferay.screens.galleryDetail.recordRating(liferay.controller.selectedEvent, photoRatingId);
-                            liferay.screens.galleryDetail.saveRatedPhotos();
-                            var oldCount = parseInt(liferay.screens.galleryDetail.infoTxt.text);
-                            if (oldCount >= 0) {
-                                liferay.screens.galleryDetail.infoTxt.text = oldCount + 1;
-                            }
-                            liferay.tools.toastNotification(e.source, L('THANKS_PHOTO_RATING'));
-                            liferay.screens.galleryDetail.infoBtn.setTouchEnabled(true);
-                        },
-                        onFail: function(msg) {
-                            liferay.tools.hideFloatingMessage();
-                            liferay.tools.alert(L('ALERT'), String.format(L('PHOTO_RATING_FAIL'), msg));
-                            liferay.screens.galleryDetail.infoBtn.setTouchEnabled(true);
-                        }
-                    });
-                }
-                liferay.screens.galleryDetail.infoBtn.setTouchEnabled(true);
-            }
+          }
         });
+        alertDialog.show();
+      }
     });
-    this.infoBtn.setTouchEnabled(true);
+  });
 
-    var infoView = Ti.UI.createView({
-        left: '8%',
-        width: Ti.UI.SIZE,
-        height: '90%',
-        bottom: 0,
-        layout: 'horizontal'
-    });
+  this.window = liferay.ui.makeWindow({
+    backEnabled: true,
+    swipe: false,
+    footerButtons: [this.saveBtn],
+    panelBg: this.panelBg
+  });
 
-    this.infoTxt = Ti.UI.createLabel({
-        text: '-',
-        font: liferay.fonts.h4,
-        color: 'white',
-        height: '95%',
-        top: '5dp',
-        textAlign: Ti.UI.TEXT_ALIGNMENT_RIGHT,
-        verticalAlign: Ti.UI.TEXT_VERTICAL_ALIGNMENT_CENTER
-    });
-
-    this.infoTxt.addEventListener('click', function(e) {
-        liferay.tools.flashLabel({
-            control: e.source,
-            onRestore: function() {
-                var info = liferay.screens.gallery.data.photo[self.currentIndex];
-                liferay.tools.toastNotification(e.source, info.title);
-            }
-        });
-    });
-
-    this.infoBtn.left = '10dp';
-
-    infoView.add(this.infoTxt);
-    infoView.add(this.infoBtn);
-
-
-    this.saveBtn = Titanium.UI.createView(liferay.settings.screens.galleryDetail.buttons.save);
-    this.saveBtn.width = liferay.tools.getDp(liferay.settings.screens.galleryDetail.buttons.save.psize * Titanium.Platform.displayCaps.platformWidth);
-    this.saveBtn.height = this.saveBtn.width;
-    this.saveBtn.addEventListener('click', function() {
-        liferay.tools.flashButton({
-            control: self.saveBtn,
-            onRestore: function() {
-                var alertDialog = Titanium.UI.createAlertDialog({
-                    title : L('GALLERY_SAVE_TITLE'),
-                    message : L('GALLERY_SAVE_PROMPT'),
-                    buttonNames : [L('YES'), L('NO')]
-                });
-                alertDialog.addEventListener('click', function(e) {
-                    if (e.index == 0) {
-
-                        var imgFile = Ti.Filesystem.getFile(liferay.screens.galleryDetail.imgView.image);
-
-                        Ti.Media.saveToPhotoGallery(imgFile, {
-                            success: function() {
-                                liferay.tools.toastNotification(null, L('GALLERY_SAVE_SAVED'));
-                            },
-                            error: function(err) {
-                                liferay.tools.alert(L('ALERT'), String.format(L('GALLERY_SAVE_ERROR'), JSON.stringify(err)));
-                            }
-                        });
-                    }
-                });
-                alertDialog.show();
-            }
-        });
-    });
-
-    this.window = liferay.ui.makeWindow({
-        backEnabled: true,
-        swipe: false,
-        footerButtons: [this.prevBtn, this.nextBtn, infoView, this.saveBtn],
-        panelBg: this.panelBg
-    });
-
-
-	// gallery detail specifics
-
-	this.scrollView = Titanium.UI.createScrollView({
-        width: "95%",
-        height: "95%",
-        backgroundColor:"transparent",
-        contentWidth: "auto",
-        contentHeight: "auto",
-        top: "2.5%",
-        left: "2.5%",
-        maxZoomScale: 5,
-        minZoomScale: 0.5,
-        zoomScale: 1,
-        touchEnabled: true,
-        showVerticalScrollIndicator: true,
-        showHorizontalScrollIndicator: true
-    });
-
-	var imageContainer = Ti.UI.createView({
-		height: '100%',
-		width: '100%',
-        backgroundColor: "transparent",
-		top: 0,
-		left: 0
-	});
-
-	this.imgView = Ti.UI.createImageView({
-		width : '100%',
-        height: 'auto',
-		backgroundColor : 'transparent',
-		touchEnabled : true,
-		preventDefaultImage : true,
-		autoRotate: true,
-		enableZoomControls: false
-	});
-
-	this.imgView.addEventListener('swipe', function(e) {
-		if (e.direction == 'left') {
-			if (self.currentIndex < liferay.screens.gallery.data.photo.length - 1) {
-				self.loadDetails(++self.currentIndex);
-			}
-		} else if (e.direction == 'right') {
-			if (self.currentIndex > 0) {
-				self.loadDetails(--self.currentIndex);
-
-			}
-		}
-	});
-
-	if (liferay.model.android) {
-		this.imgView.addEventListener('pinch', function(e) {
-			var t = Ti.UI.create2DMatrix().scale(e.scale);
-			liferay.screens.galleryDetail.imgView.transform = t;
-		});
-	}
-
-	imageContainer.add(this.imgView);
-	this.scrollView.add(imageContainer);
-	this.panelBg.add(this.scrollView);
-
-	return this.window;
+  return this.window;
 };
 
-liferay.screens.galleryDetail.loadDetails = function(index) {
-	//Ti.API.info(this.className + ".loadDetails(): " + index);
-	liferay.screens.galleryDetail.infoTxt.text = '-';
+liferay.screens.galleryDetail.loadDetails = function (photo, index, allPhotos) {
+  //Ti.API.info(this.className + ".loadDetails(): " + index);
 
-	var photo = liferay.screens.gallery.data.photo[index];
-	var canRate = photo.canRate;
-	liferay.screens.galleryDetail.loadRatedPhotos();
+  var self = this;
 
-	this.currentIndex = index;
+  var canRate = photo.canRate;
+  liferay.screens.galleryDetail.loadRatedPhotos();
 
-	this.prevBtn.opacity = (index <= 0) ? 0.5 : 1;
-	this.nextBtn.opacity = (index >= liferay.screens.gallery.data.photo.length - 1) ? 0.5 : 1;
+  liferay.tools.createFloatingMessage({
+    container: liferay.screens.gallery.window
+  });
 
-	liferay.tools.createFloatingMessage({
-		container : liferay.screens.gallery.window
-	});
 
-	var url = 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '_z.jpg';
+  if (this.timerId) {
+    //Ti.API.info("clearing timer: " + this.timerId);
+    clearTimeout(this.timerId);
+  }
+  this.timerId = setTimeout(function () {
+    liferay.tools.hideFloatingMessage();
+    liferay.tools.alert(L('ALERT'), L('GALLERY_SLOW'));
+  }, 10000);
 
-	if (this.timerId) {
-		//Ti.API.info("clearing timer: " + this.timerId);
-		clearTimeout(this.timerId);
-	}
-	this.timerId = setTimeout(function() {
-		liferay.tools.hideFloatingMessage();
-		liferay.tools.alert(L('ALERT'), L('GALLERY_SLOW'));
-	}, 10000);
+  var views = [];
 
-	this.loadImage({
-		imageView : this.imgView,
-		url : url,
-		setImage : true,
-		onLoad : function() {
-			clearTimeout(liferay.screens.galleryDetail.timerId);
-			liferay.tools.hideFloatingMessage();
-			liferay.screens.gallery.fetchCount(photo);
+  this.scrollableView = Ti.UI.createScrollableView({
+    width: Ti.UI.FILL,
+    height: Ti.UI.FILL,
+    backgroundColor: '#888888',
+    showPagingControl: true
+  });
 
-			var borderSize = liferay.tools.getDp(Titanium.Platform.displayCaps.platformWidth * 0.1);
-			var imgSize = borderSize * .75;
+  var imgSize = liferay.tools.getDp(Titanium.Platform.displayCaps.platformWidth * 0.15);
 
-			var iconContainer = Ti.UI.createView({
-				bottom: '5%',
-				right: '5%',
-				width: Ti.UI.SIZE,
-				height: Ti.UI.SIZE,
-				layout: 'horizontal',
-				horizontalWrap: false
-			});
-			var border = Ti.UI.createView({
-				backgroundColor: '#777777',
-				width: borderSize,
-				height: borderSize,
-				borderWidth: '2px',
-				borderRadius: '2px',
-				borderColor: '#DDDDDD'
-			});
-			var tweetButton = Ti.UI.createImageView({
-				width: imgSize,
-				height: 'auto',
-				image: liferay.settings.screens.all.buttons.tweet.backgroundImage
-			});
-			border.add(tweetButton);
-			iconContainer.add(border);
+  allPhotos.forEach(function (photo, idx) {
+    var url = 'http://farm' + photo.farm + '.static.flickr.com/' + photo.server + '/' + photo.id + '_' + photo.secret + '_z.jpg';
+    var imageView = Ti.UI.createImageView({image: url});
 
-			border.addEventListener('click', function(e) {
-				var tweetUrl = "http://flickr.com/photos/liferay/sets/" + photo.photosetid;
-				var tweetHash = liferay.controller.selectedEvent.event_hashtag ? liferay.controller.selectedEvent.event_hashtag : Ti.App.Properties.getString('liferay.default_event_hashtag');
+    imageView.addEventListener('postlayout', function (e) {
+      self.loadImage({
+        imageView: e.source,
+        url: url,
+        setImage: true,
+        onLoad: function () {
+          liferay.tools.hideFloatingMessage();
+          liferay.screens.galleryDetail.fetchCount(photo, likeLabel);
+          liferay.screens.galleryDetail.allImageViews[idx] = e.source.image;
+          var ifi = e.source.toBlob();
+          var imgW = ifi.width;
+          var imgH = ifi.height;
 
-				liferay.screens.front.tweet(photo.title + ' ' + tweetHash + ' ' + tweetUrl, liferay.screens.galleryDetail.imgView.toBlob());
-			});
+          var viewW = liferay.tools.getPx(self.scrollableView.rect.width);
+          var viewH = liferay.tools.getPx(self.scrollableView.rect.height);
 
-			border = Ti.UI.createView({
-				left: '10px',
-				backgroundColor: '#777777',
-				width: borderSize,
-				height: borderSize,
-				borderWidth: '2px',
-				borderRadius: '2px',
-				borderColor: '#DDDDDD'
-			});
-			var fbButton = Ti.UI.createImageView({
-				width: imgSize,
-				height: 'auto',
-				image: liferay.settings.screens.all.buttons.fb.backgroundImage
-			});
+          if (viewW == 0 || viewH == 0) return;
 
-			border.addEventListener('click', function(e) {
-				var ln = Ti.App.Properties.getString('liferay.flickr.sets_baseurl') + '/sets/' + photo.photosetid;
-				var data = {
-					link : Ti.App.Properties.getString('liferay.flickr.sets_baseurl') + '/' + photo.id,
-					name : liferay.controller.selectedEvent.menutitle + ' ' + liferay.controller.selectedEvent.location_label,
-					message : "Wish you were here!",
-					caption : photo.title,
-					picture : url,
-					actions: '{"name": "' + L('ALL_PHOTOS') + '", "link" : "' + ln + '"}'
-				};
+          var xF = (viewW - imgW) / imgW;
+          var yF = (viewH - imgH) / imgH;
 
-				liferay.screens.front.fbFeed(data);
+          var minF = Math.min(xF, yF);
 
-			});
-			border.add(fbButton);
-			iconContainer.add(border);
-			liferay.screens.galleryDetail.panelBg.add(iconContainer);
+          imageView.width = liferay.tools.getDp(imgW + (imgW * minF));
+          imageView.height = liferay.tools.getDp(imgH + (imgH * minF));
 
-			// zoom pic to fill either width or height of container
-			if (liferay.model.android) {
-				setTimeout(function() {
-					var ifi = liferay.screens.galleryDetail.imgView.toBlob();
-					var imgW = ifi.width;
-					var imgH = ifi.height;
 
-					var viewW = liferay.tools.getPx(liferay.screens.galleryDetail.scrollView.rect.width);
-					var viewH = liferay.tools.getPx(liferay.screens.galleryDetail.scrollView.rect.height);
+        }
+      });
+    });
 
-                    if (viewW == 0 || viewH == 0) return;
+    var likeContainer = Ti.UI.createView({
+      width: Ti.UI.SIZE,
+      height: Ti.UI.SIZE,
+      left: '10dp',
+      bottom: '10dp',
+      layout: 'horizontal',
+      backgroundColor: 'transparent',
+      horizontalWrap: false,
+      opacity: 0.8
+    });
 
-					var xF = (viewW - imgW) / imgW;
-					var yF = (viewH - imgH) / imgH;
 
-					var minF = Math.min(xF, yF);
+    var likeLabel = Ti.UI.createLabel({
+      text: '?',
+      font: liferay.fonts.h4b,
+      color: '#dddddd',
+      left: '5dp'
+    });
 
-                    liferay.screens.galleryDetail.imgView.width = liferay.tools.getDp(imgW + (imgW * minF));
-                    liferay.screens.galleryDetail.imgView.height = liferay.tools.getDp(imgH + (imgH * minF));
+    likeLabel.font.fontSize = imgSize;
+    var thumbsImg = Ti.UI.createImageView({
+      width: imgSize,
+      height: 'auto',
+      image: '/images/MobApp-AgendaDet-Icon-ThumbUp-@2x.png',
+      left: '5dp',
+      bottom: '8dp'
+    });
 
-//					liferay.screens.galleryDetail.imgView.animate({
-//						width: liferay.tools.getDp(imgW + (imgW * minF)),
-//						height: liferay.tools.getDp(imgH + (imgH * minF)),
-//						duration: 100
-//					});
+    var ratingIndicator = Ti.UI.createActivityIndicator({
+      color: 'white',
+      height: Ti.UI.SIZE,
+      width: Ti.UI.SIZE,
+      left: '5dp'
+    });
 
-				}, 200);
-			}
-		}
-	});
+    likeContainer.add(likeLabel);
+    likeContainer.add(thumbsImg);
+    likeContainer.add(ratingIndicator);
+
+    likeContainer.addEventListener('click', function (e) {
+
+      var photoRatingId = "PHOTO:" + photo.id;
+
+      e.source.setTouchEnabled(false);
+      if (photo && photo.id) {
+        if (!photo.canRate) {
+          liferay.tools.toastNotification(e.source, L('RATINGS_DISABLED_FOR_PHOTO'));
+          return;
+        }
+
+        if (!this.ratingDebug && liferay.screens.galleryDetail.hasRated(photoRatingId)) {
+          liferay.tools.toastNotification(e.source, L('ALREADY_RATED_PHOTO'));
+          return;
+
+        }
+
+        ratingIndicator.show();
+        liferay.screens.galleryDetail.postRating({
+          id: photoRatingId,
+          rating: "like",
+          onSuccess: function () {
+            ratingIndicator.hide();
+            e.source.setTouchEnabled(true);
+            liferay.screens.galleryDetail.recordRating(liferay.controller.selectedEvent, photoRatingId);
+            liferay.screens.galleryDetail.saveRatedPhotos();
+            var oldCount = parseInt(likeLabel.text);
+            if (oldCount >= 0) {
+              likeLabel.text = oldCount + 1;
+            }
+            liferay.tools.toastNotification(e.source, L('THANKS_PHOTO_RATING'));
+          },
+          onFail: function (msg) {
+            ratingIndicator.hide();
+            e.source.setTouchEnabled(true);
+            liferay.tools.toastNotification(e.source, String.format(L('PHOTO_RATING_FAIL'), msg));
+          }
+        });
+      }
+    });
+
+    var overlayContainer = Ti.UI.createView({
+      width: Ti.UI.FILL,
+      height: Ti.UI.FILL,
+      touchEnabled: true
+    });
+
+    var scrollView = Ti.UI.createScrollView({
+      maxZoomScale: 3,
+      contentWidth: "auto",
+      contentHeight: "auto",
+      minZoomScale: 0.5,
+      //     zoomScale: 0.6,
+      touchEnabled: true,
+      showVerticalScrollIndicator: true,
+      showHorizontalScrollIndicator: true
+    });
+
+
+    var shareButton = Ti.UI.createImageView({
+      width: imgSize,
+      height: 'auto',
+      image: '/images/Add-Social-Icon-@2x.png',
+      right: '10dp',
+      bottom: '10dp',
+      opacity: '0.8'
+    });
+
+    shareButton.addEventListener('click', function (e) {
+      var allLink = Ti.App.Properties.getString('liferay.flickr.sets_baseurl') + '/sets/' + photo.photosetid;
+
+      liferay.screens.galleryDetail.shareImageMenu(url, allLink, imageView.toBlob(), photo.title, photo.id);
+    });
+
+    scrollView.add(imageView);
+    overlayContainer.add(scrollView);
+    overlayContainer.add(shareButton);
+    overlayContainer.add(likeContainer);
+
+    views.push(overlayContainer);
+  });
+
+  clearTimeout(liferay.screens.galleryDetail.timerId);
+
+  self.scrollableView.views = views;
+  self.scrollableView.currentPage = index;
+  self.panelBg.add(self.scrollableView);
+
 };
 
-liferay.screens.gallery.fetchCount = function(photo) {
-	if (!photo.id) {
-		return;
-	}
+liferay.screens.galleryDetail.shareFacebookImage = function (url, allLink, title) {
 
-	var id = "PHOTO:" + photo.id;
+  var data = {
+    link: url,
+    name: liferay.controller.selectedEvent.menutitle + ' ' + liferay.controller.selectedEvent.location_label,
+    //description : title,
+    caption: liferay.controller.selectedEvent.menutitle,
+    picture: url,
+    actions: '{"name": "' + L('ALL_PHOTOS') + '", "link" : "' + allLink + '"}'
+  };
+  liferay.screens.front.fbFeed(data);
+};
 
-	Request({
-		method	: 'POST',
-		url      : liferay.settings.server.servicesHost.host + liferay.settings.servicesHost.ratingServiceEndpoint,
-		params   : {
-			event: liferay.controller.selectedEvent.eventid,
-			id   : id,
-			name : Ti.Platform.id,
-			rate : "DUMMY",
-			cmd  : "get"
-		},
-		onSuccess: function (response) {
+liferay.screens.galleryDetail.shareTwitterImage = function (url, blob) {
 
-			var stat = response.stat;
-			if (stat == 'ok') {
-				var cnt = response.count;
-				liferay.screens.galleryDetail.infoTxt.text = cnt;
-			}
-		}
-	});
+  var tweetHash = liferay.controller.selectedEvent.event_hashtag ? liferay.controller.selectedEvent.event_hashtag : Ti.App.Properties.getString('liferay.default_event_hashtag');
+  liferay.screens.front.tweet(tweetHash, blob);
+};
+
+liferay.screens.galleryDetail.shareInstagramImage = function (url, blob, title, id) {
+
+
+  if (liferay.model.iOS) {
+
+    var tmpFileName = id + ".ig";
+
+    var tmpFile = Ti.Filesystem.getFile(Ti.Filesystem.tempDirectory, tmpFileName);
+    if (!tmpFile.write(blob)) {
+      alert(String.format(L('ERROR_1'), String.format(L('GALLERY_SAVE_IMAGE'), tmpFile.nativePath)));
+      return;
+    }
+
+    var docViewer = Ti.UI.iOS.createDocumentViewer({"url": tmpFile.nativePath});
+    docViewer.UTI = "com.instagram.exclusivegram";
+    docViewer.annotation = [{
+      InstagramCaption: title + " " +
+      (liferay.controller.selectedEvent.event_hashtag ?
+          liferay.controller.selectedEvent.event_hashtag :
+          Ti.App.Properties.getString('liferay.default_event_hashtag'))
+    }];
+
+    docViewer.show({"view": liferay.controller.getCurrentWindow(), "animated": true});
+  } else if (liferay.model.android) {
+    if (Ti.Filesystem.isExternalStoragePresent()) {
+      var tmpDir = Ti.Filesystem.getFile(Ti.Filesystem.externalStorageDirectory);
+      if (!tmpDir.exists()) {
+        tmpDir.createDirectory();
+      }
+      var tmpFile = Ti.Filesystem.getFile(tmpDir.nativePath, id + ".jpg");
+
+      if (!tmpFile.write(blob)) {
+        alert(String.format(L('ERROR_1'), String.format(L('GALLERY_SAVE_ERROR'), tmpFile.nativePath)));
+        return;
+      }
+
+      var intent = Ti.Android.createIntent({
+        action: Ti.Android.ACTION_SEND,
+        type: 'image/jpeg',
+        data: tmpFile.nativePath
+      });
+
+      var hashtag = liferay.controller.selectedEvent.event_hashtag ? liferay.controller.selectedEvent.event_hashtag : Ti.App.Properties.getString('liferay.default_event_hashtag');
+
+      intent.putExtra(Ti.Android.EXTRA_TITLE, hashtag);
+      intent.putExtra(Ti.Android.EXTRA_TEXT, hashtag);
+      intent.putExtraUri(Ti.Android.EXTRA_STREAM, tmpFile.nativePath);
+
+      try {
+        Ti.Android.currentActivity.startActivity(Ti.Android.createIntentChooser(intent, L('SHARE_IMAGE')));
+      } catch (e) {
+        tmpFile.deleteFile();
+        alert(L('ERROR') + ": " + e);
+      }
+
+      liferay.controller.getCurrentWindow().addEventListener('close', function (e) {
+        tmpFile.deleteFile();
+      });
+    } else {
+      // should not happen, so no localization
+      Ti.API.error('No external storage present');
+    }
+
+  }
+
+
+};
+
+
+liferay.screens.galleryDetail.shareImageMenu = function (url, allLink, blob, title, id) {
+
+  var optionDialog = Titanium.UI.createOptionDialog({
+    title: L('SHARE_IMAGE'),
+    options: ["Facebook", "Twitter", "Instagram", L('CANCEL')],
+    cancel: 3,
+    selectedIndex: 3,
+    persistent: true
+  });
+
+  optionDialog.addEventListener('click', function (e) {
+    // TODO: other social networks
+    switch (e.index) {
+      case 0:
+        liferay.screens.galleryDetail.shareFacebookImage(url, allLink, title);
+        break;
+      case 1:
+        liferay.screens.galleryDetail.shareTwitterImage(url, blob);
+        break;
+      case 2:
+        liferay.screens.galleryDetail.shareInstagramImage(url, blob, title, id);
+        break;
+      default:
+    }
+  });
+  optionDialog.show();
+};
+
+
+liferay.screens.galleryDetail.fetchCount = function (photo, label) {
+  if (!photo.id) {
+    return;
+  }
+
+  var id = "PHOTO:" + photo.id;
+
+  Request({
+    method: 'POST',
+    url: liferay.settings.server.servicesHost.host + liferay.settings.server.servicesHost.ratingServiceEndpoint,
+    params: {
+      event: liferay.controller.selectedEvent.eventid,
+      id: id,
+      name: Ti.Platform.id,
+      rate: "DUMMY",
+      cmd: "get"
+    },
+    onSuccess: function (response) {
+
+      var stat = response.stat;
+      if (stat == 'ok') {
+        label.text = response.count;
+      }
+    }
+  });
 
 };
 
 
 liferay.screens.galleryDetail.postRating = function (options) {
 
-    // options: info, rating, alreadyRatedText, savingText, timeoutText
+  Request({
+    url: liferay.settings.server.servicesHost.host + liferay.settings.server.servicesHost.ratingServiceEndpoint,
+    method: 'POST',
+    params: {
+      event: liferay.controller.selectedEvent.eventid,
+      id: options.id,
+      name: Ti.Platform.id,
+      rate: options.rating
+    },
+    onSuccess: function (response) {
 
-    if (!this.ratingDebug && liferay.screens.galleryDetail.hasRated(options.id)) {
-        liferay.tools.hideFloatingMessage();
-        liferay.tools.alert(L('NOTE'), options.alreadyRatedText);
-        return;
+      var stat = response.stat;
+      if (stat == 'ok') {
+        if (options.onSuccess) options.onSuccess();
+      } else {
+        if (options.onFail) options.onFail(stat);
+      }
+    },
+    onFailure: function (msg, response) {
+      if (options.onFail) options.onFail(msg);
     }
-
-
-    Request({
-        url      : liferay.settings.server.servicesHost.host + liferay.settings.servicesHost.ratingServiceEndpoint,
-        method	: 'POST',
-        params   : {
-            event: liferay.controller.selectedEvent.eventid,
-            id   : options.id,
-            name : Ti.Platform.id,
-            rate : options.rating
-        },
-        onSuccess: function (response) {
-
-            var stat = response.stat;
-            if (stat == 'ok') {
-                if (options.onSuccess) options.onSuccess();
-            } else {
-                if (options.onFail) options.onFail(stat);
-            }
-        },
-        onFailure: function (msg, response) {
-            if (options.onFail) options.onFail(msg);
-        }
-    });
+  });
 };
 
 liferay.screens.galleryDetail.recordRating = function (event, id) {
 
-    for (var i = 0; i < liferay.screens.galleryDetail.ratings.length; i++) {
-        if (liferay.screens.galleryDetail.ratings[i].eventId == liferay.controller.selectedEvent.eventid) {
-            liferay.screens.galleryDetail.ratings[i].ratings.push(id);
-            return;
-        }
+  for (var i = 0; i < liferay.screens.galleryDetail.ratings.length; i++) {
+    if (liferay.screens.galleryDetail.ratings[i].eventId == liferay.controller.selectedEvent.eventid) {
+      liferay.screens.galleryDetail.ratings[i].ratings.push(id);
+      return;
     }
-    // no rating found
-    liferay.screens.galleryDetail.ratings.push({
-        eventId: event.eventid,
-        ratings: [id]
-    });
+  }
+  // no rating found
+  liferay.screens.galleryDetail.ratings.push({
+    eventId: event.eventid,
+    ratings: [id]
+  });
 };
 
 liferay.screens.galleryDetail.hasRated = function (id) {
 
-    for (var i = 0; i < liferay.screens.galleryDetail.ratings.length; i++) {
-        if (liferay.screens.galleryDetail.ratings[i].eventId == liferay.controller.selectedEvent.eventid) {
-            var ratings = liferay.screens.galleryDetail.ratings[i].ratings;
-            for (var j = 0; j < ratings.length; j++) {
-                if (ratings[j] == id) {
-                    return true;
-                }
-            }
+  for (var i = 0; i < liferay.screens.galleryDetail.ratings.length; i++) {
+    if (liferay.screens.galleryDetail.ratings[i].eventId == liferay.controller.selectedEvent.eventid) {
+      var ratings = liferay.screens.galleryDetail.ratings[i].ratings;
+      for (var j = 0; j < ratings.length; j++) {
+        if (ratings[j] == id) {
+          return true;
         }
+      }
     }
-    return false;
+  }
+  return false;
 };
 
 liferay.screens.galleryDetail.loadRatedPhotos = function () {
 
-    liferay.screens.galleryDetail.ratings = [];
+  liferay.screens.galleryDetail.ratings = [];
 
-    var file = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory, liferay.settings.screens.loader.ratingsFile);
-    if (file.exists()) {
-        try {
-            liferay.screens.galleryDetail.ratings = JSON.parse(file.read());
-        } catch (ex) {
-            liferay.screens.galleryDetail.ratings = [];
-        }
+  var file = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory, liferay.settings.screens.loader.ratingsFile);
+  if (file.exists()) {
+    try {
+      liferay.screens.galleryDetail.ratings = JSON.parse(file.read());
+    } catch (ex) {
+      liferay.screens.galleryDetail.ratings = [];
     }
-    return false;
+  }
+  return false;
 };
 
 liferay.screens.galleryDetail.saveRatedPhotos = function () {
 
-        var folder = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory);
-        if (!folder.exists()) {
-            folder.createDirectory();
-            folder.remoteBackup = false;
-        }
-        var file = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory, liferay.settings.screens.loader.ratingsFile);
-        file.write(JSON.stringify(liferay.screens.galleryDetail.ratings));
-        file.remoteBackup = false;
-        //Ti.API.info("Saved ratings data to " + file.getNativePath())
-        // alert("ratings saved: " + JSON.stringify(liferay.screens.agendaDetail.ratings));
+  var folder = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory);
+  if (!folder.exists()) {
+    folder.createDirectory();
+    folder.remoteBackup = false;
+  }
+  var file = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory, liferay.settings.screens.loader.ratingsFile);
+  file.write(JSON.stringify(liferay.screens.galleryDetail.ratings));
+  file.remoteBackup = false;
 };
 
 //Ti.API.info("galleryDetail.js loaded");

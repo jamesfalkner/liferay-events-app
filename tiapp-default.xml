@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
- Copyright 2015 Liferay, Inc.
+ Copyright 2016 Liferay, Inc.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,199 +15,188 @@
  limitations under the License.
 -->
 <ti:app
-  xmlns:ti="http://ti.appcelerator.org">
-  <id>com.company.app</id>
-  <name>My App Name</name>
-  <version>1.0.0</version>
-  <publisher>My Company, Inc.</publisher>
-  <url>http://mycompanywebsite.com</url>
-  <description>A Description of My App</description>
-  <copyright>2015 by My Company, Inc.</copyright>
-  <icon>appicon.png</icon>
-  <persistent-wifi>false</persistent-wifi>
-  <prerendered-icon>true</prerendered-icon>
-  <statusbar-style>default</statusbar-style>
-  <statusbar-hidden>true</statusbar-hidden>
-  <fullscreen>true</fullscreen>
-  <navbar-hidden>true</navbar-hidden>
-  <analytics>false</analytics>
-  <guid>DD66C9A1-0D70-4F9B-A414-C244F4DFE40F</guid>
-  <property name="ti.ui.defaultunit">dip</property>
-  <property name="ti.deploytype">production</property>
-  <!-- workaround for 2373 -->
-  <property name="ti.android.bug2373.finishfalseroot" type="bool">true</property>
-  <!-- The facebook app ID - required for posting to Facebook -->
-  <property name="ti.facebook.appid">my-company-facebook-app-id</property>
-  <!-- Twitter OAuth credentials -->
-  <property name="liferay.twitter.consumerKey">my-twitter-consumerkey</property>
-  <property name="liferay.twitter.consumerSecret">my-twitter-consumer-secret</property>
-  <!-- JSON WS shared secret for signing API calls -->
-  <property name="liferay.json_shared_secret">my-super-secret-salty-word</property>
-  <!-- flickr credentials -->
-  <property name="liferay.flickr_sets_baseurl">http://flickr.com/photos/my-company</property>
-  <property name="liferay.flickr.api_key">my-flickr-api-key</property>
-  <property name="liferay.flickr.auth_token">my-flickr-auth-token</property>
-  <property name="liferay.flickr.mini_token">my-flickr-mini-token</property>
-  <property name="liferay.flickr.shared_secret">my-flickr-shared-secret</property>
-  <!-- default values -->
-  <property name="liferay.regular.font">Helvetica</property>
-  <property name="liferay.light.font">Helvetica</property>
-  <property name="liferay.default_event_url">http://mycompanywebsite.com</property>
-  <property name="liferay.default_event_hashtag">#companyhashtag</property>
-  <property name="liferay.default_event_logo_url">http://mycompany.com/logo.png</property>
-  <ios>
-    <min-ios-ver>6.0</min-ios-ver>
-      <plist>
-	  <dict>
-	      <key>UIBackgroundModes</key>
-	      <array>
-		  <string>location</string>
-		  <string>bluetooth-central</string>
-	      </array>
-	  </dict>
-	  <dict>
-	      <key>UISupportedInterfaceOrientations</key>
-	      <array>
-		  <string>UIInterfaceOrientationPortrait</string>
-		  <string>UIInterfaceOrientationPortraitUpsideDown</string>
-	      </array>
-	      <key>NSLocationUsageDescription</key>
-	      <string>
-		  This app requests your location to determine the closest event to you, and for generating dynamic iBeacon notifications.
-	      </string>
-	      <key>NSLocationAlwaysUsageDescription</key>
-	      <string>
-		  This app requests your location to determine the closest event to you, and for generating dynamic iBeacon notifications.
-	      </string>
+    xmlns:ti="http://ti.appcelerator.org">
+    <id>com.company.app</id>
+    <name>My App Name</name>
+    <version>1.0.0</version>
+    <publisher>My Company, Inc.</publisher>
+    <url>http://mycompanywebsite.com</url>
+    <description>A Description of My App</description>
+    <copyright>2016 by My Company, Inc.</copyright>
+    <icon>appicon.png</icon>
+    <persistent-wifi>false</persistent-wifi>
+    <prerendered-icon>true</prerendered-icon>
+    <statusbar-style>default</statusbar-style>
+    <statusbar-hidden>true</statusbar-hidden>
+    <fullscreen>true</fullscreen>
+    <navbar-hidden>true</navbar-hidden>
+    <analytics>false</analytics>
+    <guid>DD66C9A1-0D70-4F9B-A414-C244F4DFE40F</guid>
+    <property name="ti.ui.defaultunit">dip</property>
+    <property name="ti.deploytype">production</property>
+    <!-- workaround for 2373 -->
+    <property name="ti.android.bug2373.finishfalseroot" type="bool">true</property>
+    <!-- The facebook app ID - required for posting to Facebook -->
+    <property name="ti.facebook.appid">my-company-facebook-app-id</property>
+    <property name="liferay.gcm.senderid">my-gcm-sender-id</property>
+    <!-- Twitter OAuth credentials -->
+    <property name="liferay.twitter.consumerKey">my-twitter-consumerkey</property>
+    <property name="liferay.twitter.consumerSecret">my-twitter-consumer-secret</property>
+    <!-- LinkedIn OAuth credentials -->
+    <property name="liferay.linkedin.consumerKey">my-linkedin-consumerkey</property>
+    <property name="liferay.linkedin.consumerSecret">my-linkedin-consumer-secret</property>
+    <!-- XING OAuth credentials -->
+    <property name="liferay.xing.consumerKey">my-xing-consumerkey</property>
+    <property name="liferay.xing.consumerSecret">my-xing-consumer-secret</property>
+	<!-- JSON WS shared secret for signing API calls -->
+    <property name="liferay.json_shared_secret">my-super-secret-salty-word</property>
+    <!-- flickr credentials -->
+    <property name="liferay.flickr.sets_baseurl">http://flickr.com/photos/my-company</property>
+    <property name="liferay.flickr.api_key">my-flickr-api-key</property>
+    <property name="liferay.flickr.auth_token">my-flickr-auth-token</property>
+    <property name="liferay.flickr.mini_token">my-flickr-mini-token</property>
+    <property name="liferay.flickr.shared_secret">my-flickr-shared-secret</property>
 
-	      <key>NSLocationWhenInUseUsageDescription</key>
-	      <string>
-		  This app requests your location to determine the closest event to you, and for generating dynamic iBeacon notifications.
-	      </string>
-	  </dict>
-      </plist>
-  </ios>
-  <android
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <manifest android:installLocation="auto" android:versionCode="1" android:versionName="1.0.0" package="com.company.app">
-      <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true"/>
-      <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="18"/>
-      <uses-feature android:name="android.hardware.camera" android:required="false"/>
-      <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
-      <uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
-      <uses-feature android:name="android.hardware.screen.landscape" android:required="false"/>
-      <uses-feature android:name="android.hardware.wifi" android:required="false"/>
-      <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
-      <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
-      <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
-      <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
-      <application android:debuggable="false" android:icon="@drawable/appicon" android:label="My App Name" android:theme="@style/Theme.NoActionBar"
-		   android:name="MyAppNameApplication" android:largeHeap="true">
-        <activity android:clearTaskOnLaunch="true" android:configChanges="orientation|keyboardHidden" android:name="com.google.zxing.client.android.CaptureActivity" android:screenOrientation="landscape" android:stateNotNeeded="true" android:windowSoftInputMode="stateAlwaysHidden">
-          <intent-filter>
-            <action android:name="com.google.zxing.client.android.SCAN"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-          </intent-filter>
-        </activity>
-        <activity android:label="@string/preferences_name" android:name="com.google.zxing.client.android.PreferencesActivity" android:stateNotNeeded="true"/>
-        <activity android:label="@string/share_name" android:name="com.google.zxing.client.android.encode.EncodeActivity" android:stateNotNeeded="true">
-          <intent-filter>
-            <action android:name="com.google.zxing.client.android.ENCODE"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-          </intent-filter>
-          <intent-filter>
-            <action android:name="android.intent.action.SEND"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-            <data android:mimeType="text/x-vcard"/>
-          </intent-filter>
-          <intent-filter>
-            <action android:name="android.intent.action.SEND"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-            <data android:mimeType="text/plain"/>
-          </intent-filter>
-        </activity>
-        <activity android:configChanges="orientation|keyboardHidden" android:label="@string/sbc_name" android:name="com.google.zxing.client.android.book.SearchBookContentsActivity" android:screenOrientation="landscape" android:stateNotNeeded="true">
-          <intent-filter>
-            <action android:name="com.google.zxing.client.android.SEARCH_BOOK_CONTENTS"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-          </intent-filter>
-        </activity>
-        <activity android:label="@string/share_name" android:name="com.google.zxing.client.android.share.ShareActivity" android:screenOrientation="user" android:stateNotNeeded="true">
-          <intent-filter>
-            <action android:name="com.google.zxing.client.android.SHARE"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-          </intent-filter>
-        </activity>
-        <activity android:label="@string/history_title" android:name="com.google.zxing.client.android.history.HistoryActivity" android:stateNotNeeded="true">
-          <intent-filter>
-            <action android:name="android.intent.action.VIEW"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-          </intent-filter>
-        </activity>
-        <activity android:label="@string/bookmark_picker_name" android:name="com.google.zxing.client.android.share.BookmarkPickerActivity" android:stateNotNeeded="true">
-          <intent-filter>
-            <action android:name="android.intent.action.PICK"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-          </intent-filter>
-        </activity>
-        <activity android:configChanges="orientation" android:label="@string/app_picker_name" android:name="com.google.zxing.client.android.share.AppPickerActivity" android:stateNotNeeded="true">
-          <intent-filter>
-            <action android:name="android.intent.action.PICK"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-          </intent-filter>
-        </activity>
-        <activity android:name="com.google.zxing.client.android.HelpActivity" android:screenOrientation="user">
-          <intent-filter>
-            <action android:name="android.intent.action.VIEW"/>
-            <category android:name="android.intent.category.DEFAULT"/>
-          </intent-filter>
-        </activity>
-        <activity android:configChanges="keyboardHidden|orientation|screenSize" android:screenOrientation="portrait" android:label="Main Activity" android:name=".MyActivity">
-          <intent-filter>
-            <action android:name="android.intent.action.MAIN"/>
-            <category android:name="android.intent.category.LAUNCHER"/>
-          </intent-filter>
-        </activity>
-        <activity android:configChanges="keyboardHidden|orientation" android:name="ti.modules.titanium.media.TiCameraActivity"/>
-        <activity android:configChanges="keyboardHidden|orientation" android:launchMode="singleTask" android:name="ti.modules.titanium.map.TiMapActivity"/>
-        <activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="org.appcelerator.titanium.TiActivity"/>
-        <activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="org.appcelerator.titanium.TiTranslucentActivity"/>
-        <activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="org.appcelerator.titanium.TiModalActivity"/>
-        <activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="ti.modules.titanium.ui.TiTabActivity"/>
-        <activity android:name="ti.modules.titanium.ui.android.TiPreferencesActivity"/>
-        <uses-library android:name="com.google.android.maps"/>
-        <service android:enabled="true" android:exported="true" android:isolatedProcess="false" android:label="iBeacon" android:name="com.radiusnetworks.ibeacon.service.IBeaconService"/>
-        <service android:enabled="true" android:name="com.radiusnetworks.ibeacon.IBeaconIntentProcessor">
-          <meta-data android:name="background" android:value="true"/>
-          <intent-filter android:priority="1">
-            <action android:name="com.company.app.DID_RANGING"/>
-            <action android:name="com.company.app.DID_MONITORING"/>
-          </intent-filter>
-        </service>
-        <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="my-google-maps-v2-apikey"/>
-      </application>
-    </manifest>
-  </android>
-  <modules>
-    <module platform="android">ti.barcode</module>
-    <module platform="iphone">ti.barcode</module>
-    <module platform="android">ti.imagefactory</module>
-    <module platform="iphone">ti.imagefactory</module>
-    <module platform="android">ti.map</module>
-    <module platform="iphone">ti.map</module>
-    <module platform="android">facebook</module>
-    <module platform="iphone">facebook</module>
-    <module platform="iphone">org.beuckman.tibeacons</module>
-    <module platform="android">com.liferay.beacons</module>
-    <module platform="android">bencoding.android.tools</module>
-  </modules>
-  <deployment-targets>
-    <target device="blackberry">false</target>
-    <target device="android">true</target>
-    <target device="ipad">true</target>
-    <target device="iphone">true</target>
-    <target device="mobileweb">false</target>
-  </deployment-targets>
-  <sdk-version>3.5.1.RC</sdk-version>
-  <property name="liferay.version.string">Version: 1.0.0 Build: Monday, March 09, 2015</property>
+    <!-- google API key -->
+    <property name="liferay.google.apikey">AIzaSyCYk0TaOvmrviOw8epcEuLObLWL8ifREPg</property>
+
+    <property name="liferay.regular.font">Helvetica</property>
+    <property name="liferay.light.font">Helvetica</property>
+    <property name="liferay.default_event_url">http://mycompanywebsite.com</property>
+    <property name="liferay.default_event_hashtag">#companyhashtag</property>
+    <property name="liferay.default_event_logo_url">http://mycompany.com/logo.png</property>
+    <ios>
+	<min-ios-ver>4.0</min-ios-ver>
+	<plist>
+	    <dict>
+		<key>UIBackgroundModes</key>
+		<array>
+		    <string>location</string>
+		    <string>bluetooth-central</string>
+		</array>
+	    </dict>
+	    <dict>
+		<key>UISupportedInterfaceOrientations</key>
+		<array>
+		    <string>UIInterfaceOrientationPortrait</string>
+		    <string>UIInterfaceOrientationPortraitUpsideDown</string>
+		</array>
+		<key>NSLocationUsageDescription</key>
+		<string>
+		    This app requests your location to determine the closest event to you, and for generating dynamic iBeacon notifications.
+		</string>
+		<key>NSLocationAlwaysUsageDescription</key>
+		<string>
+		    This app requests your location to determine the closest event to you, and for generating dynamic iBeacon notifications.
+		</string>
+
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>
+		    This app requests your location to determine the closest event to you, and for generating dynamic iBeacon notifications.
+		</string>
+
+		<key>CFBundleURLTypes</key>
+		<array>
+		    <dict>
+			<key>CFBundleURLName</key>
+			<!-- Application ID same as the id value in the tiapp.xml file -->
+			<string>com.company.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+			    <!-- Prefix the Facebook App ID with 'fb' -->
+			    <string>facebook.appid</string>
+			</array>
+		    </dict>
+		</array>
+		<key>FacebookAppID</key>
+		<!-- Facebook App ID -->
+		<string>facebook.appid</string>
+		<key>FacebookDisplayName</key>
+		<!-- Facebook App Name from developer.facebook.com -->
+		<string>My Facebook App Name</string>
+
+	    </dict>
+	</plist>
+    </ios>
+    <android
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<manifest android:installLocation="auto" android:versionCode="1" android:versionName="1.0.0" package="com.company.app">
+	    <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true"/>
+	    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="21"/>
+	    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+	    <uses-feature android:name="android.hardware.camera.front" android:required="false"/>
+	    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+	    <uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
+	    <uses-feature android:name="android.hardware.screen.landscape" android:required="false"/>
+	    <uses-feature android:name="android.hardware.wifi" android:required="false"/>
+	    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+	    <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
+	    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
+	    <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
+	    <uses-permission android:name="android.permission.FLASHLIGHT"/>
+	    <application android:debuggable="false" android:icon="@drawable/appicon" android:label="Liferay Events"
+			 android:theme="@style/Theme.NoActionBar" android:name="LiferayEventsApplication" android:largeHeap="true">
+		<activity android:configChanges="keyboardHidden|orientation|screenSize" android:screenOrientation="portrait"
+			  android:label="Liferay Events" android:name=".LiferayEventsActivity">
+		    <intent-filter>
+			<action android:name="android.intent.action.MAIN"/>
+			<category android:name="android.intent.category.LAUNCHER"/>
+		    </intent-filter>
+		</activity>
+		<activity android:configChanges="keyboardHidden|orientation" android:name="ti.modules.titanium.media.TiCameraActivity"/>
+		<activity android:configChanges="keyboardHidden|orientation" android:launchMode="singleTask"
+			  android:name="ti.modules.titanium.map.TiMapActivity"/>
+		<activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="org.appcelerator.titanium.TiActivity"/>
+		<activity android:configChanges="keyboardHidden|orientation|screenSize"
+			  android:name="org.appcelerator.titanium.TiTranslucentActivity"/>
+		<activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="org.appcelerator.titanium.TiModalActivity"/>
+		<activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="ti.modules.titanium.ui.TiTabActivity"/>
+		<activity android:name="ti.modules.titanium.ui.android.TiPreferencesActivity"/>
+		<activity android:label="@string/app_name"
+			  android:name="com.facebook.LoginActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+		<meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+
+		<uses-library android:name="com.google.android.maps"/>
+		<service android:enabled="true" android:exported="true" android:isolatedProcess="false" android:label="iBeacon"
+			 android:name="com.radiusnetworks.ibeacon.service.IBeaconService"/>
+		<service android:enabled="true" android:name="com.radiusnetworks.ibeacon.IBeaconIntentProcessor">
+		    <meta-data android:name="background" android:value="true"/>
+		    <intent-filter android:priority="1">
+			<action android:name="com.liferay.events.global.mobile.DID_RANGING"/>
+			<action android:name="com.liferay.events.global.mobile.DID_MONITORING"/>
+		    </intent-filter>
+		</service>
+		<meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="my-google-android-maps-v2-apikey"/>
+	    </application>
+	</manifest>
+    </android>
+    <modules>
+	<module platform="android">nl.vanvianen.android.gcm</module>
+	<module platform="android">ti.imagefactory</module>
+	<module platform="iphone">ti.imagefactory</module>
+	<module platform="android">ti.map</module>
+	<module platform="iphone">ti.map</module>
+	<module platform="android">facebook</module>
+	<module platform="iphone">facebook</module>
+	<module platform="iphone">org.beuckman.tibeacons</module>
+	<module platform="android">com.liferay.beacons</module>
+	<module platform="android">bencoding.android.tools</module>
+	<module platform="iphone" version="1.8">bencoding.securely</module>
+	<module platform="android" version="1.7">bencoding.securely</module>
+	<module platform="iphone" version="0.7">com.mfogg.squarecamera</module>
+	<module platform="android">de.evopark.tiqr</module>
+	<module platform="commonjs" version="0.8.1">liferay-connector</module>
+	<module platform="iphone">ti.mediapicker</module>
+	<module platform="android">ti.mediapicker</module>
+	<module platform="android">com.liferay.dragger</module>
+    </modules>
+    <deployment-targets>
+	<target device="blackberry">false</target>
+	<target device="android">true</target>
+	<target device="ipad">true</target>
+	<target device="iphone">true</target>
+	<target device="mobileweb">false</target>
+    </deployment-targets>
+    <sdk-version>4.0.0.RC4</sdk-version>
+    <property name="liferay.version.string">Version: 1.0.0 Build: Monday, March 09, 2015</property>
 </ti:app>

@@ -20,8 +20,10 @@ liferay.controller = {
     className: "liferay.controller",
 
     init: function () {
-        if (liferay.model.iOS) {
 
+        liferay.controller.subscribeToPush();
+
+        if (liferay.model.iOS) {
             if (liferay.model.iOS8) {
                 Ti.Geolocation.setPurpose(L('GEO_PERMISSION_PURPOSE'));
                 Ti.Geolocation.getCurrentPosition(function (result) {
@@ -29,7 +31,7 @@ liferay.controller = {
                 Ti.App.iOS.registerUserNotificationSettings({
                     types: [Ti.App.iOS.USER_NOTIFICATION_TYPE_ALERT,
                         Ti.App.iOS.USER_NOTIFICATION_TYPE_SOUND,
-                        Ti.App.iOS.USER_NOTIFICATION_TYPE_BADGE]
+                       Ti.App.iOS.USER_NOTIFICATION_TYPE_BADGE]
                 });
             }
             var tmpMod = require('org.beuckman.tibeacons');
@@ -67,9 +69,12 @@ liferay.controller = {
 
         this.preferredEventId = null;
         this.selectedEvent = null;
+        this.appPreferences = [];
         this.news = [];
         this.loadEventPreferences();
+        this.loadAppPreferences();
         this.loadNews();
+
 
         if (liferay.model.retina || liferay.model.iPad || (liferay.model.android && Ti.Platform.displayCaps.platformWidth > 400)) {
             liferay.tools.updateImagePaths(liferay.settings, "-@2x");
@@ -91,6 +96,10 @@ liferay.controller = {
         this.window.orientationModes = [Titanium.UI.PORTRAIT, Titanium.UI.UPSIDE_PORTRAIT];
         if (liferay.model.android) {
             this.window.backgroundImage = "default-android.png";
+            var fb = require('facebook');
+            if (fb) {
+                this.tabGroup.fbProxy = fb.createActivityWorker({lifecycleContainer: this.tabGroup});
+            }
         } else if (liferay.model.iOS) {
             if (liferay.model.iPhone) {
                 if (Ti.Platform.displayCaps.platformHeight == 568 && liferay.model.retina) {
@@ -274,6 +283,24 @@ liferay.controller = {
         }, 100);
     },
 
+    registerForEventPushTimer : null,
+
+    registerForEventPush: function() {
+        // register for push
+
+        clearTimeout(liferay.controller.registerForEventPushTimer);
+
+        if (liferay.controller.pushDeviceToken) {
+            var platform = (liferay.model.iOS) ? 'apple' : (liferay.model.android ? 'android' : null);
+            var email = liferay.drawer.getEmailAddress();
+            liferay.controller.registerToken(liferay.controller.pushDeviceToken,
+                platform, liferay.controller.selectedEvent.eventid, email,
+                function () {
+                }, function (err) {
+                    liferay.controller.registerForEventPushTimer = setTimeout(liferay.controller.registerForEventPush, liferay.settings.server.pushRegisterFrequencyMins * 60 * 1000);
+                });
+        }
+    },
     loadAndStartEvent: function () {
 
         var now = new Date();
@@ -298,6 +325,8 @@ liferay.controller = {
             }
         }
 
+        liferay.controller.registerForEventPush();
+
         if (now.getTime() > eventEndLocal) {
             liferay.controller.fetchEventDataPeriodically(liferay.controller.selectedEvent, liferay.settings.server.initialBackoffSecs);
             liferay.beacons.stopRegionMonitoring();
@@ -316,6 +345,7 @@ liferay.controller = {
                     return;
                 }
                 liferay.controller.shaken = true;
+                liferay.controller.fetchEventListDataPeriodically(liferay.controller.selectedEvent, liferay.settings.server.initialBackoffSecs);
                 liferay.controller.fetchEventDataPeriodically(liferay.controller.selectedEvent, liferay.settings.server.initialBackoffSecs);
                 setTimeout(function () {
                     liferay.controller.shaken = false;
@@ -346,6 +376,42 @@ liferay.controller = {
             }
 
             liferay.beacons.fetchBeaconsPeriodically(liferay.controller.selectedEvent, liferay.settings.server.initialBackoffSecs);
+
+            // load connect data
+            liferay.connect.loadDataFromFile();
+
+            // go thorugh and see if we can find latest cached content
+            liferay.connect.currentEventId = liferay.controller.selectedEvent.eventid;
+            liferay.connect.currentEventData = {};
+            liferay.connect.currentEventData.profile = null;
+            liferay.connect.chatListeners = [];
+            liferay.connect.currentEventData.recommendations = [];
+            liferay.connect.currentEventData.queuedInterests = [];
+            liferay.connect.currentEventData.queuedMessages = [];
+            liferay.connect.currentEventData.uninterestedIds = [];
+            liferay.connect.currentEventData.connections = [];
+            liferay.connect.currentEventData.messages = [];
+
+
+            for (var i = 0; i < liferay.connect.allEventData.length; i++) {
+                if (liferay.connect.allEventData[i].eventId == liferay.controller.selectedEvent.eventid) {
+                    liferay.connect.currentEventData = liferay.connect.allEventData[i].data;
+                    break;
+                }
+            }
+
+            liferay.connect.syncConnectData(liferay.controller.selectedEvent, liferay.settings.server.initialBackoffSecs);
+
+            // see if there are new pics
+            var seenCount = liferay.controller.getAppPreference("seenPhotoCount", liferay.controller.selectedEvent);
+            if (!seenCount) {
+                seenCount = 0;
+            }
+            liferay.screens.gallery.countEventPics(function(count) {
+                if (seenCount < count) {
+                    liferay.drawer.setNotificationValue(L('GALLERY'), (count - seenCount));
+                }
+            });
 
             liferay.controller.open(liferay.screens.front.render(), liferay.screens.front);
         }
@@ -386,7 +452,13 @@ liferay.controller = {
         liferay.controller.loadEventsFast({
             onLast: function () {
 
-                liferay.controller.saveDataToFile(liferay.data);
+                liferay.data.events.forEach(function(event) {
+                    if (liferay.controller.selectedEvent && (event.eventid == liferay.controller.selectedEvent.eventid)) {
+                        liferay.controller.selectedEvent = event;
+                    }
+                });
+
+
                 liferay.controller.childViews.forEach(function (view) {
                     view.refresh();
                 });
@@ -404,15 +476,36 @@ liferay.controller = {
         });
     },
 
-    open: function (window, view) {
+    open: function (window, view, anim) {
         liferay.controller.childWindows.push(window);
         liferay.controller.childViews.push(view);
         liferay.controller.mainTab.open(window, {
-            animated: true
+            animated: anim
         });
+
+        var seenViews = this.getAppPreference("com.liferay.seenviews");
+
+        if (!seenViews) {
+            seenViews = [];
+        }
+
+        if (view.className && (seenViews.indexOf(view.className) == -1)) {
+            if (view.helpData) {
+                liferay.ui.showHelp(view.helpData);
+            }
+            seenViews.push(view.className);
+            this.setAppPreference("com.liferay.seenviews", seenViews);
+            this.saveAppPreferences();
+        }
+
+        view.onOpen && view.onOpen();
     },
 
+
     getCurrentWindow: function () {
+        if (!liferay.controller.childWindows) {
+            return null;
+        }
         if (liferay.controller.childWindows.length <= 0) {
             return liferay.controller.window;
         } else {
@@ -420,6 +513,9 @@ liferay.controller = {
         }
     },
     getCurrentView: function () {
+        if (!liferay.controller.childViews) {
+            return null;
+        }
         if (liferay.controller.childViews.length <= 0) {
             return null;
         } else {
@@ -430,31 +526,24 @@ liferay.controller = {
     clearWindows: function () {
         var win = liferay.controller.getCurrentWindow();
         while (win != liferay.controller.window) {
-            liferay.controller.closeLast(true);
+            liferay.controller.closeLast(true, true);
             win = liferay.controller.getCurrentWindow();
         }
         liferay.controller.childWindows = [];
         liferay.controller.childViews = [];
     },
 
-    closeLast: function (close) {
+    closeLast: function (close, anim) {
         var win = liferay.controller.childWindows.pop();
         if (close) {
             if (liferay.model.iOS) {
                 liferay.controller.mainTab.close(win, {
-                    animated: true
+                    animated: anim
                 });
             } else {
                 win.close({
-                    animated: true
+                    animated: anim
                 });
-            }
-        }
-        if (liferay.model.android) {
-            if (win) {
-                // remove stuff to save memory on android
-                win.removeAllChildren();
-
             }
         }
         win = null;
@@ -646,6 +735,9 @@ liferay.controller = {
         });
         for (var i = 0; i < metadata.length; i++) {
             var parts = metadata[i].split(":");
+            if (parts.length != 2) {
+                continue;
+            }
             types[parts[0].trim()] = parts[1].trim();
         }
 
@@ -818,109 +910,91 @@ liferay.controller = {
         file.remoteBackup = false;
     },
 
-//	fakeNews : [
+    loadAppPreferences: function () {
+
+        var file = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory, liferay.settings.screens.loader.appPrefsFile);
+        if (file.exists()) {
+            try {
+                this.appPreferences = JSON.parse(file.read());
+            } catch (ex) {
+                this.appPreferences = [];
+            }
+            return true;
+        } else {
+            this.appPreferences = [];
+            return false;
+        }
+    },
+
+    saveAppPreferences: function () {
+
+        var folder = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory);
+        if (!folder.exists()) {
+            folder.createDirectory();
+            folder.remoteBackup = false;
+        }
+        var file = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory, liferay.settings.screens.loader.appPrefsFile);
+        file.write(JSON.stringify(this.appPreferences));
+        file.remoteBackup = false;
+    },
+
+    getAppPreference: function(key, event) {
+        var theKey = key;
+        if (event) {
+            theKey = event.eventid + '.' + theKey;
+        }
+
+        for (var i = 0; i < this.appPreferences.length; i++) {
+            if (this.appPreferences[i].name === theKey) {
+                return this.appPreferences[i].value;
+            }
+        }
+        // no prefernce
+        return null;
+    },
+
+    setAppPreference: function(key, val, event) {
+
+        var theKey = key;
+        if (event) {
+            theKey = event.eventid + '.' + theKey;
+        }
+
+        for (var i = 0; i < this.appPreferences.length; i++) {
+            if (this.appPreferences[i].name === theKey) {
+                this.appPreferences[i].value = val;
+                this.saveAppPreferences();
+                return;
+            }
+        }
+        // no prefernce
+        this.appPreferences.push({name: theKey, value: val});
+        this.saveAppPreferences();
+    },
+//	liferay.controller.news : [
 //		{
-//			eventid: "eventid",
-//			lastReadTime: "date",
+//			eventId: "eventid",
+//			lastReadTime: 234234223,
 //			news: [
 //				{
-//					time: "time",
-//					content: "content"
+//					time: 23423342234,
+    //              read: true/false
+//					item: newsItem {uuid: "123-123", date: "2014-12-12", time: "12:10", content:"blah", picture:"/images/foo.png", url: "http://liferay.com"}
 //				}
 //			]
 //		}
 //		],
 //
-    createNewsView: function (html) {
-        var newsView = Ti.UI.createView({
-            left: '2.5%',
-            top: '2.5%',
-            width: '95%',
-            height: '95%',
-            layout: 'vertical',
-            backgroundColor: 'black',
-            borderRadius: 10,
-            borderWidth: 5,
-            borderColor: '#89A9C9',
-            opacity: .95
-        });
 
-        var titleContainer = Ti.UI.createView({
-            left: 0,
-            top: 10,
-            width: Ti.UI.FILL,
-            height: '5%'
-        });
-
-        var label = Ti.UI.createLabel(liferay.settings.screens.loader.labels.news);
-        label.font = liferay.fonts.h4;
-        label.width = Ti.UI.SIZE;
-        label.height = Ti.UI.SIZE;
-        titleContainer.add(label);
-
-
-        var newsContainer = Ti.UI.createWebView({
-            left: '2.5%',
-            top: '2.5%',
-            width: '95%',
-            height: '75%',
-            html: html
-        });
-
-        if (liferay.model.android) {
-            // workaround for bug on android 2.3.x gingerbread
-            newsContainer.touchEnabled = false;
-        }
-
-        if (liferay.model.iOS) {
-            newsContainer.willHandleTouches = false;
-        }
-
-        var closeContainer = Ti.UI.createView({
-            left: 0,
-            width: Ti.UI.FILL,
-            height: '10%',
-            top: '1%'
-        });
-        var closebtn = Ti.UI.createButton({
-            title: L('CLOSE'),
-            font: liferay.fonts.h2,
-            top: '10%',
-            height: '80%'
-        });
-        closebtn.addEventListener('click', function (e) {
-            liferay.controller.getCurrentWindow().remove(newsView);
-        });
-        closeContainer.add(closebtn);
-        newsView.add(titleContainer);
-        newsView.add(newsContainer);
-        newsView.add(closeContainer);
-        return newsView;
-
-    },
-
-    showAllNews: function (event) {
+    getAllNewsItems: function(eventid) {
         if (!liferay.controller.news || liferay.controller.news.length <= 0) {
-            liferay.tools.toastNotification(null, L('NO_NEWS'));
-        } else {
-            var news = false;
-            liferay.controller.news.forEach(function (evtNews) {
-                if (evtNews.eventId == event.eventid) {
-                    news = true;
-                    liferay.controller.showNewsAlert(event, evtNews.news);
-                    evtNews.news.forEach(function (item) {
-                        var lastLatestDate = liferay.controller.getLastReadTime(event);
-                        if (item.read && (item.time > lastLatestDate)) {
-                            evtNews.lastReadTime = item.time;
-                        }
-                    });
-                    liferay.controller.saveNews();
-                }
-            });
-            if (!news) {
-                liferay.tools.alert(L('NOTE'), L('NO_NEWS'));
-            }
+            return [];
         }
+            for (var i = 0; i < liferay.controller.news.length; i++) {
+                if (liferay.controller.news[i].eventId == eventid) {
+                    return liferay.controller.news[i].news;
+                }
+            }
     },
     getUnreadNewsCount: function (eventid) {
         if (!liferay.controller.news || liferay.controller.news.length <= 0) {
@@ -940,39 +1014,6 @@ liferay.controller = {
         }
     },
 
-    showNewsAlert: function (event, news) {
-        var capsHeight = Titanium.Platform.displayCaps.platformHeight;
-        var phys = capsHeight / Titanium.Platform.displayCaps.dpi;
-        var size = 13;
-        if (phys > 5) {
-            size = 20;
-        }
-
-        var html = '<body style="font-size:' + size + 'pt;">';
-        news.forEach(function (item) {
-            var dt = new Date(item.time);
-            var style = 'font-family:arial,sans-serif;font-style: italic;';
-            if (!item.read) {
-                style += 'background-color: #FFD700;'
-            }
-            html += ('<span style="' + style + '">' + String.formatDate(dt, 'short') + ' - ' +
-            String.formatTime(dt, 'short') + ' </span>');
-            html += '<hr>';
-            html += '<div style="font-family:arial,sans-serif;"><p>' + item.content + '</div></p>';
-            item.read = true;
-
-        });
-
-        html += '</body>';
-        var view = liferay.controller.createNewsView(html);
-
-        liferay.controller.getCurrentWindow().add(view);
-        liferay.controller.newNews = false;
-        if (liferay.model.iOS) {
-            Ti.UI.iPhone.appBadge = null;
-        }
-    },
-
     getLastReadTime: function (event) {
         if (!liferay.controller.news) {
             return 0;
@@ -986,6 +1027,19 @@ liferay.controller = {
         return 0;
     },
 
+    setLastReadTime: function(event, time) {
+        if (!liferay.controller.news) {
+            return 0;
+        }
+        for (var i = 0; i < liferay.controller.news.length; i++) {
+            var evtNews = liferay.controller.news[i];
+            if (evtNews.eventId == event.eventid) {
+                evtNews.lastReadTime = time;
+                liferay.controller.saveNews();
+                return;
+            }
+        }
+    },
     fetchNewsPeriodically: function (event) {
         if (liferay.controller.newsTimer) {
             clearTimeout(liferay.controller.newsTimer);
@@ -995,26 +1049,31 @@ liferay.controller = {
 
         liferay.controller.fetchNews(event, function (news) {
 
-            var mappedNews = news.map(function (el) {
+            var now = new Date().getTime();
+
+            news.map(function (el) {
                 return {
                     time: (new liferay.classes.date().setFromISO8601(el.date + 'T' + el.time + ':00')).date.getTime(),
-                    content: el.content
+                    item: el
                 };
-            });
-
-            var sortedNews = mappedNews.sort(function (a, b) {
+            }).filter(function(item) {
+                return (item.time <= now);
+            }).sort(function (a, b) {
                 return b.time - a.time;
-            });
-
-            sortedNews.forEach(function (newsItem) {
-                liferay.controller.saveItemsToNews(event.eventid, newsItem.time, newsItem.content);
-                if (newsItem.time > lastReadTime) {
+            }).forEach(function (item) {
+                liferay.controller.saveItemsToNews(event.eventid, item.time, item.item);
+                if (item.time > lastReadTime) {
                     liferay.controller.newNews = true;
                 }
             });
             liferay.controller.saveNews();
             if (liferay.model.iOS) {
-                Ti.UI.iPhone.appBadge = liferay.controller.getUnreadNewsCount(event.eventid);
+                var unreadcount = liferay.controller.getUnreadNewsCount(event.eventid);
+                if (unreadcount > 0) {
+                    Ti.UI.iPhone.appBadge = unreadcount;
+                }
+
+                liferay.drawer.setNotificationValue(L('NEWS'), unreadcount);
             }
 
         }, function (err) {
@@ -1025,7 +1084,7 @@ liferay.controller = {
         }, liferay.settings.server.newsFrequencyMins * 60 * 1000);
     },
 
-    saveItemsToNews: function (eventid, time, content) {
+    saveItemsToNews: function (eventid, time, item) {
         if (!liferay.controller.news) {
             return;
         }
@@ -1033,19 +1092,17 @@ liferay.controller = {
         for (var i = 0; i < liferay.controller.news.length; i++) {
             if (liferay.controller.news[i].eventId == eventid) {
                 for (var j = 0; j < liferay.controller.news[i].news.length; j++) {
-                    if (liferay.controller.news[i].news[j].time == time) {
-                        liferay.controller.news[i].news[j] = {
-                            time: time,
-                            content: content,
-                            read: liferay.controller.news[i].news[j].read
-                        };
+                    if (liferay.controller.news[i].news[j].item &&
+                        liferay.controller.news[i].news[j].item.uuid == item.uuid) {
+                        liferay.controller.news[i].news[j].item = item;
+                        liferay.controller.news[i].news[j].time = time;
                         return;
                     }
                 }
                 // no news, so push it
                 liferay.controller.news[i].news.push({
                     time: time,
-                    content: content,
+                    item: item,
                     read: false
                 });
                 // sort all news so most recent is first
@@ -1063,7 +1120,7 @@ liferay.controller = {
             lastReadTime: 0,
             news: [{
                 time: time,
-                content: content,
+                item: item,
                 read: false
             }]
         });
@@ -1127,6 +1184,7 @@ liferay.controller = {
                         }
                     });
                     if (!badDataFound) {
+                        liferay.tools.preprocessData(tmpData);
                         if (onSuccess) {
                             onSuccess(tmpData);
                         }
@@ -1163,7 +1221,7 @@ liferay.controller = {
 
             Request({
                 method: 'POST',
-                url: liferay.settings.server.servicesHost.host + liferay.settings.servicesHost.favoritesServiceEndpoint,
+                url: liferay.settings.server.servicesHost.host + liferay.settings.server.servicesHost.favoritesServiceEndpoint,
                 params: {
                     event: event.eventid,
                     id: Ti.Platform.id,
@@ -1181,7 +1239,7 @@ liferay.controller = {
         if ((currentBeacons || currentRegions) && (currentBeacons.length > 0 || currentRegions.length > 0)) {
             Request({
                 method: 'POST',
-                url: liferay.settings.server.servicesHost.host + liferay.settings.servicesHost.beaconServiceEndpoint,
+                url: liferay.settings.server.servicesHost.host + liferay.settings.server.servicesHost.beaconServiceEndpoint,
                 params: {
                     event: event.eventid,
                     // TODO: put back
@@ -1194,5 +1252,421 @@ liferay.controller = {
                 }
             });
         }
+    },
+
+    pushDeviceToken: null,
+    subscribeToPush: function() {
+      if (liferay.model.iOS) {
+          var deviceToken = null;
+          // Check if the device is running iOS 8 or later
+          if (liferay.model.iOS8) {
+
+              // Wait for user settings to be registered before registering for push notifications
+              Ti.App.iOS.addEventListener('usernotificationsettings', function registerForPush() {
+
+                  // Remove event listener once registered for push notifications
+                  Ti.App.iOS.removeEventListener('usernotificationsettings', registerForPush);
+
+                  Ti.Network.registerForPushNotifications({
+                      success: deviceTokenSuccess,
+                      error: deviceTokenError,
+                      callback: receivePush
+                  });
+              });
+
+              // Register notification types to use
+              Ti.App.iOS.registerUserNotificationSettings({
+                  types: [
+                      Ti.App.iOS.USER_NOTIFICATION_TYPE_ALERT,
+                      Ti.App.iOS.USER_NOTIFICATION_TYPE_SOUND,
+                      Ti.App.iOS.USER_NOTIFICATION_TYPE_BADGE
+                  ]
+              });
+          } else {
+              // For iOS 7 and earlier
+              Ti.Network.registerForPushNotifications({
+                  // Specifies which notifications to receive
+                  types: [
+                      Ti.Network.NOTIFICATION_TYPE_BADGE,
+                      Ti.Network.NOTIFICATION_TYPE_ALERT,
+                      Ti.Network.NOTIFICATION_TYPE_SOUND
+                  ],
+                  success: deviceTokenSuccess,
+                  error: deviceTokenError,
+                  callback: receivePush
+              });
+          }
+            // Process incoming push notifications
+          function receivePush(e) {
+
+              // when app is running in foreground, received any time:
+              //e = {
+              //    "success": true,
+              //    "data": {
+              //        "vibrate": true,
+              //        "payload": "{\"screen\":\"gallery\",\"title\":\"Liferay Events\",\"smallIcon\":\"ic_stat_lrlogo.png\",\"ticker\":\"New Notification from Liferay Events\",\"screenDetail\":\"\"}",
+              //        "alert": "Don't miss out on photos!",
+              //        "sound": "default",
+              //        "badge": 1,
+              //        "aps": {"alert": "Don't miss out on photos!", "badge": 1, "sound": "default"}
+              //    },
+              //    "code": 0,
+              //    "source": {},
+              //    "type": "remote",
+              //    "inBackground": false
+              //};
+
+
+              var payloadObj = {};
+
+              try {
+                  payloadObj = JSON.parse(e.data.payload);
+              } catch (ex) {
+                  console.log("FAILED To parse payload: " + e.data.payload);
+              }
+
+              var message = e.data.alert;
+
+              if (payloadObj.localizedKey) {
+                message = L(payloadObj.localizedKey);
+              }
+
+              if (payloadObj.localizedKey && payloadObj.localizedArgs) {
+                  message = String.format.apply(this, [L(payloadObj.localizedKey)].concat(JSON.parse(payloadObj.localizedArgs)));
+              }
+
+              if (e.inBackground && !liferay.controller.getCurrentView()) {
+                  // received notification while app not running
+
+                  liferay.controller.missedPush = {
+                      title: payloadObj.title,
+                      message: message,
+                      screen: payloadObj.screen,
+                      screenDetail: payloadObj.screenDetail,
+                      payload: payloadObj
+                  };
+
+              } else if (!e.inBackground || (e.inBackground && liferay.controller.getCurrentView())) {
+                  // coming back from backgrounded app or in foreground, so show dialog
+                  var eventId = payloadObj.eventId;
+
+                  if (payloadObj.saveToNews) {
+                      var picUrl = payloadObj.picUrl;
+                      var picLink = payloadObj.picLink;
+
+                      var item = {
+                          time: new Date().getTime(),
+                          item: {
+                              content:message,
+                              url:picLink,
+                              picture: picUrl,
+                              uuid: new Date().getTime()
+                          }
+                      };
+                      liferay.controller.saveItemsToNews(eventId, item.time, item.item);
+                      if (liferay.controller.selectedEvent && liferay.controller.selectedEvent.eventid == eventId) {
+                          liferay.controller.newNews = true;
+                          liferay.controller.saveNews();
+                          var unreadcount = liferay.controller.getUnreadNewsCount(eventId);
+                          if (unreadcount > 0) {
+                              Ti.UI.iPhone.appBadge = unreadcount;
+                              liferay.drawer.setNotificationValue(L('NEWS'), unreadcount);
+                          }
+                      }
+                  }
+
+                  var isCurrentEvent = true;
+                  if (payloadObj.screen && (!liferay.controller.selectedEvent || (liferay.controller.selectedEvent.eventid != eventId))) {
+                      // push has a screen link but for a different event, so don't show
+                      isCurrentEvent = false;
+                  }
+
+                  var shouldShow = true;
+                  if (payloadObj.screen) {
+                      shouldShow = liferay.controller.testPushAction(payloadObj.screen, payloadObj.screenDetail);
+                  }
+                  if (shouldShow) {
+
+                      var dialog = Ti.UI.createAlertDialog({
+                          title: payloadObj.title,
+                          message: message,
+                          buttonNames: [payloadObj.screen ? L('VIEW') : L('OK')],
+                          cancel: 1
+                      });
+                      dialog.addEventListener("click", function (event) {
+                          dialog.hide();
+                          if (event.index == 0) {
+                              /* Do stuff to view the notification */
+                              if (payloadObj.screen && !isCurrentEvent) {
+                                  liferay.tools.alert(L('NOTE'), L('WRONG_EVENT'));
+                                  return;
+                              }
+
+                              if (payloadObj.screen) {
+                                  liferay.controller.loadPushAction(payloadObj.screen, payloadObj.screenDetail);
+                              }
+                          }
+                      });
+                      dialog.show();
+                  }
+              }
+
+          }
+          // Save the device token for subsequent API calls
+          function deviceTokenSuccess(e) {
+              liferay.controller.pushDeviceToken = e.deviceToken;
+              if (liferay.controller.selectedEvent && liferay.controller.pushDeviceToken) {
+                  var platform = (liferay.model.iOS) ? 'apple' : (liferay.model.android ? 'android' : null);
+                  var emailAddress = liferay.drawer.getEmailAddress();
+
+                  liferay.controller.registerToken(e.deviceToken,
+                      platform, liferay.controller.selectedEvent.eventid, emailAddress,
+                      function() {
+                      }, function(err) {
+
+                      });
+              }
+          }
+          function deviceTokenError(e) {
+              console.log('Failed to register for push notifications! ' + JSON.stringify(e));
+          }
+
+      }  else if (liferay.model.android) {
+
+          var gcm = require("nl.vanvianen.android.gcm");
+
+          /* If the app is started or resumed act on pending data saved when the notification was received */
+          var lastData = gcm.getLastData();
+          if (lastData) {
+              Ti.API.info("Last notification received " + JSON.stringify(lastData));
+                // called when activity opened when app closed
+              //var lastData = {
+              //    "title": "Liferay Events",
+              //    "collapse_key": "do_not_collapse",
+              //    "badge": "1",
+              //    "sound": "default",
+              //    "payload": "{\"body\":\"Don't miss out on stuff!\",\"screen\":\"agendaDetail\",\"title\":\"Liferay Events\",\"ticker\":\"New Notification from Liferay Events\",\"sound\":\"default\",\"screenDetail\":\"James Falkner\",\"vibrate\":true,\"badge\":1}",
+              //    "from": "234324224",
+              //    "message": "Don't miss out on stuff!",
+              //    "ticker": "New Notification from Liferay Events",
+              //    "vibrate": "true"
+              //};
+
+              var payloadObj = {};
+
+              try {
+                  payloadObj = JSON.parse(lastData.payload);
+              } catch (ex) {
+                  console.log("FAILED To parse payload: " + lastData.payload);
+              }
+
+              var message = lastData.message;
+
+              if (payloadObj.localizedKey) {
+                  message = L(payloadObj.localizedKey);
+              }
+
+              if (payloadObj.localizedKey && payloadObj.localizedArgs) {
+                  message = String.format.apply(this, [L(payloadObj.localizedKey)].concat(JSON.parse(payloadObj.localizedArgs)));
+              }
+
+              liferay.controller.missedPush = {
+                  title: lastData.title,
+                  message: message,
+                  screen: payloadObj.screen,
+                  screenDetail: payloadObj.screenDetail,
+                  payload: payloadObj
+              };
+              gcm.clearLastData();
+
+          }
+
+          gcm.registerPush({
+              /* The Sender ID from Google Developers Console, see https://console.developers.google.com/project/XXXXXXXX/apiui/credential */
+              /* It's the same as your project id */
+              senderId: Ti.App.Properties.getString('liferay.gcm.senderid'),
+              notificationSettings: {
+                  //sound: 'mysound.mp3', /* Place in platform/android/res/raw/mysound.mp3 */
+                  smallIcon: 'ic_stat_lrlogo.png',  /* Place in platform/android/res/drawable/notification_icon.png */
+                  largeIcon: 'appicon.png',  /* Same */
+                  vibrate: true
+              },
+              success: function (event) {
+                  Ti.API.info("Push registration success: " + JSON.stringify(event));
+                  /* Add code to send event.registrationId to your server */
+                  liferay.controller.pushDeviceToken = event.registrationId;
+                //  liferay.controller.registerToken(liferay.controller.pushDeviceToken);
+
+              },
+              error: function (event) {
+                  Ti.API.info("Push registration error = " + JSON.stringify(event));
+              },
+              callback: function (event) {
+                  Ti.API.info("Push callback = " + JSON.stringify(event));
+                  //event = {
+                  //    "data": {
+                  //        "title": "Liferay Events",
+                  //        "collapse_key": "do_not_collapse",
+                  //        "badge": "1",
+                  //        "sound": "default",
+                  //        "payload": "{\"body\":\"Don't miss out on stuff!\",\"screen\":\"agendaDetail\",\"title\":\"Liferay Events\",\"ticker\":\"New Notification from Liferay Events\",\"sound\":\"default\",\"screenDetail\":\"James Falkner\",\"vibrate\":true,\"badge\":1}",
+                  //        "message": "Don't miss out on stuff!",
+                  //        "from": "23423342",
+                  //        "vibrate": "true",
+                  //        "ticker": "New Notification from Liferay Events"
+                  //    }
+                  //};
+                  /* Called when a notification is received and the app is running */
+                  gcm.clearLastData();
+
+                  var data = event.data;
+                  var payloadObj = {};
+                  try {
+                      payloadObj = JSON.parse(data.payload);
+                  } catch (ex) {
+                      console.log("FAILED to parse payload: " + data.payload);
+                  }
+
+                  var message = data.message;
+
+                  if (payloadObj.localizedKey) {
+                      message = L(payloadObj.localizedKey);
+                  }
+
+                  if (payloadObj.localizedKey && payloadObj.localizedArgs) {
+                      message = String.format.apply(this, [L(payloadObj.localizedKey)].concat(JSON.parse(payloadObj.localizedArgs)));
+                  }
+                  var eventId = payloadObj.eventId;
+
+                  if (payloadObj.saveToNews) {
+                      var picUrl = payloadObj.picUrl;
+                      var picLink = payloadObj.picLink;
+
+                      var item = {
+                          time: new Date().getTime(),
+                          item: {
+                              content:message,
+                              url:picLink,
+                              picture: picUrl,
+                              uuid: new Date().getTime()
+                          }
+                      };
+                      liferay.controller.saveItemsToNews(eventId, item.time, item.item);
+                      if (liferay.controller.selectedEvent && liferay.controller.selectedEvent.eventid == eventId) {
+                          liferay.controller.newNews = true;
+                          liferay.controller.saveNews();
+                          var unreadcount = liferay.controller.getUnreadNewsCount(eventId);
+                          if (unreadcount > 0) {
+                              liferay.drawer.setNotificationValue(L('NEWS'), unreadcount);
+                          }
+                      }
+                  }
+
+                  var isCurrentEvent = true;
+                  if (payloadObj.screen && (!liferay.controller.selectedEvent || (liferay.controller.selectedEvent.eventid != eventId))) {
+                      // push has a screen link but for a different event, so don't show
+                      isCurrentEvent = false;
+                  }
+
+
+                  var shouldShow = true;
+                  if (payloadObj.screen) {
+                      shouldShow = liferay.controller.testPushAction(payloadObj.screen, payloadObj.screenDetail);
+                  }
+                  if (shouldShow) {
+                      var dialog = Ti.UI.createAlertDialog({
+                          title: data.title,
+                          message: message,
+                          buttonNames: [payloadObj.screen ? L('VIEW'): L('OK')],
+                          cancel: 1
+                      });
+                      dialog.addEventListener("click", function(event) {
+                          dialog.hide();
+                          if (event.index == 0) {
+                              /* Do stuff to view the notification */
+                              if (payloadObj.screen && !isCurrentEvent) {
+                                  liferay.tools.alert(L('NOTE'), L('WRONG_EVENT'));
+                                  return;
+                              }
+
+                              if (payloadObj.screen) {
+                                  liferay.controller.loadPushAction(payloadObj.screen, payloadObj.screenDetail);
+                              }
+                          }
+                      });
+                      dialog.show();
+                  }
+              }
+          });
+
+      }
+    },
+    testPushAction: function(screen, screenDetail) {
+        var windowName = screen;
+        var windowParams = [];
+        if (screenDetail) windowParams = screenDetail.split(';;');
+
+        var shouldShowAction = false;
+
+        var currentView = liferay.controller.getCurrentView();
+        if (currentView === liferay.screens[windowName]) {
+            shouldShowAction = currentView.testAction("DUMMY", windowParams, "");
+        } else {
+            var view = liferay.screens[windowName];
+            if (view) {
+                shouldShowAction = view.testAction("DUMMY", windowParams, "");
+            }
+        }
+
+        return !!shouldShowAction;
+
+    },
+    loadPushAction: function(screen, screenDetail) {
+
+        liferay.connect.forceSync();
+
+        var windowName = screen;
+        var windowParams = [];
+        if (screenDetail) windowParams = screenDetail.split(';;');
+
+        var currentView = liferay.controller.getCurrentView();
+        if (currentView === liferay.screens[windowName]) {
+            currentView.loadAction(windowParams, "", function() {});
+        } else {
+            var view = liferay.screens[windowName];
+            if (view) {
+                liferay.controller.open(view.render(), view);
+                view.loadAction(windowParams, "", function() {});
+            }
+        }
+
+    },
+    registerToken: function(token, platform, channel, emailAddress, onSuccess, onFailure) {
+
+        Request({
+            method: 'POST',
+            hashAlg: 'sha',
+            sigName: 'signature',
+            url: liferay.settings.server.pushHost.host + liferay.settings.server.pushHost.addDeviceEndpoint,
+            params: {
+                token: token,
+                platform: platform,
+                channel: channel,
+                emailAddress: emailAddress
+            },
+            onSuccess: function (newDevice) {
+                if (newDevice && newDevice.exception) {
+                    onFailure && onFailure(newDevice.exception + newDevice.message);
+                    return;
+                }
+
+                if (!newDevice.pushNotificationsDeviceId) {
+                    onFailure && onFailure("No valid push device returned for token:" + token + " platform:" + platform + " channel:" +  channel);
+                }
+                onSuccess && onSuccess(newDevice);
+
+            },
+            onFailure: onFailure
+        });
     }
 };

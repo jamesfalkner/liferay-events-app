@@ -333,7 +333,7 @@ liferay.list_templates.init = function () {
                     ]
                 },
                 {
-                    // left image container
+                    // right arrow container
                     type: 'Ti.UI.View',
                     properties: {
                         left: '90%',
@@ -399,4 +399,181 @@ liferay.list_templates.init = function () {
                     ]
                 }
         ];
+
+    liferay.list_templates.drawer_menu = {
+        base: {
+            properties: {
+                backgroundColor: '#1f1f1f',
+                borderColor: '#1f1f1f',
+                borderWidth: '2dp',
+                borderRadius: '3dp'
+                //height: '150dp'
+            },
+            childTemplates: [
+                {
+                    // left image container
+                    type: 'Ti.UI.View',
+                    properties: {
+                        left: 0,
+                        width: '25%',
+                        height: Ti.UI.FILL,
+                        backgroundColor: 'transparent'
+                    },
+                    childTemplates: [
+                        {
+                            type: 'Ti.UI.View',
+                            properties: {
+                                top: '7dp',
+                                bottom: '7dp',
+                                left: '7dp',
+                                right: '7dp'
+                            },
+                            childTemplates: [
+                                {
+                                    type: 'Ti.UI.ImageView',
+                                    bindId: 'image',
+                                    height: 'auto',
+                                    width: 'auto'
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    // middle title container
+                    type: 'Ti.UI.View',
+                    properties: {
+                        left: '30%',
+                        width: '56%',
+                        height: Ti.UI.FILL,
+                        backgroundColor: 'transparent'
+                    },
+                    childTemplates: [
+                        {
+                            type: 'Ti.UI.Label',
+                            bindId: 'title',
+                            properties: {
+                                width: Ti.UI.FILL,
+                                height: Ti.UI.FILL,
+                                font: liferay.fonts.h1,
+                                color: '#eeeeee',
+                                backgroundColor: 'transparent',
+                                verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
+                                textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT
+                            }
+
+                        }
+                    ]
+                },
+                {
+                    // right notification container
+                    type: 'Ti.UI.View',
+                    properties: {
+                        left: '83%',
+                        width: '14%',
+                        height: Ti.UI.FILL,
+                        backgroundColor: 'transparent'
+                    },
+                    childTemplates: [
+                        {
+                            type: 'Ti.UI.View',
+                            properties: {
+                                top: '2dp',
+                                bottom: '2dp',
+                                left: '2dp',
+                                right: '2dp'
+                            },
+                            childTemplates: [
+                                {
+                                    type: 'Ti.UI.Label',
+                                    bindId: 'notification_label',
+                                    properties: {
+                                        width: liferay.model.iOS ? '20dp' : Ti.UI.SIZE,
+                                        height: liferay.model.iOS ? '20dp' : Ti.UI.SIZE,
+                                        font: liferay.fonts.h1b,
+                                        color: 'white',
+                                        backgroundColor: liferay.settings.screens.agenda.selectColor,
+                                        verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
+                                        textAlign: Ti.UI.TEXT_ALIGNMENT_CENTER,
+                                        borderSize: '1dp',
+                                        borderRadius: '10dp',
+                                        borderColor: 'transparent'
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        no_notification: {
+            properties: {
+                backgroundColor: '#1f1f1f',
+                borderColor: '#1f1f1f',
+                borderWidth: '2dp',
+                borderRadius: '3dp'
+                //height: '150dp'
+            },
+            childTemplates: [
+                {
+                    // left image container
+                    type: 'Ti.UI.View',
+                    properties: {
+                        left: 0,
+                        width: '25%',
+                        height: Ti.UI.FILL,
+                        backgroundColor: 'transparent'
+                    },
+                    childTemplates: [
+                        {
+                            type: 'Ti.UI.View',
+                            properties: {
+                                top: '7dp',
+                                bottom: '7dp',
+                                left: '7dp',
+                                right: '7dp'
+                            },
+                            childTemplates: [
+                                {
+                                    type: 'Ti.UI.ImageView',
+                                    bindId: 'image',
+                                    height: 'auto',
+                                    width: 'auto'
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    // middle title container
+                    type: 'Ti.UI.View',
+                    properties: {
+                        left: '30%',
+                        width: '56%',
+                        height: Ti.UI.FILL,
+                        backgroundColor: 'transparent'
+                    },
+                    childTemplates: [
+                        {
+                            type: 'Ti.UI.Label',
+                            bindId: 'title',
+                            properties: {
+                                width: Ti.UI.FILL,
+                                height: Ti.UI.FILL,
+                                font: liferay.fonts.h1,
+                                color: '#eeeeee',
+                                backgroundColor: 'transparent',
+                                verticalAlign: Titanium.UI.TEXT_VERTICAL_ALIGNMENT_CENTER,
+                                textAlign: Ti.UI.TEXT_ALIGNMENT_LEFT
+                            }
+
+                        }
+                    ]
+                }
+            ]
+        }
+
+    };
+
+
 };

@@ -80,7 +80,9 @@ liferay.screens.activities.loadActivities = function() {
 	});
 
     if (!this.listViewSection) {
-        this.listViewSection = Ti.UI.createListSection();
+        this.listViewSection = Ti.UI.createListSection({
+            headerTitle: L('ACTIVITIES')
+        });
     }
 
     this.listViewSection.setItems(data);

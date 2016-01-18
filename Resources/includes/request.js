@@ -23,21 +23,10 @@ function Request(options) {
 
 	var allParams = [];
 
-	allParams.push({
-		name: 'api_ver',
-		value: liferay.settings.server.apiVersion
-	});
-
-	var locale = Titanium.Locale.getCurrentLocale().replace('-', '_');
-	if (locale) {
-		allParams.push({
-			name: 'locale',
-			value: locale
-		});
-	}
 	if(options.params) {
 		for(var paramName in options.params) {
 			if (!options.params.hasOwnProperty(paramName)) continue;
+			if (options.sigIgnore && (options.sigIgnore.indexOf(paramName) >= 0)) continue;
 			allParams.push({
 				name: paramName,
 				value: options.params[paramName]
@@ -62,18 +51,18 @@ function Request(options) {
 	});
 
     var hashVal;
-    
-    if (options.hashAlg === 'sha') {
-        hashVal = Ti.Utils.sha256(preSig)
+
+    if (options.hashAlg === 'md5') {
+		hashVal = Ti.Utils.md5HexDigest(preSig);
     } else  {
-        hashVal = Ti.Utils.md5HexDigest(preSig);
+		hashVal = Ti.Utils.sha256(preSig)
     }
 
 	allParams.push({
-		name: "api_sig",
+		name: options.sigName ? options.sigName : "api_sig",
 		value: hashVal
 	});
-    
+
 	if (!options.method || options.method == 'GET') {
 		allParams.forEach(function(param, idx) {
 			url += (param.name + '=' + encodeURIComponent(param.value));
@@ -105,22 +94,44 @@ function Request(options) {
 				return;
 			}
 		}
-        //console.log(JSON.stringify(resultObj));
+		//console.log("location: " + this.location + " args: " + JSON.stringify(this.lrargs) + " result: " + JSON.stringify(resultObj));
 		options.onSuccess(resultObj);
 	};
 
 	xhr.onerror = function(e) {
+		//console.log("FAILED TO GET: " + this.location + " args: " + JSON.stringify(this.lrargs) + " result: " + JSON.stringify(e));
 		if (options.onFailure) {
 			options.onFailure('Request failed:' + e.error);
 		}
 	};
 	xhr.open(options.method || 'GET', url);
-	xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+	var contentType;
+	if (!options.contentType) {
+		contentType = 'application/x-www-form-urlencoded';
+	} else if (options.contentType == 'DEFAULT') {
+		contentType = null;
+	} else {
+		contentType = options.contentType;
+	}
+
+	if (contentType) {
+		xhr.setRequestHeader('Content-Type', contentType);
+	}
 	if (options.method == 'POST') {
 		var paramObj = {};
 		allParams.forEach(function(el) {
 			paramObj[el.name] = el.value;
+			if (typeof el.value === 'number' && isFinite(el.value)) {
+				paramObj[el.name] = el.value.toFixed();
+			}
 		});
+		if (options.sigIgnore) {
+			options.sigIgnore.forEach(function(paramName) {
+				paramObj[paramName] = options.params[paramName];
+			});
+		}
+		xhr.lrargs = paramObj;
 		xhr.send(paramObj);
 	} else {
 		xhr.send();

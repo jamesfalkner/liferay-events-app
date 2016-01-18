@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+var ImageFactory = require('ti.imagefactory');
+var MediaPickerModule = require('/lib/MediaPicker').MediaPicker;
+var MediaPicker = new MediaPickerModule();
+
 liferay.tools = {};
 liferay.tools.actInd = null;
 liferay.tools.actIndProg = null;
@@ -75,6 +79,16 @@ liferay.tools.preprocessData = function (arr) {
                 item[key] = liferay.tools.getBoolean(item[key]);
             }
         });
+
+        try {
+            liferay.settings.server.customValues.forEach(function (key) {
+                if (item[key]) {
+                    item[key] = JSON.parse(item[key]);
+                }
+            });
+        } catch (ex) {
+            console.log(JSON.stringify(ex));
+        }
 
     });
 
@@ -152,12 +166,25 @@ liferay.tools.blockingAlert = function (title, message, callback) {
     alertDialog.show();
 };
 
-liferay.tools.toastNotification = function (control, msg) {
+liferay.tools.toastNotification = function (control, msg, win) {
+
+    // longer messages should take more time to disappear
+    var displayTime = 1000 + ((msg.length / 28) * 1000);
+
+    if (liferay.model.android) {
+        var dur = (displayTime < 3000) ? Ti.UI.NOTIFICATION_DURATION_SHORT : Ti.UI.NOTIFICATION_DURATION_LONG;
+        Ti.UI.createNotification({
+            message: msg,
+            duration: dur
+        }).show();
+        return;
+    }
+
     if (control) {
         var origTouchEnabledValue = ( typeof control.touchEnabled === 'undefined' ) ? true : control.touchEnabled;
         control.touchEnabled = false;
     }
-    var win = liferay.controller.getCurrentWindow();
+    var theWin = win || liferay.controller.getCurrentWindow();
     var msgView = Ti.UI.createLabel({
         text: msg,
         font: liferay.fonts.h4,
@@ -175,20 +202,17 @@ liferay.tools.toastNotification = function (control, msg) {
         borderColor: 'black',
         height: '20%',
         bottom: '30dp',
-        opacity: 0,
-        zIndex: 2
+        opacity: 0
     });
 
     bg.add(msgView);
-    win.add(bg);
+    theWin.add(bg);
 
     bg.animate({
         opacity: 0.8,
         duration: 200
     });
 
-    // longer messages should take more time to disappear
-    var displayTime = 1000 + ((msg.length / 25) * 1000);
 
 
     setTimeout(function() {
@@ -196,6 +220,7 @@ liferay.tools.toastNotification = function (control, msg) {
             opacity: 0,
             duration: 4000
         }, function () {
+            theWin.remove(bg);
             if (control) {
                 control.touchEnabled = origTouchEnabledValue;
             }
@@ -255,14 +280,18 @@ liferay.tools.createFloatingMessage = function (options) {
 
 liferay.tools.showSpinner = function (options) {
     if (!liferay.tools.spinner) {
-        liferay.tools.spinner = Titanium.UI.createActivityIndicator({
-            width: 'auto',
-            height: 'auto',
-            bottom: 5,
-            color: "#ffffff",
-            zIndex: 101
-        });
+        liferay.tools.spinner = Titanium.UI.createActivityIndicator({});
     }
+
+    liferay.tools.spinner.left = options.left;
+    liferay.tools.spinner.right = options.right;
+    liferay.tools.spinner.width = options.width || Ti.UI.SIZE;
+    liferay.tools.spinner.height = options.height || Ti.UI.SIZE;
+    if (!options.verticalCentered) {
+        liferay.tools.spinner.bottom = options.bottom || 5;
+    }
+    liferay.tools.spinner.zIndex = 1000;
+    liferay.tools.spinner.color = '#ffffff';
 
     if (liferay.tools.spinnerView) {
         liferay.tools.spinnerView.remove(liferay.tools.spinner);
@@ -393,4 +422,136 @@ liferay.tools.updateImagePaths = function (object, prefix) {
 
 liferay.tools.appendImagePrefix = function (path, prefix) {
     return path.replace(/(.png$|.jpg$)/, prefix + "$1");
+};
+
+liferay.tools.makeRelativeDateString = function(date) {
+
+
+    var  now = new Date().getTime();
+    var secsDiff = (now - date.getTime()) / 1000;
+    var mins = secsDiff / 60;
+    var hours = mins / 60;
+    var days = hours / 24;
+
+
+    if (secsDiff < 120) {
+        return L('MOMENTS_AGO')
+    } else if (mins < 120) {
+        return String.format(L('ABOUT_X_MINS_AGO'), Math.round(mins).toString());
+    } else if (hours < 48) {
+        if (hours > 18) {
+            return L('YESTERDAY');
+        } else {
+            return String.format(L('ABOUT_X_HOURS_AGO'), Math.round(hours).toString());
+        }
+    } else if (days < 30) {
+        return String.format(L('ABOUT_X_DAYS_AGO'), Math.round(days).toString());
+    } else {
+        return String.formatDate(date, 'long');
+    }
+};
+
+liferay.tools.makeBlob = function(picSpec, callback) {
+    var finalBlob;
+
+    if (picSpec.media) {
+        finalBlob = picSpec.media;
+        if (picSpec.cropRect) {
+            try {
+                finalBlob = finalBlob.imageAsCropped(picSpec.cropRect);
+            } catch (ex) {
+                console.log("exception during crop: " + JSON.stringify(ex));
+            }
+        }
+        var picWidth = 0, picHeight = 0;
+
+        if (finalBlob.width > 0 && finalBlob.height > 0) {
+            picWidth = finalBlob.width;
+            picHeight = finalBlob.height;
+        } else if (picSpec.media.width > 0 && picSpec.media.height > 0) {
+            picWidth = pic.media.width;
+            picHeight = pic.media.height;
+        }
+
+        callback(finalBlob, picWidth, picHeight);
+
+    } else if (picSpec.apiName && picSpec.apiName == 'Ti.Blob') {
+        callback(picSpec, picSpec.width, picSpec.height);
+    } else if (picSpec.url || picSpec.id) {
+        // from multiselector
+        MediaPicker.getImageByURL({
+            key: picSpec.url,
+            id: picSpec.id,
+            success:  function (e) {
+                if (e.image && e.image.apiName == 'Ti.Blob') {
+                    // e.image is a blob
+                    callback(e.image, e.width, e.height);
+                } else {
+                    var file = Ti.Filesystem.getFile('file://' + e.image);
+                    try {
+                        callback(file.read(), e.width, e.height);
+                    } catch (ex) {
+                        callback(null, 0, 0);
+                    }
+                }
+            }
+        });
+    }
+};
+
+liferay.tools.downsizePic = function(pic, maxSideSize, callback) {
+
+    liferay.tools.makeBlob(pic, function(blob, width, height) {
+
+        var resizedPic = blob;
+        if (width <= 0 || height <= 0) {
+            try {
+                var tmpcompress = ImageFactory.compress(resizedPic, 1.0);
+                if (tmpcompress && tmpcompress.width > 0 && tmpcompress.height > 0) {
+                    picWidth = tmpcompress.width;
+                    picHeight = tmpcompress.height;
+                }
+                tmpcompress = null;
+            } catch (ex) {
+            }
+        }
+
+
+        if (width > 0 && height > 0) {
+            var longestSide = Math.max(width, height);
+            if (longestSide > maxSideSize) {
+                var scale = maxSideSize / longestSide;
+                resizedPic = ImageFactory.imageAsResized(resizedPic, {
+                    width: Math.floor(width * scale),
+                    height: Math.floor(height * scale),
+                    format: ImageFactory.JPEG,
+                    quality: 0.7
+                });
+            }
+        }
+        callback(resizedPic);
+    });
+};
+
+liferay.tools.clipImage = function(localpath, bounds) {
+
+    try {
+        var file = Titanium.Filesystem.getFile(localpath);
+        if (!file) {
+            return null;
+        }
+
+        var croppedImg = file.read().imageAsCropped(bounds);
+
+        file.write(croppedImg);
+
+        return localpath;
+    } catch (ex) {
+        return null;
+    }
+
+};
+
+liferay.tools.selectPhotos = function(onSuccess) {
+    MediaPicker.show(onSuccess, 20, 'photos', L('CHOOSE_MULTI_PHOTOS'));
 };
