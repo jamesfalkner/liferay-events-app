@@ -58,7 +58,7 @@
     <property name="liferay.flickr.shared_secret">my-flickr-shared-secret</property>
 
     <!-- google API key -->
-    <property name="liferay.google.apikey">AIzaSyCYk0TaOvmrviOw8epcEuLObLWL8ifREPg</property>
+    <property name="liferay.google.apikey">my-google-url-shortener-api-key</property>
 
     <property name="liferay.regular.font">Helvetica</property>
     <property name="liferay.light.font">Helvetica</property>
